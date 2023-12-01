@@ -7,10 +7,11 @@ const jsonScalar = asNexusMethod(JSONResolver, "json");
 const dateTimeScalar = asNexusMethod(DateTimeResolver, "date");
 
 import * as documentsTypes from "./graphql/documents";
+import * as coreTypes from "./graphql/core";
 import { permissions } from "./permissions";
 
 export const schema = makeSchema({
-  types: [documentsTypes, jsonScalar, dateTimeScalar],
+  types: [coreTypes, documentsTypes, jsonScalar, dateTimeScalar],
   outputs: {
     typegen: join(__dirname, "..", "nexus-typegen.ts"),
     schema: join(__dirname, "..", "schema.graphql"),
