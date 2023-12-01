@@ -11,7 +11,7 @@ export default function PrimaryHeader() {
         <ProfileMenu />
         <NotificationList />
       </Box>
-      <Box>
+      <Box display="flex" flexDirection="row">
         <SystemWeather />
         <SystemClock />
       </Box>
