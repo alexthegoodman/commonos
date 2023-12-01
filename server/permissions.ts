@@ -38,7 +38,7 @@ export const permissions = shield(
         if (thrownThing === null) {
           thrownThing = "NOT AUTHORIZED!";
         }
-        console.error(thrownThing);
+        console.error(thrownThing, args, info);
         // return new ApolloError(thrownThing as string, "ERR_INTERNAL_SERVER");
         return new Error(thrownThing as string);
       }

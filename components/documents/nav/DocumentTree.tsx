@@ -1,26 +1,115 @@
 import * as React from "react";
 import useSWR, { mutate } from "swr";
 
-import styles from "./DocumentTree.module.scss";
-
-import { DocumentTreeProps } from "./DocumentTree.d";
-import { getDocumentsData } from "../../api/document";
+import { getDocumentsData } from "../../../fetchers/document";
 import { useCookies } from "react-cookie";
 import Link from "next/link";
-import { getUserData, updateUserData } from "../../helpers/requests";
-import graphClient from "../../helpers/GQLClient";
-import { newDocumentMutation } from "../../graphql/document";
+import { getUserData, updateUserData } from "../../../fetchers/user";
+import graphClient from "../../../helpers/GQLClient";
+import { newDocumentMutation } from "../../../gql/document";
+import { Typography, styled } from "@mui/material";
+import { Add, ChevronRight } from "@mui/icons-material";
+
+const TreeWrapper = styled("section")(
+  ({ theme }) => `
+    height: calc(100vh - 100px);
+    margin-top: 25px;
+  
+    .documentTreeInner {
+      padding-left: 10px;
+  
+      li {
+        position: relative;
+        list-style: none;
+      }
+      ul {
+        display: block;
+        list-style: none;
+        padding: 0 0 0 25px;
+        margin: 0 0 0 0;
+  
+        &.addDocumentMenu {
+          position: absolute;
+          top: 0px;
+          left: 150px;
+          background: white;
+          box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+          padding: 15px;
+          margin: 0;
+          border-radius: 5px;
+          width: 150px;
+          z-index: 50;
+  
+          li {
+            padding: 7px 0;
+            cursor: pointer;
+          }
+        }
+  
+        li {
+          span, p {
+            display: flex;
+            flex-direction: row;
+  
+            &.selected {
+              background-color: grey;
+            }
+  
+            svg {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              transform: rotate(90deg);
+              cursor: pointer;
+            }
+            a {
+              display: block;
+              padding: 7px 2px;
+              text-decoration: none;
+              line-height: 21px;
+            }
+          }
+  
+          &.addDocument {
+            // padding: 7px 0;
+            cursor: pointer;
+  
+            span {
+              line-height: 35px;
+  
+              > i {
+                &:hover {
+                  background-color: none;
+                }
+              }
+            }
+          }
+  
+          &.folded {
+            svg {
+              transform: rotate(0deg);
+            }
+  
+            ul {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+`
+);
 
 const AddDocumentMenu = ({ id = null, addPageHandler }) => {
-  const [showMenu, setShowMenu] = React.useState(false);
+  // const [showMenu, setShowMenu] = React.useState(false);
 
   return (
-    <li className={styles.addDocument} onClick={() => setShowMenu(!showMenu)}>
-      <span>
-        <i className="ph-plus-thin"></i> Add Document
-      </span>
-      {showMenu ? (
-        <ul className={styles.addDocumentMenu}>
+    <li className="addDocument" onClick={() => addPageHandler(id)}>
+      <Typography variant="body2">
+        <Add /> Add Document
+      </Typography>
+      {/* {showMenu ? (
+        <ul className="addDocumentMenu">
           <li onClick={() => addPageHandler(id, "book")}>Add Book</li>
           <li onClick={() => addPageHandler(id, "cover")}>Add Cover</li>
           <li onClick={() => addPageHandler(id, "part")}>Add Part</li>
@@ -28,20 +117,20 @@ const AddDocumentMenu = ({ id = null, addPageHandler }) => {
         </ul>
       ) : (
         <></>
-      )}
+      )} */}
     </li>
   );
 };
 
-const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
+const DocumentTree = ({ documentId = "" }) => {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
   graphClient.setupClient(token);
 
-  // const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
-  //   revalidateOnMount: true,
-  // });
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
 
   const treeData = userData ? userData.documentTree : [];
 
@@ -76,14 +165,10 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
     }
   };
 
-  const addPageHandler = async (parentId = null, preset) => {
+  const addPageHandler = async (parentId = null) => {
     // create new document
-    const { newDocument } = await graphClient.client?.request(
-      newDocumentMutation,
-      {
-        preset,
-      }
-    );
+    const { newDocument } =
+      await graphClient.client?.request(newDocumentMutation);
 
     // if parentId supplied, add to its children
     let newTree = treeData;
@@ -105,10 +190,10 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
 
     // save new tree
 
-    // mutate("browseKey", () => getDocumentsData(token));
-    // mutate("homeLayout", () => updateUserData(token, newTree), {
-    //   optimisticData: { ...userData, documentTree: newTree },
-    // });
+    mutate("browseKey", () => getDocumentsData(token));
+    mutate("homeLayout", () => updateUserData(token, newTree), {
+      optimisticData: { ...userData, documentTree: newTree },
+    });
   };
 
   const toggleFold = (targetId) => {
@@ -122,9 +207,9 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
     });
 
     // save tree
-    // mutate("homeLayout", () => updateUserData(token, newTree), {
-    //   optimisticData: { ...userData, documentTree: newTree },
-    // });
+    mutate("homeLayout", () => updateUserData(token, newTree), {
+      optimisticData: { ...userData, documentTree: newTree },
+    });
   };
 
   const displayChildren = (obj, addPage) => {
@@ -141,19 +226,17 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
 
           return (
             <>
-              <li className={child.folded ? styles.folded : ""}>
-                <span
-                  className={documentId === child.id ? styles.selected : ""}
+              <li className={child.folded ? "folded" : ""}>
+                <Typography
+                  variant="body2"
+                  className={documentId === child.id ? "selected" : ""}
                 >
-                  <i
-                    className="ph-caret-right-thin"
-                    onClick={() => toggleFold(child.id)}
-                  ></i>
+                  <ChevronRight onClick={() => toggleFold(child.id)} />
 
-                  <Link href={`/editor/${child.id}`} draggable="true">
+                  <Link href={`/documents/${child.id}`} draggable="true">
                     {childData?.title}
                   </Link>
-                </span>
+                </Typography>
 
                 {child.id ? displayChildren(child, newAddPage) : <></>}
               </li>
@@ -177,9 +260,9 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
   );
 
   return (
-    <section className={styles.documentTree}>
-      <div className={styles.documentTreeInner}>
-        <span className={styles.treeHeadline}>Your Documents</span>
+    <TreeWrapper>
+      <div className="documentTreeInner">
+        <Typography variant="h5">Your Documents</Typography>
         {treeData && typeof treeData === "object" && documentsData ? (
           treeData.map((item) => {
             const itemData = documentsData.filter(
@@ -194,21 +277,17 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
               <>
                 <ul>
                   <>
-                    <li className={item.folded ? styles.folded : ""}>
-                      <span
-                        className={
-                          documentId === item.id ? styles.selected : ""
-                        }
+                    <li className={item.folded ? "folded" : ""}>
+                      <Typography
+                        variant="body2"
+                        className={documentId === item.id ? "selected" : ""}
                       >
-                        <i
-                          className="ph-caret-right-thin"
-                          onClick={() => toggleFold(item.id)}
-                        ></i>
+                        <ChevronRight onClick={() => toggleFold(item.id)} />
 
-                        <Link href={`/editor/${item.id}`} draggable="true">
+                        <Link href={`/documents/${item.id}`} draggable="true">
                           {itemData?.title}
                         </Link>
-                      </span>
+                      </Typography>
 
                       {item.id ? displayChildren(item, newAddPage) : <></>}
                     </li>
@@ -223,7 +302,7 @@ const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
         )}
         {newTopLevelPage}
       </div>
-    </section>
+    </TreeWrapper>
   );
 };
 

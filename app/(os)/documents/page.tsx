@@ -1,7 +1,9 @@
 "use client";
 
-import { Typography } from "@mui/material";
+import EmptyNotice from "@/components/core/layout/EmptyNotice";
 
-export default function Home() {
-  return <Typography>Documents</Typography>;
+export default function Documents() {
+  return (
+    <EmptyNotice message="Create a document in the left-hand sidebar to begin" />
+  );
 }

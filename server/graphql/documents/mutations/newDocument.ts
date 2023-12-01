@@ -21,6 +21,8 @@ export const NewDocumentMutation = extendType({
           },
         });
 
+        console.info("newDocument", newDocument);
+
         return newDocument;
       },
     });
