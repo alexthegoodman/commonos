@@ -47,4 +47,25 @@ export default class Helpers {
 
     return generatedUsername;
   }
+
+  parseCookie(str: string) {
+    if (str && typeof str !== "undefined") {
+      return str
+        .split(";")
+        .map((v) => v.split("="))
+        .reduce((acc, v) => {
+          acc[decodeURIComponent(v[0].trim())] = decodeURIComponent(
+            v[1].trim()
+          );
+          return acc;
+        }, {});
+    } else {
+      return {};
+    }
+  }
+
+  createAuthHeader(str: string) {
+    const authPayload = Buffer.from(`${str}`, "utf8").toString("base64");
+    return `Basic ${authPayload}`;
+  }
 }

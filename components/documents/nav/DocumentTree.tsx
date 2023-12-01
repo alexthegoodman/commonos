@@ -1,0 +1,230 @@
+import * as React from "react";
+import useSWR, { mutate } from "swr";
+
+import styles from "./DocumentTree.module.scss";
+
+import { DocumentTreeProps } from "./DocumentTree.d";
+import { getDocumentsData } from "../../api/document";
+import { useCookies } from "react-cookie";
+import Link from "next/link";
+import { getUserData, updateUserData } from "../../helpers/requests";
+import graphClient from "../../helpers/GQLClient";
+import { newDocumentMutation } from "../../graphql/document";
+
+const AddDocumentMenu = ({ id = null, addPageHandler }) => {
+  const [showMenu, setShowMenu] = React.useState(false);
+
+  return (
+    <li className={styles.addDocument} onClick={() => setShowMenu(!showMenu)}>
+      <span>
+        <i className="ph-plus-thin"></i> Add Document
+      </span>
+      {showMenu ? (
+        <ul className={styles.addDocumentMenu}>
+          <li onClick={() => addPageHandler(id, "book")}>Add Book</li>
+          <li onClick={() => addPageHandler(id, "cover")}>Add Cover</li>
+          <li onClick={() => addPageHandler(id, "part")}>Add Part</li>
+          <li onClick={() => addPageHandler(id, "chapter")}>Add Chapter</li>
+        </ul>
+      ) : (
+        <></>
+      )}
+    </li>
+  );
+};
+
+const DocumentTree: React.FC<DocumentTreeProps> = ({ documentId = "" }) => {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
+  graphClient.setupClient(token);
+
+  // const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+  //   revalidateOnMount: true,
+  // });
+
+  const treeData = userData ? userData.documentTree : [];
+
+  const {
+    data: documentsData,
+    error,
+    isLoading,
+    // mutate,
+  } = useSWR("browseKey", () => getDocumentsData(token));
+
+  console.info("documents data", userData, documentsData);
+
+  const addToChildren = (obj, newId, targetId) => {
+    if (obj.children) {
+      obj.children.forEach((child) => {
+        if (child.id === targetId) {
+          child.children.push({ id: newId, folded: true, children: [] });
+        }
+        addToChildren(child, newId, targetId);
+      });
+    }
+  };
+
+  const foldChildren = (obj, targetId) => {
+    if (obj.children) {
+      obj.children.forEach((child) => {
+        if (child.id === targetId) {
+          child.folded = !child.folded;
+        }
+        foldChildren(child, targetId);
+      });
+    }
+  };
+
+  const addPageHandler = async (parentId = null, preset) => {
+    // create new document
+    const { newDocument } = await graphClient.client?.request(
+      newDocumentMutation,
+      {
+        preset,
+      }
+    );
+
+    // if parentId supplied, add to its children
+    let newTree = treeData;
+    if (parentId) {
+      newTree.forEach((item) => {
+        if (item.id === parentId) {
+          item.children.push({
+            id: newDocument.id,
+            folded: true,
+            children: [],
+          });
+        }
+        addToChildren(item, newDocument.id, parentId);
+      });
+    } else {
+      if (newTree === null) newTree = [];
+      newTree.push({ id: newDocument.id, folded: true, children: [] });
+    }
+
+    // save new tree
+
+    // mutate("browseKey", () => getDocumentsData(token));
+    // mutate("homeLayout", () => updateUserData(token, newTree), {
+    //   optimisticData: { ...userData, documentTree: newTree },
+    // });
+  };
+
+  const toggleFold = (targetId) => {
+    let newTree = treeData;
+
+    newTree.forEach((item) => {
+      if (item.id === targetId) {
+        item.folded = !item.folded;
+      }
+      foldChildren(item, targetId);
+    });
+
+    // save tree
+    // mutate("homeLayout", () => updateUserData(token, newTree), {
+    //   optimisticData: { ...userData, documentTree: newTree },
+    // });
+  };
+
+  const displayChildren = (obj, addPage) => {
+    return obj.children ? (
+      <ul>
+        {obj.children.map((child) => {
+          const childData = documentsData.filter(
+            (document) => document.id === child.id
+          )[0];
+
+          const newAddPage = (
+            <AddDocumentMenu id={child.id} addPageHandler={addPageHandler} />
+          );
+
+          return (
+            <>
+              <li className={child.folded ? styles.folded : ""}>
+                <span
+                  className={documentId === child.id ? styles.selected : ""}
+                >
+                  <i
+                    className="ph-caret-right-thin"
+                    onClick={() => toggleFold(child.id)}
+                  ></i>
+
+                  <Link href={`/editor/${child.id}`} draggable="true">
+                    {childData?.title}
+                  </Link>
+                </span>
+
+                {child.id ? displayChildren(child, newAddPage) : <></>}
+              </li>
+            </>
+          );
+        })}
+        {addPage}
+      </ul>
+    ) : (
+      <ul>{addPage}</ul>
+    );
+  };
+
+  if (isLoading) return <></>;
+  if (error) return <>{error.message}</>;
+
+  const newTopLevelPage = (
+    <ul>
+      <AddDocumentMenu id={null} addPageHandler={addPageHandler} />
+    </ul>
+  );
+
+  return (
+    <section className={styles.documentTree}>
+      <div className={styles.documentTreeInner}>
+        <span className={styles.treeHeadline}>Your Documents</span>
+        {treeData && typeof treeData === "object" && documentsData ? (
+          treeData.map((item) => {
+            const itemData = documentsData.filter(
+              (document) => document.id === item.id
+            )[0];
+
+            const newAddPage = (
+              <AddDocumentMenu id={item.id} addPageHandler={addPageHandler} />
+            );
+
+            return (
+              <>
+                <ul>
+                  <>
+                    <li className={item.folded ? styles.folded : ""}>
+                      <span
+                        className={
+                          documentId === item.id ? styles.selected : ""
+                        }
+                      >
+                        <i
+                          className="ph-caret-right-thin"
+                          onClick={() => toggleFold(item.id)}
+                        ></i>
+
+                        <Link href={`/editor/${item.id}`} draggable="true">
+                          {itemData?.title}
+                        </Link>
+                      </span>
+
+                      {item.id ? displayChildren(item, newAddPage) : <></>}
+                    </li>
+                  </>
+                  {/* {newAddPage} */}
+                </ul>
+              </>
+            );
+          })
+        ) : (
+          <></>
+        )}
+        {newTopLevelPage}
+      </div>
+    </section>
+  );
+};
+
+export default DocumentTree;

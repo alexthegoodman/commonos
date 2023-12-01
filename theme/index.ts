@@ -4,18 +4,21 @@ export const themeOptions: ThemeOptions = {
   palette: {
     mode: "dark",
     primary: {
-      main: "#3f51b5",
+      main: "#FFFFFF",
     },
     secondary: {
-      main: "#f50057",
+      main: "#E5E5E5",
     },
   },
   typography: {
+    allVariants: {
+      color: "white",
+    },
     button: {
       textTransform: "none",
     },
     h1: {
-      fontSize: "6rem",
+      fontSize: "4rem",
     },
     body1: {
       fontSize: "1rem",
