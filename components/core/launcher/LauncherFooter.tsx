@@ -15,9 +15,9 @@ export default function LauncherFooter() {
       <Box>
         <Link href="/files">Files</Link>
       </Box>
-      <Box>
+      {/* <Box>
         <Link href="/apps">See Apps</Link>
-      </Box>
+      </Box> */}
       <Box>
         <Link href="/settings">Settings</Link>
       </Box>

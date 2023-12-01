@@ -9,7 +9,16 @@ import Link from "next/link";
 export default function Launcher() {
   return (
     <Box display="flex" flexDirection="column" alignItems="center">
-      <Box maxWidth={450} width="100%">
+      <Box
+        boxSizing={"border-box"}
+        display="flex"
+        flexDirection="column"
+        justifyContent="center"
+        maxWidth={450}
+        width="100%"
+        height="calc(100vh - 64px)"
+        paddingBottom="200px"
+      >
         <PrimaryPromptForm />
       </Box>
 

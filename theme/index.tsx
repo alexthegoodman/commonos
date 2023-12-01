@@ -31,7 +31,9 @@ export const themeOptions: ThemeOptions = {
       fontSize: "1rem",
     },
   },
+
   spacing: 8,
+
   components: {
     MuiButton: {
       styleOverrides: {
