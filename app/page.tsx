@@ -1,15 +1,13 @@
 "use client";
 
-import PrimaryHeader from "@/components/core/nav/PrimaryHeader";
-import PrimaryTabs from "@/components/core/nav/PrimaryTabs";
-import { Button } from "@mui/material";
+import { Typography } from "@mui/material";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <main>
-      <PrimaryHeader />
-      <PrimaryTabs />
-      <Button>Begin</Button>
+      <Typography>Welcome</Typography>
+      <Link href="/launcher">Enter CommonOS</Link>
     </main>
   );
 }

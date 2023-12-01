@@ -1,11 +1,65 @@
 import React, { useState, useReducer } from "react";
 
+export const allTabs = [
+  {
+    id: "launcher",
+    label: "Launcher",
+    href: "/launcher",
+    canClose: false,
+  },
+  {
+    id: "documents",
+    label: "Documents",
+    href: "/documents",
+    canClose: true,
+  },
+  {
+    id: "slides",
+    label: "Slides",
+    href: "/slides",
+    canClose: true,
+  },
+  {
+    id: "sheets",
+    label: "Sheets",
+    href: "/sheets",
+    canClose: true,
+  },
+  {
+    id: "drawings",
+    label: "Drawings",
+    href: "/drawings",
+    canClose: true,
+  },
+];
+
+// for testing only
+const testDefaultTabs = [
+  {
+    id: "launcher",
+    pinned: false,
+  },
+  {
+    id: "documents",
+    pinned: false,
+  },
+  {
+    id: "slides",
+    pinned: false,
+  },
+];
+
+export interface Tab {
+  id: string;
+  pinned: boolean;
+}
+
 export interface LauncherContextState {
-  selectedTab: number;
+  openTabs: Tab[];
 }
 
 export const LauncherContextState = {
-  selectedTab: 0, // 0 means default / all interests
+  openTabs: testDefaultTabs,
 };
 
 export const LauncherContextReducer = (
