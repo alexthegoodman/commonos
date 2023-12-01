@@ -23,8 +23,6 @@ const FormInput = ({
             : ""
         }
       />
-      {/* <input {...fieldProps} {...register(fieldProps.name, validation)} /> */}
-      {/* <SimpleErrorMessage errors={errors} fieldProps={fieldProps} /> */}
     </Box>
   );
 };
