@@ -7,8 +7,14 @@ export interface Track {
   end: number;
 }
 
+export interface TrackRow {
+  id: string;
+  name: string;
+  tracks: Track[];
+}
+
 export interface SoundsContextState {
-  tracks: Track[] | null;
+  trackRows: TrackRow[] | null;
   selectedTrack: string | null;
   currentTime: number;
   playing: boolean;
@@ -17,7 +23,7 @@ export interface SoundsContextState {
 }
 
 export const SoundsContextState = {
-  tracks: null,
+  trackRows: null,
   selectedTrack: null,
   currentTime: 0,
   playing: false,

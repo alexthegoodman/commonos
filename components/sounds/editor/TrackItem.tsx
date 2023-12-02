@@ -10,6 +10,7 @@ let listenerAttached = 0;
 
 const TrackItem = ({
   constraintsRef = null,
+  rowId = null,
   track = null,
   trackWidth = 1,
   trackHeight = 1,
@@ -17,7 +18,7 @@ const TrackItem = ({
   handleClick = () => console.info("handleClick"),
   updateTrack = () => console.info("updateTrack"),
 }) => {
-  const [{ tracks, selectedTrack }, dispatch] = useSoundsContext();
+  const [{ trackRows, selectedTrack }, dispatch] = useSoundsContext();
 
   const { id, start, end, zoomFactor } = track;
 
@@ -35,84 +36,65 @@ const TrackItem = ({
   const left = trackWidth * (leftPerc / 100);
   const msPerPixel = originalDuration / trackWidth;
 
-  console.info("width", width, widthPx);
+  console.info("width", track, trackRows, width, widthPx);
 
   // TODO: esc key should cancel any dragging
 
-  React.useEffect(() => {
-    const handleMouseMove = (e) => {
-      const { clientX, clientY } = e;
-      const wrapper = document.getElementById("videoTrackWrapper");
-      const targetTrackItem = document.getElementById(id);
-      const clickAreaOffset = 200;
+  // React.useEffect(() => {
+  //   const handleMouseMove = (e) => {
+  //     const { clientX, clientY } = e;
+  //     const wrapper = document.getElementById("videoTrackWrapper");
+  //     const targetTrackItem = document.getElementById(id);
+  //     const clickAreaOffset = 200;
 
-      //   console.info("mouse  move", targetTrackItem, translating);
+  //     //   console.info("mouse  move", targetTrackItem, translating);
 
-      if (!targetTrackItem) return;
+  //     if (!targetTrackItem) return;
 
-      //   console.info("targetTrackItem", targetTrackItem);
+  //     //   console.info("targetTrackItem", targetTrackItem);
 
-      const wrapperRect = wrapper.getBoundingClientRect();
-      const targetTrackItemRect = targetTrackItem.getBoundingClientRect();
-      const { left, right, width } = targetTrackItemRect;
-      const {
-        left: wrapperLeft,
-        right: wrapperRight,
-        width: wrapperWidth,
-      } = wrapperRect;
+  //     const wrapperRect = wrapper.getBoundingClientRect();
+  //     const targetTrackItemRect = targetTrackItem.getBoundingClientRect();
+  //     const { left, right, width } = targetTrackItemRect;
+  //     const {
+  //       left: wrapperLeft,
+  //       right: wrapperRight,
+  //       width: wrapperWidth,
+  //     } = wrapperRect;
 
-      const pixelPerMs = originalDuration / wrapperWidth;
-      const msPerPixel = wrapperWidth / originalDuration;
-      const baseX = clientX - 200; // -200 to account for offset
-      const totalX = left + (clientX - left);
+  //     const pixelPerMs = originalDuration / wrapperWidth;
+  //     const msPerPixel = wrapperWidth / originalDuration;
+  //     const baseX = clientX - 200; // -200 to account for offset
+  //     const totalX = left + (clientX - left);
 
-      //   if (translating) {
-      //     const pixelsForX = baseX * pixelPerMs;
-      //     const clientXMs = baseX * pixelPerMs;
-      //     const widthMs = width * pixelPerMs;
-      //     // console.info("msForX", clientX, pixelPerMs, clientXMs, width);
-      //     const newStart = Math.floor(clientXMs);
-      //     const newEnd = Math.floor(newStart + widthMs); // dont add width to ms times, convert width to ms
-      //     updateTrack(
-      //       track.id,
-      //       "",
-      //       [
-      //         { key: "start", value: newStart },
-      //         { key: "end", value: newEnd },
-      //       ],
-      //       true
-      //     );
-      //     // setLiveStart(newStart);
-      //     // setLiveEnd(newEnd);
-      //   }
-      if (resizingLeft) {
-        const newWidth = width - (clientX - left);
-        const newLeft = left + (clientX - left);
-        // targetTrackItem.style.width = `${newWidth}px`;
-        // targetTrackItem.style.left = `${newLeft}px`;
-        const newStart = Math.floor(newLeft * msPerPixel);
-        // console.info("newStart", newStart, newLeft, msPerPixel);
-        updateTrack(track.id, "start", newStart - clickAreaOffset);
-      }
-      if (resizingRight) {
-        const newWidth = width + (clientX - right);
-        // targetTrackItem.style.width = `${newWidth}px`;
-        const leftSpace = left + newWidth;
-        const newEnd = Math.floor(leftSpace * msPerPixel);
-        updateTrack(track.id, "end", newEnd + clickAreaOffset);
-      }
-    };
+  //     if (resizingLeft) {
+  //       const newWidth = width - (clientX - left);
+  //       const newLeft = left + (clientX - left);
+  //       // targetTrackItem.style.width = `${newWidth}px`;
+  //       // targetTrackItem.style.left = `${newLeft}px`;
+  //       const newStart = Math.floor(newLeft * msPerPixel);
+  //       // console.info("newStart", newStart, newLeft, msPerPixel);
+  //       updateTrack(rowId, track.id, "start", newStart - clickAreaOffset);
+  //     }
+  //     if (resizingRight) {
+  //       const newWidth = width + (clientX - right);
+  //       // targetTrackItem.style.width = `${newWidth}px`;
+  //       const leftSpace = left + newWidth;
+  //       const newEnd = Math.floor(leftSpace * msPerPixel);
+  //       updateTrack(rowId, track.id, "end", newEnd + clickAreaOffset);
+  //     }
+  //   };
 
-    listenerAttached++;
-    console.info("attach mousemove listener", listenerAttached);
-    document.addEventListener("mousemove", handleMouseMove);
+  //   listenerAttached++;
+  //   console.info("attach mousemove listener", listenerAttached);
+  //   document.addEventListener("mousemove", handleMouseMove);
 
-    return () => {
-      listenerAttached--;
-      console.info("detaching mousemove listener");
-      document.removeEventListener("mousemove", handleMouseMove);
-    };
-  }, [translating, resizingLeft, resizingRight]);
+  //   return () => {
+  //     listenerAttached--;
+  //     console.info("detaching mousemove listener");
+  //     document.removeEventListener("mousemove", handleMouseMove);
+  //   };
+  // }, [translating, resizingLeft, resizingRight]);
 
   const leftHandleDown = (e) => {
     console.info("leftHandleDown");
@@ -175,6 +157,7 @@ const TrackItem = ({
     const newEnd = Math.floor((x + widthPx) * msPerPixel);
 
     updateTrack(
+      rowId,
       track.id,
       "",
       [
@@ -197,10 +180,10 @@ const TrackItem = ({
         const newStart = Math.floor(
           (left + Math.abs(e.movementX)) * msPerPixel
         );
-        updateTrack(track.id, "start", newStart);
+        updateTrack(rowId, track.id, "start", newStart);
       } else {
         const newStart = Math.floor((left + e.movementX) * msPerPixel);
-        updateTrack(track.id, "start", newStart);
+        updateTrack(rowId, track.id, "start", newStart);
       }
       // set to match glitch from resizable so bug doesnt bubble up
       // but it should not shorten from right side
@@ -208,17 +191,28 @@ const TrackItem = ({
       // updateTrack(track.id, "end", newEnd);
     } else if (side === "right") {
       const newEnd = Math.floor((left + newWidth) * msPerPixel);
-      updateTrack(track.id, "end", newEnd);
+      updateTrack(rowId, track.id, "end", newEnd);
     }
   };
 
   const handleTrackDelete = () => {
-    console.info("handleTrackDelete", track.id);
+    console.info("handleTrackDelete", rowId, track.id);
 
-    const newTracks = tracks.filter((t) => t.id !== track.id);
-    dispatch({ type: "tracks", payload: newTracks });
+    // const newTracks = tracks.filter((t) => t.id !== track.id);
+    const newTrackRows = trackRows.map((trackRow) => {
+      if (trackRow.id === rowId) {
+        return {
+          ...trackRow,
+          tracks: trackRow.tracks.filter((t) => t.id !== track.id),
+        };
+      }
+      return trackRow;
+    });
+    dispatch({ type: "trackRows", payload: newTrackRows });
     dispatch({ type: "selectedTrack", payload: null });
   };
+
+  const staticTrackHeight = 100;
 
   return (
     <Draggable
@@ -227,7 +221,7 @@ const TrackItem = ({
       // defaultPosition={{ x: left, y: 0 }}
       position={{ x: left, y: 0 }}
       // disabled={true}
-      grid={[5, 5]}
+      grid={[25, 25]}
       scale={1}
       // onStart={this.handleStart}
       // onDrag={this.handleDrag}
@@ -244,13 +238,13 @@ const TrackItem = ({
     >
       <Resizable
         style={{ position: "absolute" }}
-        grid={[1, 1]}
+        grid={[25, 25]}
         defaultSize={{
           width: widthPx,
-          height: trackHeight,
+          height: staticTrackHeight,
         }}
-        minHeight={trackHeight}
-        maxHeight={trackHeight}
+        minHeight={staticTrackHeight}
+        maxHeight={staticTrackHeight}
         minWidth={5}
         maxWidth={trackWidth}
         onResize={onResize}
