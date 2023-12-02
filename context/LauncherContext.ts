@@ -86,3 +86,6 @@ export const LauncherContext = React.createContext<{
   state: LauncherContextState,
   dispatch: () => undefined,
 });
+
+export const useLauncherContext = () =>
+  React.useContext(LauncherContext) as unknown as Iterable<any>;
