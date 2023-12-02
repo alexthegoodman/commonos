@@ -10,7 +10,7 @@ import FormInput from "../fields/FormInput";
 import FormMessage from "../fields/FormMessage";
 
 import Helpers from "../../../helpers/Helpers";
-import { Box, Button, Typography, styled } from "@mui/material";
+import { Alert, Box, Button, Typography, styled } from "@mui/material";
 import FormTextarea from "../fields/FormTextarea";
 
 // import { useTranslation } from "next-i18next";
@@ -21,6 +21,7 @@ const CmForm = styled("form")(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
+  marginTop: "25px",
 }));
 
 const PrimaryPromptForm = ({
@@ -68,6 +69,13 @@ const PrimaryPromptForm = ({
 
   return (
     <Box>
+      <Alert severity="info">
+        <Typography variant="body1">
+          The magic of CommonOS is in the Flow experience.
+          <br />
+          Try it with a prompt!
+        </Typography>
+      </Alert>
       <CmForm onSubmit={handleSubmit(onSubmit, onError)}>
         <FormMessage type="error" message={formErrorMessage} />
 
