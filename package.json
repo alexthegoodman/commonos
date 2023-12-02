@@ -19,6 +19,7 @@
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.19",
     "@prisma/client": "^5.6.0",
+    "@silevis/reactgrid": "^4.1.2",
     "bcryptjs": "^2.4.3",
     "canvas": "^2.11.2",
     "graphql-middleware": "^6.1.35",
