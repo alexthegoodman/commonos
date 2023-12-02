@@ -1,11 +1,28 @@
 import React, { useState, useReducer, Dispatch } from "react";
 
+export interface Track {
+  id: string;
+  name: string;
+  start: number;
+  end: number;
+}
+
 export interface SoundsContextState {
-  currentSoundId: string | null;
+  tracks: Track[] | null;
+  selectedTrack: string | null;
+  currentTime: number;
+  playing: boolean;
+  stopped: boolean;
+  exporting: boolean;
 }
 
 export const SoundsContextState = {
-  currentSoundId: null,
+  tracks: null,
+  selectedTrack: null,
+  currentTime: 0,
+  playing: false,
+  stopped: true,
+  exporting: false,
 };
 
 export const SoundsContextReducer = (
