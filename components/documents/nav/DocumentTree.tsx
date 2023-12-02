@@ -7,7 +7,7 @@ import Link from "next/link";
 import { getUserData, updateUserData } from "../../../fetchers/user";
 import graphClient from "../../../helpers/GQLClient";
 import { newDocumentMutation } from "../../../gql/document";
-import { Typography, styled } from "@mui/material";
+import { CircularProgress, Typography, styled } from "@mui/material";
 import { Add, ChevronRight } from "@mui/icons-material";
 
 const TreeWrapper = styled("section")(
@@ -250,7 +250,7 @@ const DocumentTree = ({ documentId = "" }) => {
     );
   };
 
-  if (isLoading) return <></>;
+  if (isLoading) return <CircularProgress />;
   if (error) return <>{error.message}</>;
 
   const newTopLevelPage = (

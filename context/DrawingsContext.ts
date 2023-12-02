@@ -1,11 +1,11 @@
 import React, { useState, useReducer, Dispatch } from "react";
 
 export interface DrawingsContextState {
-  currentDrawingId: string | null;
+  lines: any[] | null;
 }
 
 export const DrawingsContextState = {
-  currentDrawingId: null,
+  lines: [],
 };
 
 export const DrawingsContextReducer = (
