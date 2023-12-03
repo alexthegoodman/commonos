@@ -25,6 +25,26 @@ model User {
   documents Document[]
   documentTree Json?
 
+  // presentations
+  presentations Presentation[]
+  presentationFiles Json?
+
+  // sheets
+  sheets Sheet[]
+  sheetFiles Json?
+
+  // drawings
+  drawings Drawing[]
+  drawingFiles Json?
+
+  // sounds
+  sounds Sound[]
+  soundFiles Json?
+
+  // videos
+  videos Video[]
+  videoFiles Json?
+
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
@@ -34,6 +54,71 @@ model Document {
 
   title   String
   content Json?
+  
+  creator     User @relation(fields: [creatorId], references: [id])
+  creatorId   String 
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Presentation {
+  id String @id @unique @default(uuid())
+
+  title   String
+  context Json?
+  
+  creator     User @relation(fields: [creatorId], references: [id])
+  creatorId   String 
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Sheet {
+  id String @id @unique @default(uuid())
+
+  title   String
+  context Json?
+  
+  creator     User @relation(fields: [creatorId], references: [id])
+  creatorId   String 
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Drawing {
+  id String @id @unique @default(uuid())
+
+  title   String
+  context Json?
+  
+  creator     User @relation(fields: [creatorId], references: [id])
+  creatorId   String 
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Sound {
+  id String @id @unique @default(uuid())
+
+  title   String
+  context Json?
+  
+  creator     User @relation(fields: [creatorId], references: [id])
+  creatorId   String 
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Video {
+  id String @id @unique @default(uuid())
+
+  title   String
+  context Json?
   
   creator     User @relation(fields: [creatorId], references: [id])
   creatorId   String 
