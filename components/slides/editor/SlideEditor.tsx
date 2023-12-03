@@ -10,6 +10,10 @@ export default function SlideEditor() {
   const windowSize = useWindowSize();
   const [state, dispatch] = useSlidesContext();
 
+  const currentSlideData = state.slides.filter(
+    (slide) => slide.id === state.currentSlideId
+  )[0];
+
   const stageWidth =
     windowSize.width && windowSize.width < 1400 ? windowSize.width - 400 : 1000;
   const stageHeight = stageWidth * 0.65;

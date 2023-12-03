@@ -1,5 +1,6 @@
 "use client";
 
+import Autosaver from "@/components/slides/editor/Autosaver";
 import SlideEditor from "@/components/slides/editor/SlideEditor";
 import SlideList from "@/components/slides/nav/SlideList";
 import {
@@ -15,6 +16,7 @@ export default function Presentation() {
     <SlidesContext.Provider
       value={useReducer(SlidesContextReducer, SlidesContextState)}
     >
+      <Autosaver />
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <SlideList />

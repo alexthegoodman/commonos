@@ -2,6 +2,7 @@ import React, { useState, useReducer, Dispatch } from "react";
 
 export interface Slide {
   id: string;
+  title: string;
 }
 
 export interface SlidesContextState {
@@ -12,12 +13,15 @@ export interface SlidesContextState {
 const testDefaultSlides: Slide[] = [
   {
     id: "1",
+    title: "Slide 1",
   },
   {
     id: "2",
+    title: "Slide 2",
   },
   {
     id: "3",
+    title: "Slide 3",
   },
 ];
 
