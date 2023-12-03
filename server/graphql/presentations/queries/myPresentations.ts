@@ -15,6 +15,9 @@ export const MyPresentationQuery = extendType({
               id: currentUser.id,
             },
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         });
 
         return presentations;

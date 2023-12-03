@@ -15,6 +15,9 @@ export const MySheetQuery = extendType({
               id: currentUser.id,
             },
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         });
 
         return sheets;

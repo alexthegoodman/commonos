@@ -15,6 +15,9 @@ export const MyVideoQuery = extendType({
               id: currentUser.id,
             },
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         });
 
         return videos;

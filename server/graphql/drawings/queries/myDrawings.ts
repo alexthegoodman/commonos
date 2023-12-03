@@ -15,6 +15,9 @@ export const MyDrawingQuery = extendType({
               id: currentUser.id,
             },
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         });
 
         return drawings;

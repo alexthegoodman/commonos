@@ -11,7 +11,7 @@ import {
   SlidesContextState,
 } from "@/context/SlidesContext";
 import { getSlideData } from "@/fetchers/slide";
-import { Button, Grid } from "@mui/material";
+import { Button, CircularProgress, Grid } from "@mui/material";
 import { useReducer } from "react";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
@@ -35,9 +35,18 @@ export default function Presentation(props) {
     }
   );
 
-  return slideData && slideData.context ? (
-    <InnerLayout presentationId={presentationId} slideData={slideData} />
+  return !isLoading ? (
+    <>
+      {slideData && slideData.context ? (
+        <InnerLayout presentationId={presentationId} slideData={slideData} />
+      ) : (
+        <InnerLayout
+          presentationId={presentationId}
+          slideData={{ context: SlidesContextState }}
+        />
+      )}
+    </>
   ) : (
-    <></>
+    <CircularProgress />
   );
 }

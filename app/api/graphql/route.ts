@@ -2,10 +2,8 @@ import { startServerAndCreateNextHandler } from "@as-integrations/next";
 import { server } from "@/server/server";
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-import { PrismaClient } from "@prisma/client";
 import { context } from "../../../server/context";
-
-const prisma = new PrismaClient();
+import prisma from "@/server/prisma";
 
 const handler = startServerAndCreateNextHandler<NextRequest>(server, {
   //   context: async (req) => ({ req }),

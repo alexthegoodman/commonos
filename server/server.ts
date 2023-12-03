@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
 import { ApolloServer } from "@apollo/server";
 import { protectedSchema } from "./schema";
 import { Context, context } from "./context";

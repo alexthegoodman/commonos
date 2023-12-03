@@ -15,6 +15,9 @@ export const MySoundQuery = extendType({
               id: currentUser.id,
             },
           },
+          orderBy: {
+            createdAt: "asc",
+          },
         });
 
         return sounds;

@@ -3,6 +3,7 @@ import "client-only";
 
 import { useSlidesContext } from "@/context/SlidesContext";
 import SlideEditor from "./SlideEditor";
+import EmptyNotice from "@/components/core/layout/EmptyNotice";
 
 export default function EditorWrapper() {
   const [state, dispatch] = useSlidesContext();
@@ -14,6 +15,6 @@ export default function EditorWrapper() {
   return currentSlideData ? (
     <SlideEditor key={currentSlideData.id} slide={currentSlideData} />
   ) : (
-    <></>
+    <EmptyNotice message="Select a slide" />
   );
 }
