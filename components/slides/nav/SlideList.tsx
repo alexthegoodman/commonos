@@ -1,5 +1,6 @@
 import { useSlidesContext } from "@/context/SlidesContext";
 import { Box, Button } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 
 export default function SlideList() {
   const [state, dispatch] = useSlidesContext();
@@ -20,6 +21,22 @@ export default function SlideList() {
           </Button>
         );
       })}
+      <Button
+        onClick={() => {
+          dispatch({
+            type: "slides",
+            payload: [
+              ...state.slides,
+              {
+                id: uuidv4(),
+                title: "New Slide",
+              },
+            ],
+          });
+        }}
+      >
+        Add Slide
+      </Button>
     </Box>
   );
 }

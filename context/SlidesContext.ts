@@ -10,23 +10,8 @@ export interface SlidesContextState {
   currentSlideId: string | null;
 }
 
-const testDefaultSlides: Slide[] = [
-  {
-    id: "1",
-    title: "Slide 1",
-  },
-  {
-    id: "2",
-    title: "Slide 2",
-  },
-  {
-    id: "3",
-    title: "Slide 3",
-  },
-];
-
 export const SlidesContextState = {
-  slides: testDefaultSlides,
+  slides: [],
   currentSlideId: null,
 };
 

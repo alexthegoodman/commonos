@@ -6,13 +6,13 @@ import {
 } from "../gql/presentation";
 import graphClient from "../helpers/GQLClient";
 
-export const getSlideData = async (token: string, slideId: string) => {
+export const getSlideData = async (token: string, presentationId: string) => {
   graphClient.setupClient(token);
 
   const { presentation } = (await graphClient.client?.request(
     presentationQuery,
     {
-      slideId,
+      presentationId,
     }
   )) as any;
 
@@ -41,7 +41,7 @@ export const newSlide = async (token: string) => {
 
 export const updateSlide = async (
   token: string,
-  slideId: string,
+  presentationId: string,
   title: string,
   context: string
 ) => {
@@ -50,7 +50,7 @@ export const updateSlide = async (
   const { updatePresentation } = (await graphClient.client?.request(
     updatePresentationMutation,
     {
-      slideId,
+      presentationId,
       title,
       context,
     }
