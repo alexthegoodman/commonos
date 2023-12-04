@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+const { DateTime } = require("luxon");
 
 export default class Helpers {
   isDefinedWithContent(item: any) {
@@ -67,5 +68,12 @@ export default class Helpers {
   createAuthHeader(str: string) {
     const authPayload = Buffer.from(`${str}`, "utf8").toString("base64");
     return `Basic ${authPayload}`;
+  }
+
+  getUploadDirectory() {
+    const year = DateTime.now().toFormat("yyyy");
+    const month = DateTime.now().toFormat("MM");
+    const folder = `${year}/${month}/`;
+    return folder;
   }
 }
