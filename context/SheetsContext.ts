@@ -1,11 +1,15 @@
+import { realDefaultColumns, realDefaultRows } from "@/fixtures/sheets";
+import { Column, Row } from "@silevis/reactgrid";
 import React, { useState, useReducer, Dispatch } from "react";
 
 export interface SheetsContextState {
-  currentSheetId: string | null;
+  columns: Column[];
+  rows: Row[];
 }
 
 export const SheetsContextState = {
-  currentSheetId: null,
+  columns: realDefaultColumns,
+  rows: realDefaultRows,
 };
 
 export const SheetsContextReducer = (

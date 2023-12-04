@@ -11,96 +11,21 @@ import {
 } from "@silevis/reactgrid";
 import "@silevis/reactgrid/styles.css";
 import { styled } from "@mui/material";
+import { useSheetsContext } from "@/context/SheetsContext";
 
-interface Person {
-  column1: string;
-  column2: string;
-  column3: string;
-  column4: string;
-  column5: string;
-}
-
-const getColumns = (): Column[] => [
-  { columnId: "column1", width: 250, resizable: true },
-  { columnId: "column2", width: 250, resizable: true },
-  { columnId: "column3", width: 250, resizable: true },
-  { columnId: "column4", width: 250, resizable: true },
-  { columnId: "column5", width: 250, resizable: true },
-];
-
-const headerRow: Row = {
-  rowId: "header",
-  cells: [
-    { type: "header", text: "Column 1" },
-    { type: "header", text: "Column 2" },
-    { type: "header", text: "Column 3" },
-    { type: "header", text: "Column 4" },
-    { type: "header", text: "Column 5" },
-  ],
-};
-
-const getPeople = (): Person[] => [
-  {
-    column1: "John",
-    column2: "Doe",
-    column3: "Test",
-    column4: "Test",
-    column5: "Test",
-  },
-  {
-    column1: "Jane",
-    column2: "Doe",
-    column3: "Test",
-    column4: "Test",
-    column5: "Test",
-  },
-  {
-    column1: "John",
-    column2: "Smith",
-    column3: "Test",
-    column4: "Test",
-    column5: "Test",
-  },
-  {
-    column1: "Jane",
-    column2: "Smith",
-    column3: "Test",
-    column4: "Test",
-    column5: "Test",
-  },
-  {
-    column1: "John",
-    column2: "Doe",
-    column3: "Test",
-    column4: "Test",
-    column5: "Test",
-  },
-];
-
-const getRows = (people: Person[]): Row[] => [
-  headerRow,
-  ...people.map<Row>((person, idx) => ({
-    rowId: idx,
-    cells: [
-      { type: "text", text: person.column1 },
-      { type: "text", text: person.column2 },
-      { type: "text", text: person.column3 },
-      { type: "text", text: person.column4 },
-      { type: "text", text: person.column5 },
-    ],
-  })),
-];
-
-const applyChangesToPeople = (
+const applyChangesToRow = (
   changes: CellChange<TextCell>[],
-  prevPeople: Person[]
-): Person[] => {
+  prevRows: Row[],
+  prevColumns: Column[]
+): Row[] => {
   changes.forEach((change) => {
-    const personIndex = change.rowId;
-    const fieldName = change.columnId;
-    prevPeople[personIndex][fieldName] = change.newCell.text;
+    const rowIndex = prevRows.findIndex((el) => el.rowId === change.rowId);
+    const cellIndex = prevColumns.findIndex(
+      (el) => el.columnId === change.columnId
+    );
+    prevRows[rowIndex].cells[cellIndex].text = change.newCell.text;
   });
-  return [...prevPeople];
+  return [...prevRows];
 };
 
 const GridWrapper = styled("div")(({ theme }) => ({
@@ -110,21 +35,27 @@ const GridWrapper = styled("div")(({ theme }) => ({
 }));
 
 export default function SheetEditor() {
-  const [people, setPeople] = React.useState<Person[]>(getPeople());
-  const [columns, setColumns] = React.useState<Column[]>(getColumns());
-  const rows = getRows(people);
+  const [state, dispatch] = useSheetsContext();
+
+  const columns = state.columns;
+  const rows = state.rows;
 
   const handleChanges = (changes: CellChange<TextCell>[]) => {
-    setPeople((prevPeople) => applyChangesToPeople(changes, prevPeople));
+    dispatch({
+      type: "rows",
+      payload: applyChangesToRow(changes, rows, columns),
+    });
   };
 
   const handleColumnResize = (ci: Id, width: number) => {
-    setColumns((prevColumns) => {
-      const columnIndex = prevColumns.findIndex((el) => el.columnId === ci);
-      const resizedColumn = prevColumns[columnIndex];
-      const updatedColumn = { ...resizedColumn, width };
-      prevColumns[columnIndex] = updatedColumn;
-      return [...prevColumns];
+    dispatch({
+      type: "columns",
+      payload: columns.map((column) => {
+        if (column.columnId === ci) {
+          return { ...column, width };
+        }
+        return column;
+      }),
     });
   };
 
