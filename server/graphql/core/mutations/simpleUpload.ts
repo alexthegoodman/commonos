@@ -8,7 +8,7 @@ export const SimpleUploadMutation = extendType({
   type: "Mutation",
   definition(t) {
     t.field("simpleUpload", {
-      type: "Json",
+      type: "JSON",
       args: {
         fileName: nullable(stringArg()),
         fileSize: nullable(intArg()),
@@ -22,11 +22,30 @@ export const SimpleUploadMutation = extendType({
         x
       ) => {
         const helpers = new Helpers();
-        const filePath = helpers.getUploadDirectory() + fileName;
+        const filePath = helpers.getUploadDirectory(fileName);
 
         console.info("uploading file", filePath);
 
-        const blob = await put(filePath, fileData, { access: "public" });
+        let buffer;
+        if (true) {
+          buffer = Buffer.from(
+            fileData.replace(/^data:image\/\w+;base64,/, ""),
+            "base64"
+          );
+        }
+        // else if (contentType === "video") {
+        //   buffer = Buffer.from(
+        //     base64.replace(/^data:video\/\w+;base64,/, ""),
+        //     "base64"
+        //   );
+        // } else if (contentType === "audio") {
+        //   buffer = Buffer.from(
+        //     base64.replace(/^data:audio\/\w+;base64,/, ""),
+        //     "base64"
+        //   );
+        // }
+
+        const blob = await put(filePath, buffer, { access: "public" });
 
         return blob;
       },

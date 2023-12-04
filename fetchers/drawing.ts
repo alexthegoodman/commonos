@@ -2,6 +2,7 @@ import {
   drawingQuery,
   myDrawingsQuery,
   newDrawingMutation,
+  simpleUploadMutation,
   updateDrawingMutation,
 } from "../gql/drawing";
 import graphClient from "../helpers/GQLClient";
@@ -54,4 +55,26 @@ export const updateDrawing = async (
   )) as any;
 
   return updateDrawing;
+};
+
+export const simpleUpload = async (
+  token: string,
+  fileName: string,
+  fileSize: number,
+  fileType: string,
+  fileData: string
+) => {
+  graphClient.setupClient(token);
+
+  const { simpleUpload } = (await graphClient.client?.request(
+    simpleUploadMutation,
+    {
+      fileName,
+      fileSize,
+      fileType,
+      fileData,
+    }
+  )) as any;
+
+  return simpleUpload;
 };

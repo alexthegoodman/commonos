@@ -1,16 +1,24 @@
 "use client";
 import "client-only";
 
-import { Stage, Layer, Star, Text, Rect, Line } from "react-konva";
+import { Stage, Layer, Star, Text, Rect, Line, Image } from "react-konva";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { useDrawingsContext } from "@/context/DrawingsContext";
 import { useRef, useState } from "react";
 import Konva from "konva";
 import { v4 as uuidv4 } from "uuid";
+import { Button } from "@mui/material";
+import FormUpload from "@/components/core/fields/FormUpload";
+import { FormProvider, useForm } from "react-hook-form";
+import { simpleUpload } from "@/fetchers/drawing";
+import { useCookies } from "react-cookie";
 
 var lastLine = null;
 
 export default function DrawingEditor() {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
   const windowSize = useWindowSize();
   const [state, dispatch] = useDrawingsContext();
 
@@ -21,6 +29,14 @@ export default function DrawingEditor() {
 
   const stageRef = useRef(null);
   const drawLayerRef = useRef(null);
+
+  const methods = useForm();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
   const stageWidth =
     windowSize.width && windowSize.width < 1400 ? windowSize.width - 400 : 1000;
@@ -81,30 +97,74 @@ export default function DrawingEditor() {
     });
   };
 
+  const onSubmit = async (formValues) => {
+    console.info("formValues", formValues);
+    const blob = await simpleUpload(
+      token,
+      formValues.fileName,
+      formValues.fileSize,
+      formValues.fileType,
+      formValues.fileData
+    );
+    console.info("blob", blob);
+  };
+
+  const onError = (error) => console.error(error);
+
   return (
-    <Stage
-      ref={stageRef}
-      width={stageWidth}
-      height={stageHeight}
-      onMouseDown={startPaint}
-      onTouchStart={startPaint}
-      onMouseUp={endPaint}
-      onTouchEnd={endPaint}
-      onMouseMove={movePaint}
-      onTouchMove={movePaint}
-    >
-      <Layer>
-        <Rect
-          x={0}
-          y={0}
-          width={stageWidth}
-          height={stageHeight}
-          fill="white"
-        />
-      </Layer>
-      <Layer ref={drawLayerRef}>
-        {state.lines?.map((line) => <Line key={line.id} {...line} />)}
-      </Layer>
-    </Stage>
+    <>
+      <FormProvider {...methods}>
+        <form className="form" onSubmit={handleSubmit(onSubmit, onError)}>
+          <FormUpload
+            name="file"
+            placeholder={"Upload Image"}
+            accept="image/*"
+            aria-label="Upload Image"
+            register={register}
+            errors={errors}
+            validation={{
+              required: true,
+            }}
+          />
+          <Button type="submit">Add Image</Button>
+        </form>
+      </FormProvider>
+      <Stage
+        ref={stageRef}
+        width={stageWidth}
+        height={stageHeight}
+        onMouseDown={startPaint}
+        onTouchStart={startPaint}
+        onMouseUp={endPaint}
+        onTouchEnd={endPaint}
+        onMouseMove={movePaint}
+        onTouchMove={movePaint}
+      >
+        <Layer>
+          <Rect
+            x={0}
+            y={0}
+            width={stageWidth}
+            height={stageHeight}
+            fill="white"
+          />
+        </Layer>
+        <Layer>
+          {state.images?.map((image) => (
+            <Image
+              key={image.id}
+              image={image.imageData}
+              x={image.x}
+              y={image.y}
+              width={image.width}
+              height={image.height}
+            />
+          ))}
+        </Layer>
+        <Layer ref={drawLayerRef}>
+          {state.lines?.map((line) => <Line key={line.id} {...line} />)}
+        </Layer>
+      </Stage>
+    </>
   );
 }

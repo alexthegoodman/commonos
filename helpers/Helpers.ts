@@ -70,10 +70,12 @@ export default class Helpers {
     return `Basic ${authPayload}`;
   }
 
-  getUploadDirectory() {
+  getUploadDirectory(fileName: string) {
     const year = DateTime.now().toFormat("yyyy");
     const month = DateTime.now().toFormat("MM");
     const folder = `${year}/${month}/`;
-    return folder;
+    const sanitizedFileName = fileName.replace(/[^a-z0-9.]/gi, "_");
+    const path = folder + sanitizedFileName;
+    return path;
   }
 }

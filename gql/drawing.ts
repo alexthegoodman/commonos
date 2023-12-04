@@ -54,3 +54,19 @@ export const drawingQuery = gql`
     }
   }
 `;
+
+export const simpleUploadMutation = gql`
+  mutation SimpleUploadMutation(
+    $fileName: String
+    $fileSize: Int
+    $fileType: String
+    $fileData: String
+  ) {
+    simpleUpload(
+      fileName: $fileName
+      fileSize: $fileSize
+      fileType: $fileType
+      fileData: $fileData
+    )
+  }
+`;
