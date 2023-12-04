@@ -1,5 +1,5 @@
-import { useSlidesContext } from "@/context/SlidesContext";
-import { getSlideData, updateSlide } from "@/fetchers/slide";
+import { useSheetsContext } from "@/context/SheetsContext";
+import { updateSheet } from "@/fetchers/sheet";
 import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { mutate } from "swr";
@@ -9,17 +9,17 @@ export default function Autosaver({ id, title }) {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
-  const [state, dispatch] = useSlidesContext();
+  const [state, dispatch] = useSheetsContext();
   const debouncedState = useDebounce(state, 500);
   const debouncedTitle = useDebounce(title, 500);
 
   useEffect(() => {
-    if (debouncedState.slides.length > 0) {
+    if (debouncedState.columns.length > 0 && debouncedState.rows.length > 0) {
       // save context to db
-      console.info("save slides context to db", debouncedState);
+      console.info("save sheet context to db", debouncedState);
 
-      mutate("slideKey" + id, () =>
-        updateSlide(token, id, debouncedTitle, JSON.stringify(debouncedState))
+      mutate("sheetKey" + id, () =>
+        updateSheet(token, id, debouncedTitle, JSON.stringify(debouncedState))
       );
     }
   }, [debouncedState, debouncedTitle]);

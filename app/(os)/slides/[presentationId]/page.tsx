@@ -42,7 +42,7 @@ export default function Presentation(props) {
       ) : (
         <InnerLayout
           presentationId={presentationId}
-          slideData={{ context: SlidesContextState }}
+          slideData={{ title: "New Presentation", context: SlidesContextState }}
         />
       )}
     </>
