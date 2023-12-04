@@ -2,10 +2,12 @@ import React, { useState, useReducer, Dispatch } from "react";
 
 export interface DrawingsContextState {
   lines: any[] | null;
+  images: any[] | null;
 }
 
 export const DrawingsContextState = {
   lines: [],
+  images: [],
 };
 
 export const DrawingsContextReducer = (

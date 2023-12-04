@@ -1,7 +1,15 @@
 "use client";
 import "client-only";
 
-import { Stage, Layer, Star, Text, Rect, Line, Image } from "react-konva";
+import {
+  Stage,
+  Layer,
+  Star,
+  Text,
+  Rect,
+  Line,
+  Image as KonvaImage,
+} from "react-konva";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { useDrawingsContext } from "@/context/DrawingsContext";
 import { useRef, useState } from "react";
@@ -26,6 +34,7 @@ export default function DrawingEditor() {
 
   const [mode, setMode] = useState("brush"); // brush or eraser
   const [isPainting, setIsPainting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const stageRef = useRef(null);
   const drawLayerRef = useRef(null);
@@ -38,8 +47,7 @@ export default function DrawingEditor() {
     formState: { errors },
   } = methods;
 
-  const stageWidth =
-    windowSize.width && windowSize.width < 1400 ? windowSize.width - 400 : 1000;
+  const stageWidth = 1000;
   const stageHeight = stageWidth;
 
   const startPaint = (e) => {
@@ -99,17 +107,43 @@ export default function DrawingEditor() {
 
   const onSubmit = async (formValues) => {
     console.info("formValues", formValues);
-    const blob = await simpleUpload(
-      token,
-      formValues.fileName,
-      formValues.fileSize,
-      formValues.fileType,
-      formValues.fileData
-    );
-    console.info("blob", blob);
   };
 
   const onError = (error) => console.error(error);
+
+  const onFinishUpload = async (file, base64) => {
+    console.info("onFinishUpload file", file);
+    setIsUploading(true);
+    const blob = await simpleUpload(
+      token,
+      file.name,
+      file.size,
+      file.type,
+      base64
+    );
+
+    var imageObj = new Image();
+    imageObj.onload = function () {
+      dispatch({
+        type: "images",
+        payload: [
+          ...state.images,
+          {
+            id: uuidv4(),
+            imageData: imageObj,
+            x: 0,
+            y: 0,
+            width: stageWidth,
+            height: stageHeight,
+          },
+        ],
+      });
+
+      setIsUploading(false);
+      console.info("onFinishUpload blob", blob);
+    };
+    imageObj.src = blob.url;
+  };
 
   return (
     <>
@@ -125,8 +159,10 @@ export default function DrawingEditor() {
             validation={{
               required: true,
             }}
+            onFinishFile={onFinishUpload}
+            disabled={isUploading}
           />
-          <Button type="submit">Add Image</Button>
+          {/* <Button type="submit">Add Image</Button> */}
         </form>
       </FormProvider>
       <Stage
@@ -151,7 +187,7 @@ export default function DrawingEditor() {
         </Layer>
         <Layer>
           {state.images?.map((image) => (
-            <Image
+            <KonvaImage
               key={image.id}
               image={image.imageData}
               x={image.x}
