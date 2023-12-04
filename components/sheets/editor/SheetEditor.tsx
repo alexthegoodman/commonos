@@ -10,8 +10,9 @@ import {
   Id,
 } from "@silevis/reactgrid";
 import "@silevis/reactgrid/styles.css";
-import { styled } from "@mui/material";
+import { Button, styled } from "@mui/material";
 import { useSheetsContext } from "@/context/SheetsContext";
+import { v4 as uuidv4 } from "uuid";
 
 const applyChangesToRow = (
   changes: CellChange<TextCell>[],
@@ -59,6 +60,50 @@ export default function SheetEditor() {
     });
   };
 
+  const addColumn = () => {
+    dispatch({
+      type: "columns",
+      payload: [
+        ...columns,
+        {
+          columnId: uuidv4(),
+          width: 100,
+          reorderable: true,
+          resizable: true,
+        },
+      ],
+    });
+    dispatch({
+      type: "rows",
+      payload: rows.map((row) => ({
+        ...row,
+        cells: [
+          ...row.cells,
+          {
+            type: "text",
+            text: "",
+          },
+        ],
+      })),
+    });
+  };
+
+  const addRow = () => {
+    dispatch({
+      type: "rows",
+      payload: [
+        ...rows,
+        {
+          rowId: uuidv4(),
+          cells: columns.map((column) => ({
+            type: "text",
+            text: "",
+          })),
+        },
+      ],
+    });
+  };
+
   return (
     <GridWrapper>
       <ReactGrid
@@ -70,6 +115,12 @@ export default function SheetEditor() {
         enableRowSelection
         enableColumnSelection
       />
+      <Button variant="contained" color="success" onClick={addColumn}>
+        Add Column
+      </Button>
+      <Button variant="contained" color="success" onClick={addRow}>
+        Add Row
+      </Button>
     </GridWrapper>
   );
 }
