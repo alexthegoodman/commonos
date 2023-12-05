@@ -20,7 +20,7 @@ export default function Sheet(props) {
   const token = cookies.cmUserToken;
 
   const {
-    data: slideData,
+    data: sheetData,
     error,
     isLoading,
     mutate,
@@ -30,8 +30,8 @@ export default function Sheet(props) {
 
   return !isLoading ? (
     <>
-      {slideData && slideData.context ? (
-        <InnerLayout sheetId={sheetId} sheetData={slideData} />
+      {sheetData && sheetData.context ? (
+        <InnerLayout sheetId={sheetId} sheetData={sheetData} />
       ) : (
         <InnerLayout
           sheetId={sheetId}
