@@ -13,4 +13,4 @@ export const fullDomainPort =
     : process.env.NEXT_PUBLIC_HOST + ":3000";
 
 export const graphqlUrl =
-  env === "production" ? "" : `http://localhost:3000/api/graphql`;
+  env === "production" ? "" : `http://localhost:4000/graphql`;
