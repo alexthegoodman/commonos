@@ -40,24 +40,64 @@ export default function FlowEditor({ id, prompt }) {
     if (state.files.length === 0 && !gotFiles) {
       // fetch file list from api and add to context
       console.info("fetch file list");
-      getFileListData(token, id).then((data) => {
-        console.info("got file list", data);
 
-        if (data?.documents?.length) {
-          const files = data.documents.map((file) => {
-            return {
-              id: uuidv4(),
-              name: file,
-              app: "documents",
-              questions: [],
-            };
+      getFileListData(token, id, "documents").then((data1) => {
+        console.info("got file list 1", data1);
+
+        let files = data1.documents.map((file) => {
+          return {
+            id: uuidv4(),
+            name: file,
+            app: "documents",
+            questions: [],
+          };
+        });
+
+        if (data1?.documents?.length) {
+          getFileListData(token, id, "additionalFiles").then((data2) => {
+            console.info("got file list 2", data2);
+
+            if (
+              data2?.spreadsheets?.length &&
+              data2?.presentations?.length &&
+              data2?.images?.length
+            ) {
+              files = [
+                ...files,
+                ...data2.presentations.map((file) => {
+                  return {
+                    id: uuidv4(),
+                    name: file,
+                    app: "slides",
+                    questions: [],
+                  };
+                }),
+                ...data2.spreadsheets.map((file) => {
+                  return {
+                    id: uuidv4(),
+                    name: file,
+                    app: "sheets",
+                    questions: [],
+                  };
+                }),
+                ...data2.images.map((file) => {
+                  return {
+                    id: uuidv4(),
+                    name: file,
+                    app: "images",
+                    questions: [],
+                  };
+                }),
+              ];
+
+              console.info("dispatch files", files);
+              dispatch({
+                type: "files",
+                payload: files,
+              });
+              setGotFiles(true);
+            }
           });
-          console.info("dispatch files", files);
-          dispatch({
-            type: "files",
-            payload: files,
-          });
-          setGotFiles(true);
         }
       });
     }
@@ -118,7 +158,7 @@ export default function FlowEditor({ id, prompt }) {
               Finish
             </Button>
           </>
-        ) : (
+        ) : state.files.length > 0 ? (
           state.files.map((file, i) => (
             <Grid key={file.id} item xs={12} md={12}>
               <Box display="flex" flexDirection="row">
@@ -140,6 +180,8 @@ export default function FlowEditor({ id, prompt }) {
               </Box>
             </Grid>
           ))
+        ) : (
+          <CircularProgress />
         )}
       </Grid>
     </Box>

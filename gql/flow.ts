@@ -8,9 +8,17 @@ export const newFlowMutation = gql`
   }
 `;
 
-export const updateFlowQuestionsMutation = gql`
-  mutation UpdateFlow($flowId: String!, $questionsContext: String) {
-    updateFlow(flowId: $flowId, questionsContext: $questionsContext) {
+export const updateFlowMutation = gql`
+  mutation UpdateFlow(
+    $flowId: String!
+    $questionsContext: String
+    $resultsContext: String
+  ) {
+    updateFlow(
+      flowId: $flowId
+      questionsContext: $questionsContext
+      resultsContext: $resultsContext
+    ) {
       id
     }
   }
@@ -48,7 +56,7 @@ export const flowQuery = gql`
 `;
 
 export const getFileListQuery = gql`
-  query getFileList($flowId: String!) {
-    getFileList(flowId: $flowId)
+  query getFileList($flowId: String!, $getThis: String!) {
+    getFileList(flowId: $flowId, getThis: $getThis)
   }
 `;

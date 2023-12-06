@@ -3,6 +3,7 @@ import {
   getFileListQuery,
   myFlowsQuery,
   newFlowMutation,
+  updateFlowMutation,
   //   updateFlowMutation,
 } from "../gql/flow";
 import graphClient from "../helpers/GQLClient";
@@ -40,28 +41,39 @@ export const newFlow = async (
   return createFlow;
 };
 
-// export const updateFlow = async (
-//   token: string,
-//   flowId: string,
-//   title: string,
-//   context: string
-// ) => {
-//   graphClient.setupClient(token);
+export const updateFlow = async (
+  token: string,
+  flowId: string,
+  whichContext: string,
+  context: string
+) => {
+  graphClient.setupClient(token);
 
-//   const { updateFlow } = (await graphClient.client?.request(
-//     updateFlowMutation,
-//     {
-//       flowId,
-//       title,
-//       context,
-//     }
-//   )) as any;
+  const variables: any = {
+    flowId,
+  };
 
-//   return updateFlow;
-// };
+  if (whichContext === "questions") {
+    variables.questionsContext = context;
+  }
+  if (whichContext === "results") {
+    variables.resultsContext = context;
+  }
+
+  const { updateFlow } = (await graphClient.client?.request(
+    updateFlowMutation,
+    variables
+  )) as any;
+
+  return updateFlow;
+};
 
 var callingFileList = false;
-export const getFileListData = async (token: string, flowId: string) => {
+export const getFileListData = async (
+  token: string,
+  flowId: string,
+  getThis: string
+) => {
   graphClient.setupClient(token);
 
   if (callingFileList) {
@@ -74,6 +86,7 @@ export const getFileListData = async (token: string, flowId: string) => {
 
   const { getFileList } = (await graphClient.client?.request(getFileListQuery, {
     flowId,
+    getThis,
   })) as any;
 
   callingFileList = false;

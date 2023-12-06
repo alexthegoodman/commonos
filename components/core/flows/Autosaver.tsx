@@ -1,4 +1,5 @@
 import { useFlowQuestionsContext } from "@/context/FlowQuestionsContext";
+import { updateFlow } from "@/fetchers/flow";
 import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { mutate } from "swr";
@@ -15,9 +16,9 @@ export default function Autosaver({ id }) {
     if (debouncedState.files.length > 0) {
       // save context to db
       console.info("save flow files/questions context to db", debouncedState);
-      // mutate("drawingKey" + id, () =>
-      //   updateDrawing(token, id, debouncedTitle, JSON.stringify(debouncedState))
-      // );
+      mutate("flowKey" + id, () =>
+        updateFlow(token, id, "questions", JSON.stringify(debouncedState))
+      );
     }
   }, [debouncedState]);
 
