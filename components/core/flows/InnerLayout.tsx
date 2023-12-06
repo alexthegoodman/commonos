@@ -3,22 +3,21 @@
 import { Box } from "@mui/material";
 import { useReducer, useState } from "react";
 import Autosaver from "./Autosaver";
-import {
-  DrawingsContext,
-  DrawingsContextReducer,
-  DrawingsContextState,
-} from "@/context/DrawingsContext";
 import FlowEditor from "./FlowEditor";
+import {
+  FlowQuestionsContext,
+  FlowQuestionsContextReducer,
+} from "@/context/FlowQuestionsContext";
 
-export default function InnerLayout({ flowId, context }) {
+export default function InnerLayout({ flowId, prompt, context }) {
   return (
-    <DrawingsContext.Provider
-      value={useReducer(DrawingsContextReducer, context)}
+    <FlowQuestionsContext.Provider
+      value={useReducer(FlowQuestionsContextReducer, context)}
     >
       <Autosaver id={flowId} />
       <Box>
-        <FlowEditor />
+        <FlowEditor id={flowId} prompt={prompt} />
       </Box>
-    </DrawingsContext.Provider>
+    </FlowQuestionsContext.Provider>
   );
 }

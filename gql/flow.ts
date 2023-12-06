@@ -21,11 +21,6 @@ export const myFlowsQuery = gql`
     myFlows {
       id
 
-      creator {
-        email
-        role
-      }
-
       updatedAt
       createdAt
     }
@@ -37,13 +32,23 @@ export const flowQuery = gql`
     flow(flowId: $flowId) {
       id
 
-      creator {
-        email
-        role
+      prompt
+      type {
+        name
+        code
       }
+
+      questionsContext
+      resultsContext
 
       updatedAt
       createdAt
     }
+  }
+`;
+
+export const getFileListQuery = gql`
+  query getFileList($flowId: String!) {
+    getFileList(flowId: $flowId)
   }
 `;

@@ -1,5 +1,6 @@
 import {
   flowQuery,
+  getFileListQuery,
   myFlowsQuery,
   newFlowMutation,
   //   updateFlowMutation,
@@ -58,3 +59,24 @@ export const newFlow = async (
 
 //   return updateFlow;
 // };
+
+var callingFileList = false;
+export const getFileListData = async (token: string, flowId: string) => {
+  graphClient.setupClient(token);
+
+  if (callingFileList) {
+    return null;
+  }
+
+  callingFileList = true;
+
+  console.info("calling getFileListData", flowId);
+
+  const { getFileList } = (await graphClient.client?.request(getFileListQuery, {
+    flowId,
+  })) as any;
+
+  callingFileList = false;
+
+  return getFileList;
+};

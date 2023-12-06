@@ -8,7 +8,7 @@ import {
 import theme from "@/theme";
 import { ThemeProvider } from "@mui/material";
 import { Inter } from "next/font/google";
-import { useReducer } from "react";
+import { use, useEffect, useReducer } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
