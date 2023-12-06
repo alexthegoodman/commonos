@@ -12,6 +12,7 @@ import FormMessage from "../fields/FormMessage";
 import Helpers from "../../../helpers/Helpers";
 import { Alert, Box, Button, Typography, styled } from "@mui/material";
 import FormTextarea from "../fields/FormTextarea";
+import { newFlow } from "@/fetchers/flow";
 
 // import { useTranslation } from "next-i18next";
 // import MixpanelBrowser from "../../../helpers/MixpanelBrowser";
@@ -28,13 +29,15 @@ const PrimaryPromptForm = ({
   onClick = (e) => console.info("Click AuthForm"),
   type = "login",
 }) => {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
   // const { t } = useTranslation();
   const helpers = new Helpers();
   // const mixpanel = new MixpanelBrowser();
 
   const router = useRouter();
 
-  const [cookies, setCookie, removeCookie] = useCookies(["cmUserToken"]);
   const [formErrorMessage, setFormErrorMessage] = React.useState("");
   const [submitLoading, setSubmitLoading] = React.useState(false);
 
@@ -52,7 +55,9 @@ const PrimaryPromptForm = ({
     setSubmitLoading(true);
 
     try {
-      // TODO: prompt power
+      // prompt power
+      const { id } = await newFlow(token, data.prompt, "edit");
+      router.push(`/flows/${id}`);
     } catch (error: any) {
       console.error(error);
       const errorMessage = error?.response?.errors[0].message;
