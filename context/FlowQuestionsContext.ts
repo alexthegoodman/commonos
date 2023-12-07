@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 //           `Anecdotes or stories about popular or unique cats within each breed`,
 //           `Tips on choosing the right breed based on lifestyle and environment`,
 //         ],
-//         chosenAnswer: "",
+//         chosenAnswers: [],
 //       },
 //       {
 //         id: uuidv4(),
@@ -31,7 +31,7 @@ import { v4 as uuidv4 } from "uuid";
 //           `Interactive elements like quizzes or puzzles to understand cat behavior`,
 //           `Case studies illustrating behavior modification techniques`,
 //         ],
-//         chosenAnswer: "",
+//         chosenAnswers: [],
 //       },
 //     ],
 //   },

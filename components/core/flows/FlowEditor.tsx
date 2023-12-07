@@ -3,6 +3,8 @@
 import { useFlowQuestionsContext } from "@/context/FlowQuestionsContext";
 import { getFileListData, getQuestionsData } from "@/fetchers/flow";
 import {
+  Check,
+  CheckCircle,
   DocumentScanner,
   Image,
   List,
@@ -49,16 +51,24 @@ const IconBox = styled(Box)(({ theme }) => ({
   backgroundColor: "rgba(255,255,255,0.1)",
   borderRadius: "50%",
   display: "flex",
+  flexDirection: "row",
   justifyContent: "center",
   alignItems: "center",
-  marginBottom: theme.spacing(1),
 }));
 
-const FileItem = styled(Grid)(({ theme }) => ({
+const FileItem = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: "rgba(255,255,255,0.1)",
   borderRadius: "0px",
   boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+  marginBottom: theme.spacing(2),
+}));
+
+const FileTextField = styled(TextField)(({ theme }) => ({
+  "& .MuiInputBase-root": {
+    height: "40px",
+    fontSize: "0.8rem",
+  },
 }));
 
 export default function FlowEditor({ id, prompt }) {
@@ -177,15 +187,15 @@ export default function FlowEditor({ id, prompt }) {
   return (
     <Box>
       <PromptWrapper>
-        <Typography variant="overline">Your Prompt:</Typography>
+        <Typography variant="overline">Your Prompt</Typography>
         <Box>
           <PromptTitle variant="h4">{prompt}</PromptTitle>
         </Box>
       </PromptWrapper>
 
-      <Grid container gap={3}>
-        {view === "initial" && (
-          <>
+      {view === "initial" && (
+        <>
+          <Grid container gap={3}>
             {state.initialQuestions && state.initialQuestions.length > 0 ? (
               state.initialQuestions.map((question, i) => (
                 <Grid key={question.id} item xs={12} md={12}>
@@ -221,86 +231,120 @@ export default function FlowEditor({ id, prompt }) {
             >
               Next
             </Button>
-          </>
-        )}
-        {view === "files" && (
-          <>
-            {state.files.length > 0 ? (
-              <>
-                <Alert severity="info">
-                  <Typography variant="h5" mb={1}>
-                    Please review your files
-                  </Typography>
-                  <Typography variant="body1">
-                    The files in this list will be created based on your answers
-                    to questions for each file. <br />
-                    You can also skip files or skip the questions.
-                  </Typography>
-                </Alert>
+          </Grid>
+        </>
+      )}
+      {view === "files" && (
+        <>
+          <Grid container gap={0}>
+            <Grid item xs={12} md={8}>
+              {state.files.length > 0 ? (
+                <>
+                  <Typography variant="overline">Your File Plan</Typography>
+                  {state.files.map((file, i) => {
+                    const hasAnsweredQuestion = file.questions.find(
+                      (question) => question.chosenAnswers.length > 0
+                    );
 
-                {state.files.map((file, i) => (
-                  <FileItem key={file.id} item xs={12} md={12}>
-                    <Box
-                      display="flex"
-                      flexDirection="row"
-                      justifyContent="space-between"
-                      alignItems="center"
-                    >
-                      <Typography
-                        variant="body2"
-                        width={200}
-                        display="flex"
-                        alignItems="center"
-                        flexDirection="column"
-                        textTransform="capitalize"
-                        textAlign="center"
-                      >
-                        <IconBox>
-                          {file.app === "documents" && <DocumentScanner />}
-                          {file.app === "slides" && <PresentToAllOutlined />}
-                          {file.app === "sheets" && <List />}
-                          {file.app === "images" && <Image />}
-                        </IconBox>
-
-                        {file.app}
-                      </Typography>
-                      <Box flex={1}>
-                        <TextField fullWidth value={file.name} />
-                      </Box>
-                      <Box
-                        display="flex"
-                        justifyContent="space-between"
-                        width={400}
-                        padding="0px 20px"
-                      >
-                        <Button>Skip File</Button>
-                        <Button>Skip Questions</Button>
-                        <Button
-                          color="success"
-                          variant="contained"
-                          onClick={() => beginQuestions(file)}
+                    return (
+                      <FileItem key={file.id}>
+                        <Box
+                          display="flex"
+                          flexDirection="row"
+                          justifyContent="space-between"
+                          alignItems="center"
                         >
-                          Answer Questions
-                        </Button>
-                      </Box>
-                    </Box>
-                  </FileItem>
-                ))}
+                          <Typography
+                            variant="body2"
+                            width={175}
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            flexDirection="row"
+                            textTransform="capitalize"
+                            textAlign="center"
+                          >
+                            <IconBox>
+                              {file.app === "documents" && <DocumentScanner />}
+                              {file.app === "slides" && (
+                                <PresentToAllOutlined />
+                              )}
+                              {file.app === "sheets" && <List />}
+                              {file.app === "images" && <Image />}
+                            </IconBox>
+
+                            {file.app}
+                          </Typography>
+                          <Box flex={1}>
+                            <FileTextField fullWidth value={file.name} />
+                          </Box>
+                          <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            width={350}
+                            padding="0px 20px"
+                          >
+                            <Button size="small">
+                              Skip File {file.skipFile && <CheckCircle />}
+                            </Button>
+                            <Button size="small">
+                              Skip Questions{" "}
+                              {file.skipQuestions && <CheckCircle />}
+                            </Button>
+                            <Button
+                              size="small"
+                              color="success"
+                              variant="contained"
+                              onClick={() => beginQuestions(file)}
+                            >
+                              Answer Questions
+                              {hasAnsweredQuestion && <CheckCircle />}
+                            </Button>
+                          </Box>
+                        </Box>
+                      </FileItem>
+                    );
+                  })}
+                </>
+              ) : (
+                <CircularProgress />
+              )}
+            </Grid>
+            <Grid item xs={12} md={4} paddingLeft={2}>
+              <Alert severity="info">
+                <Typography variant="h6" mb={1}>
+                  Please review your files
+                </Typography>
+                <Typography variant="body2">
+                  The files in this list will be created based on your answers
+                  to questions for each file. You can also skip files or skip
+                  the questions. Easily extend the list by adding new files or
+                  editing file titles.
+                </Typography>
+              </Alert>
+              <Box padding={2} textAlign="center">
+                <Typography variant="h5">
+                  {state.files.length} Files to be created
+                </Typography>
+              </Box>
+              <Box display="flex" justifyContent="center">
                 <Button
+                  color="success"
+                  variant="contained"
                   onClick={() => {
                     // TODO
                   }}
                 >
                   Create Files
                 </Button>
-              </>
-            ) : (
-              <CircularProgress />
-            )}
-          </>
-        )}
-        {view === "questions" && (
-          <>
+              </Box>
+            </Grid>
+          </Grid>
+        </>
+      )}
+      {view === "questions" && (
+        <>
+          <Grid container gap={3}>
             <Typography variant="h5">{currentFileData.name}</Typography>
             {currentFileData.questions.map((question, i) => (
               <Grid key={question.id} item xs={12} md={12}>
@@ -349,9 +393,9 @@ export default function FlowEditor({ id, prompt }) {
             >
               Finish
             </Button>
-          </>
-        )}
-      </Grid>
+          </Grid>
+        </>
+      )}
     </Box>
   );
 }
