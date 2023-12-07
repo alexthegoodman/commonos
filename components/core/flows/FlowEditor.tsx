@@ -3,6 +3,13 @@
 import { useFlowQuestionsContext } from "@/context/FlowQuestionsContext";
 import { getFileListData, getQuestionsData } from "@/fetchers/flow";
 import {
+  DocumentScanner,
+  Image,
+  List,
+  PresentToAllOutlined,
+} from "@mui/icons-material";
+import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -20,6 +27,38 @@ const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
   width: "200px",
   height: "200px",
+}));
+
+const PromptWrapper = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+}));
+
+const PromptTitle = styled(Typography)(({ theme }) => ({
+  display: "inline",
+  backgroundColor: "white",
+  color: "black",
+  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+  lineHeight: "3rem",
+  padding: "4px",
+}));
+
+const IconBox = styled(Box)(({ theme }) => ({
+  width: "40px",
+  height: "40px",
+  backgroundColor: "rgba(255,255,255,0.1)",
+  borderRadius: "50%",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  marginBottom: theme.spacing(1),
+}));
+
+const FileItem = styled(Grid)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: "rgba(255,255,255,0.1)",
+  borderRadius: "0px",
+  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
 }));
 
 export default function FlowEditor({ id, prompt }) {
@@ -49,8 +88,10 @@ export default function FlowEditor({ id, prompt }) {
             payload: data.questions.map((question) => {
               return {
                 id: uuidv4(),
+                type: "multipleChoice",
                 question: question.question,
                 possibleAnswers: question.answers,
+                chosenAnswers: [],
               };
             }),
           });
@@ -71,6 +112,8 @@ export default function FlowEditor({ id, prompt }) {
               name: file,
               app: "documents",
               questions: [],
+              skipFile: false,
+              skipQuestions: true,
             };
           });
 
@@ -91,6 +134,8 @@ export default function FlowEditor({ id, prompt }) {
                       name: file,
                       app: "slides",
                       questions: [],
+                      skipFile: false,
+                      skipQuestions: true,
                     };
                   }),
                   ...data2.spreadsheets.map((file) => {
@@ -99,6 +144,8 @@ export default function FlowEditor({ id, prompt }) {
                       name: file,
                       app: "sheets",
                       questions: [],
+                      skipFile: false,
+                      skipQuestions: true,
                     };
                   }),
                   ...data2.images.map((file) => {
@@ -107,6 +154,8 @@ export default function FlowEditor({ id, prompt }) {
                       name: file,
                       app: "images",
                       questions: [],
+                      skipFile: false,
+                      skipQuestions: true,
                     };
                   }),
                 ];
@@ -127,7 +176,13 @@ export default function FlowEditor({ id, prompt }) {
 
   return (
     <Box>
-      <Typography variant="h4">{prompt}</Typography>
+      <PromptWrapper>
+        <Typography variant="overline">Your Prompt:</Typography>
+        <Box>
+          <PromptTitle variant="h4">{prompt}</PromptTitle>
+        </Box>
+      </PromptWrapper>
+
       <Grid container gap={3}>
         {view === "initial" && (
           <>
@@ -159,32 +214,86 @@ export default function FlowEditor({ id, prompt }) {
             ) : (
               <CircularProgress />
             )}
+            <Button
+              onClick={() => {
+                setView("files");
+              }}
+            >
+              Next
+            </Button>
           </>
         )}
         {view === "files" && (
           <>
             {state.files.length > 0 ? (
-              state.files.map((file, i) => (
-                <Grid key={file.id} item xs={12} md={12}>
-                  <Box display="flex" flexDirection="row">
-                    <Typography variant="body2" width={200}>
-                      {file.app}
-                    </Typography>
-                    <TextField fullWidth label="File Name" value={file.name} />
-                    <Box width={600}>
-                      <Button>Skip File</Button>
-                      <Button>Use Default</Button>
-                      <Button
-                        color="success"
-                        variant="contained"
-                        onClick={() => beginQuestions(file)}
+              <>
+                <Alert severity="info">
+                  <Typography variant="h5" mb={1}>
+                    Please review your files
+                  </Typography>
+                  <Typography variant="body1">
+                    The files in this list will be created based on your answers
+                    to questions for each file. <br />
+                    You can also skip files or skip the questions.
+                  </Typography>
+                </Alert>
+
+                {state.files.map((file, i) => (
+                  <FileItem key={file.id} item xs={12} md={12}>
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography
+                        variant="body2"
+                        width={200}
+                        display="flex"
+                        alignItems="center"
+                        flexDirection="column"
+                        textTransform="capitalize"
+                        textAlign="center"
                       >
-                        Answer Questions
-                      </Button>
+                        <IconBox>
+                          {file.app === "documents" && <DocumentScanner />}
+                          {file.app === "slides" && <PresentToAllOutlined />}
+                          {file.app === "sheets" && <List />}
+                          {file.app === "images" && <Image />}
+                        </IconBox>
+
+                        {file.app}
+                      </Typography>
+                      <Box flex={1}>
+                        <TextField fullWidth value={file.name} />
+                      </Box>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        width={400}
+                        padding="0px 20px"
+                      >
+                        <Button>Skip File</Button>
+                        <Button>Skip Questions</Button>
+                        <Button
+                          color="success"
+                          variant="contained"
+                          onClick={() => beginQuestions(file)}
+                        >
+                          Answer Questions
+                        </Button>
+                      </Box>
                     </Box>
-                  </Box>
-                </Grid>
-              ))
+                  </FileItem>
+                ))}
+                <Button
+                  onClick={() => {
+                    // TODO
+                  }}
+                >
+                  Create Files
+                </Button>
+              </>
             ) : (
               <CircularProgress />
             )}
