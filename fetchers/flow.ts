@@ -1,6 +1,7 @@
 import {
   flowQuery,
   getFileListQuery,
+  getQuestionsQuery,
   myFlowsQuery,
   newFlowMutation,
   updateFlowMutation,
@@ -92,4 +93,33 @@ export const getFileListData = async (
   callingFileList = false;
 
   return getFileList;
+};
+
+var callingQuestions = false;
+export const getQuestionsData = async (
+  token: string,
+  fileTitle: string,
+  getThis: string
+) => {
+  graphClient.setupClient(token);
+
+  if (callingQuestions) {
+    return null;
+  }
+
+  callingQuestions = true;
+
+  console.info("calling getQuestionsData", fileTitle);
+
+  const { getQuestions } = (await graphClient.client?.request(
+    getQuestionsQuery,
+    {
+      fileTitle,
+      getThis,
+    }
+  )) as any;
+
+  callingQuestions = false;
+
+  return getQuestions;
 };

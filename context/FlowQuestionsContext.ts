@@ -116,10 +116,12 @@ import { v4 as uuidv4 } from "uuid";
 // ];
 
 export interface FlowQuestionsContextState {
+  initialQuestions: any[] | null;
   files: any[] | null;
 }
 
 export const FlowQuestionsContextState = {
+  initialQuestions: [],
   files: [],
 };
 
