@@ -18,7 +18,11 @@ export const themeOptions: ThemeOptions = {
     },
     background: {
       default: "#333333",
-      paper: "#E5E5E5",
+      paper: "#333333",
+    },
+    success: {
+      main: "#38ef7d",
+      dark: "#38ef7d",
     },
   },
   typography: {
@@ -46,22 +50,6 @@ export const themeOptions: ThemeOptions = {
   spacing: 8,
 
   components: {
-    MuiInputLabel: {
-      styleOverrides: {
-        root: {
-          top: "-10px",
-        },
-      },
-    },
-    MuiInputBase: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "white",
-          borderRadius: "0px !important",
-          color: "green",
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {

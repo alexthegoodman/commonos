@@ -22,8 +22,11 @@ import {
 } from "@mui/material";
 import { useEffect, useReducer, useState } from "react";
 import { useCookies } from "react-cookie";
+import { useForm } from "react-hook-form";
 import useSWR from "swr";
 import { v4 as uuidv4 } from "uuid";
+import FormSelect from "../fields/FormSelect";
+import FormInput from "../fields/FormInput";
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -38,9 +41,15 @@ const PromptWrapper = styled(Box)(({ theme }) => ({
 
 const PromptTitle = styled(Typography)(({ theme }) => ({
   display: "inline",
-  backgroundColor: "white",
+  // backgroundColor: "white",
+  // background:
+  //   "linear-gradient(90deg, rgba(126,345,255,1) 0%, rgba(255,185,90,0.1) 100%)",
+  background:
+    "-webkit-repeating-linear-gradient(bottom, #38efaf 0%, #38ef7d 100%) !important",
+  // "-webkit-background-clip": "text !important",
+  // "-webkit-text-fill-color": "transparent !important",
   color: "black",
-  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+  // boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
   lineHeight: "3rem",
   padding: "4px",
 }));
@@ -54,6 +63,7 @@ const IconBox = styled(Box)(({ theme }) => ({
   flexDirection: "row",
   justifyContent: "center",
   alignItems: "center",
+  marginRight: theme.spacing(1),
 }));
 
 const FileItem = styled(Box)(({ theme }) => ({
@@ -68,6 +78,9 @@ const FileTextField = styled(TextField)(({ theme }) => ({
   "& .MuiInputBase-root": {
     height: "40px",
     fontSize: "0.8rem",
+    backgroundColor: "white",
+    borderRadius: "0px !important",
+    color: "green",
   },
 }));
 
@@ -81,6 +94,33 @@ export default function FlowEditor({ id, prompt }) {
   const [view, setView] = useState("initial"); // initial, files, questions
 
   const currentFileData = state.files.find((file) => file.id === currentFileId);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+    dispatch({
+      type: "files",
+      payload: [
+        ...state.files,
+        {
+          id: uuidv4(),
+          name: data.name,
+          app: data.app,
+          questions: [],
+          skipFile: false,
+          skipQuestions: true,
+        },
+      ],
+    });
+    reset();
+  };
+  const onError = (error) => console.error(error);
 
   const beginQuestions = (file) => {
     setCurrentFileId(file.id);
@@ -276,7 +316,25 @@ export default function FlowEditor({ id, prompt }) {
                             {file.app}
                           </Typography>
                           <Box flex={1}>
-                            <FileTextField fullWidth value={file.name} />
+                            <FileTextField
+                              fullWidth
+                              value={file.name}
+                              onChange={(e) => {
+                                dispatch({
+                                  type: "files",
+                                  payload: state.files.map((f) => {
+                                    if (f.id === file.id) {
+                                      return {
+                                        ...f,
+                                        name: e.target.value,
+                                      };
+                                    } else {
+                                      return f;
+                                    }
+                                  }),
+                                });
+                              }}
+                            />
                           </Box>
                           <Box
                             display="flex"
@@ -323,8 +381,55 @@ export default function FlowEditor({ id, prompt }) {
                 </Typography>
               </Alert>
               <Box padding={2} textAlign="center">
+                <form
+                  className="form"
+                  onSubmit={handleSubmit(onSubmit, onError)}
+                  style={{ display: "flex", flexDirection: "row" }}
+                >
+                  <FormSelect
+                    name="app"
+                    placeholder="Select an app"
+                    label="Select an app"
+                    options={[
+                      {
+                        label: "Documents",
+                        value: "documents",
+                      },
+                      {
+                        label: "Slides",
+                        value: "slides",
+                      },
+                      {
+                        label: "Sheets",
+                        value: "sheets",
+                      },
+                      {
+                        label: "Images",
+                        value: "images",
+                      },
+                    ]}
+                    register={register}
+                    errors={errors}
+                    validation={{ required: true }}
+                    style={{
+                      minWidth: "150px",
+                    }}
+                  />
+                  <FormInput
+                    type="text"
+                    name="name"
+                    placeholder="File name"
+                    register={register}
+                    errors={errors}
+                    validation={{ required: true }}
+                  />
+                  <Button type="submit">Add File</Button>
+                </form>
+              </Box>
+              <Box padding={2} textAlign="center">
                 <Typography variant="h5">
-                  {state.files.length} Files to be created
+                  {state.files.filter((f) => !f.skipFile).length} Files to be
+                  created
                 </Typography>
               </Box>
               <Box display="flex" justifyContent="center">
