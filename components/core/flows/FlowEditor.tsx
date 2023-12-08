@@ -5,6 +5,7 @@ import { getFileListData, getQuestionsData } from "@/fetchers/flow";
 import {
   Check,
   CheckCircle,
+  Close,
   DocumentScanner,
   Image,
   List,
@@ -16,7 +17,9 @@ import {
   Button,
   CircularProgress,
   Grid,
+  IconButton,
   TextField,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -113,7 +116,6 @@ export default function FlowEditor({ id, prompt }) {
           name: data.name,
           app: data.app,
           questions: [],
-          skipFile: false,
           skipQuestions: true,
         },
       ],
@@ -162,7 +164,6 @@ export default function FlowEditor({ id, prompt }) {
               name: file,
               app: "documents",
               questions: [],
-              skipFile: false,
               skipQuestions: true,
             };
           });
@@ -184,7 +185,6 @@ export default function FlowEditor({ id, prompt }) {
                       name: file,
                       app: "slides",
                       questions: [],
-                      skipFile: false,
                       skipQuestions: true,
                     };
                   }),
@@ -194,7 +194,6 @@ export default function FlowEditor({ id, prompt }) {
                       name: file,
                       app: "sheets",
                       questions: [],
-                      skipFile: false,
                       skipQuestions: true,
                     };
                   }),
@@ -204,7 +203,6 @@ export default function FlowEditor({ id, prompt }) {
                       name: file,
                       app: "images",
                       questions: [],
-                      skipFile: false,
                       skipQuestions: true,
                     };
                   }),
@@ -342,9 +340,9 @@ export default function FlowEditor({ id, prompt }) {
                             width={350}
                             padding="0px 20px"
                           >
-                            <Button size="small">
+                            {/* <Button size="small">
                               Skip File {file.skipFile && <CheckCircle />}
-                            </Button>
+                            </Button> */}
                             <Button size="small">
                               Skip Questions{" "}
                               {file.skipQuestions && <CheckCircle />}
@@ -358,6 +356,21 @@ export default function FlowEditor({ id, prompt }) {
                               Answer Questions
                               {hasAnsweredQuestion && <CheckCircle />}
                             </Button>
+                            <Tooltip title="Remove File">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  dispatch({
+                                    type: "files",
+                                    payload: state.files.filter(
+                                      (f) => f.id !== file.id
+                                    ),
+                                  });
+                                }}
+                              >
+                                <Close />
+                              </IconButton>
+                            </Tooltip>
                           </Box>
                         </Box>
                       </FileItem>
@@ -428,8 +441,7 @@ export default function FlowEditor({ id, prompt }) {
               </Box>
               <Box padding={2} textAlign="center">
                 <Typography variant="h5">
-                  {state.files.filter((f) => !f.skipFile).length} Files to be
-                  created
+                  {state.files.length} Files to be created
                 </Typography>
               </Box>
               <Box display="flex" justifyContent="center">
