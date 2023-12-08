@@ -57,17 +57,25 @@ const PromptTitle = styled(Typography)(({ theme }) => ({
   padding: "4px",
 }));
 
-const IconBox = styled(Box)(({ theme }) => ({
-  width: "40px",
-  height: "40px",
-  backgroundColor: "rgba(255,255,255,0.1)",
-  borderRadius: "50%",
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  marginRight: theme.spacing(1),
-}));
+const IconBox = styled(Box)(({ theme, app }) => {
+  const backgroundColor = {
+    documents: "rgba(155,255,255,0.2)",
+    slides: "rgba(255,155,255,0.2)",
+    sheets: "rgba(255,255,155,0.2)",
+    images: "rgba(255,255,255,0.2)",
+  }[app];
+  return {
+    width: "40px",
+    height: "40px",
+    backgroundColor,
+    borderRadius: "50%",
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: theme.spacing(1),
+  };
+});
 
 const FileItem = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -302,7 +310,7 @@ export default function FlowEditor({ id, prompt }) {
                             textTransform="capitalize"
                             textAlign="center"
                           >
-                            <IconBox>
+                            <IconBox app={file.app}>
                               {file.app === "documents" && <DocumentScanner />}
                               {file.app === "slides" && (
                                 <PresentToAllOutlined />
