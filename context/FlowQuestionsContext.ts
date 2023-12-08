@@ -118,11 +118,13 @@ import { v4 as uuidv4 } from "uuid";
 export interface FlowQuestionsContextState {
   initialQuestions: any[] | null;
   files: any[] | null;
+  openQuestionIds: string[] | null;
 }
 
 export const FlowQuestionsContextState = {
   initialQuestions: [],
   files: [],
+  openQuestionIds: [],
 };
 
 export const FlowQuestionsContextReducer = (
