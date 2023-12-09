@@ -28,6 +28,7 @@ export const myFlowsQuery = gql`
   query Flows {
     myFlows {
       id
+      prompt
 
       updatedAt
       createdAt

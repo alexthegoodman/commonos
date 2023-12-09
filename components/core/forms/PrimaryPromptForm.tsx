@@ -93,6 +93,8 @@ const PrimaryPromptForm = ({
           validation={{
             required: "Prompt Required",
           }}
+          minRows={3}
+          autoFocus={true}
         />
 
         <Button type="submit" disabled={submitLoading}>

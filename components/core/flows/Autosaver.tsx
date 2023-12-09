@@ -13,7 +13,10 @@ export default function Autosaver({ id }) {
   const debouncedState = useDebounce(state, 500);
 
   useEffect(() => {
-    if (debouncedState.files.length > 0) {
+    if (
+      debouncedState.initialQuestions.length > 0 ||
+      debouncedState.files.length > 0
+    ) {
       // save context to db
       console.info("save flow files/questions context to db", debouncedState);
       mutate("flowKey" + id, () =>
