@@ -61,6 +61,12 @@ export default function SlideEditor({ slide, state, dispatch }) {
                     x: 50,
                     y: 50,
                     fontSize: 24,
+                    fontStyle: "normal",
+                    fontFamily: "Arial",
+                    fontVariant: "normal",
+                    fill: "black",
+                    align: "left",
+                    lineHeight: 1,
                   });
                 }
                 return slide;
@@ -70,6 +76,8 @@ export default function SlideEditor({ slide, state, dispatch }) {
         >
           Add Text
         </Button>
+      </Box>
+      <Box>
         <ToolbarWrapper
           ref={textToolbarRef}
           style={{
@@ -114,6 +122,58 @@ export default function SlideEditor({ slide, state, dispatch }) {
             <MenuItem value={24}>24</MenuItem>
             <MenuItem value={32}>32</MenuItem>
           </Select>
+
+          <Select
+            label="Font Family"
+            style={{
+              height: "40px",
+            }}
+            disabled={disabled}
+            value={
+              slide && slide[selectedItemType]
+                ? slide[selectedItemType].filter(
+                    (text) => text.id === selectedItemId
+                  )[0]?.fontFamily
+                : "Arial"
+            }
+            onChange={(e) => {
+              // update preview
+              const textarea = document.getElementById("slidesTextBox");
+              textarea.style.fontFamily = e.target.value;
+              // update actual
+              dispatch({
+                type: "slides",
+                payload: state.slides.map((slide) => {
+                  if (slide.id === state.currentSlideId) {
+                    slide.texts = slide.texts.map((t) => {
+                      if (t.id === selectedItemId) {
+                        t.fontFamily = e.target.value;
+                      }
+                      return t;
+                    });
+                  }
+                  return slide;
+                }),
+              });
+            }}
+          >
+            <MenuItem value="Arial">Arial</MenuItem>
+            <MenuItem value="Helvetica">Helvetica</MenuItem>
+            <MenuItem value="Times New Roman">Times New Roman</MenuItem>
+            <MenuItem value="Times">Times</MenuItem>
+            <MenuItem value="Courier New">Courier New</MenuItem>
+            <MenuItem value="Courier">Courier</MenuItem>
+            <MenuItem value="Verdana">Verdana</MenuItem>
+            <MenuItem value="Georgia">Georgia</MenuItem>
+            <MenuItem value="Palatino">Palatino</MenuItem>
+            <MenuItem value="Garamond">Garamond</MenuItem>
+            <MenuItem value="Bookman">Bookman</MenuItem>
+            <MenuItem value="Comic Sans MS">Comic Sans MS</MenuItem>
+            <MenuItem value="Trebuchet MS">Trebuchet MS</MenuItem>
+            <MenuItem value="Arial Black">Arial Black</MenuItem>
+            <MenuItem value="Impact">Impact</MenuItem>
+          </Select>
+
           <Button
             color="success"
             variant="contained"
@@ -167,7 +227,13 @@ export default function SlideEditor({ slide, state, dispatch }) {
                 key={text.id}
                 ref={textNodeRefs.current[i]}
                 text={text.content}
-                fontSize={text.fontSize}
+                fontSize={text.fontSize ?? 24}
+                fontStyle={text?.fontStyle ?? "normal"}
+                fontFamily={text?.fontFamily ?? "Arial"}
+                fontVariant={text?.fontVariant ?? "normal"}
+                fill={text?.fill ?? "black"}
+                align={text?.align ?? "left"}
+                lineHeight={text?.lineHeight ?? 1}
                 x={text.x}
                 y={text.y}
                 draggable
