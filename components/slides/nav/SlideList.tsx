@@ -30,6 +30,9 @@ export default function SlideList() {
               {
                 id: uuidv4(),
                 title: "New Slide",
+                texts: [],
+                shapes: [],
+                images: [],
               },
             ],
           });

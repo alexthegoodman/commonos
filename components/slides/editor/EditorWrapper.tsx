@@ -13,7 +13,12 @@ export default function EditorWrapper() {
   )[0];
 
   return currentSlideData ? (
-    <SlideEditor key={currentSlideData.id} slide={currentSlideData} />
+    <SlideEditor
+      key={currentSlideData.id}
+      slide={currentSlideData}
+      state={state}
+      dispatch={dispatch}
+    />
   ) : (
     <EmptyNotice message="Select a slide" />
   );

@@ -3,6 +3,9 @@ import React, { useState, useReducer, Dispatch } from "react";
 export interface Slide {
   id: string;
   title: string;
+  texts: any[] | null;
+  shapes: any[] | null;
+  images: any[] | null;
 }
 
 export interface SlidesContextState {
