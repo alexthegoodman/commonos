@@ -103,6 +103,145 @@ const FileTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+function QuestionItem({ type, question, state, dispatch }) {
+  return (
+    <Grid key={question.id} item xs={12} md={12}>
+      <Typography variant="subtitle1">{question.question}</Typography>
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="flex-start"
+        width="fit-content"
+      >
+        {question.possibleAnswers.map((answer, j) => {
+          const chosen = question.chosenAnswers.find((a) => a === answer)
+            ? true
+            : false;
+          return (
+            <AnswerButton
+              key={j}
+              onClick={() => {
+                if (type === "initial") {
+                  if (chosen) {
+                    dispatch({
+                      type: "initialQuestions",
+                      payload: state.initialQuestions.map((q) => {
+                        if (q.id === question.id) {
+                          return {
+                            ...q,
+                            chosenAnswers: q.chosenAnswers.filter(
+                              (a) => a !== answer
+                            ),
+                          };
+                        } else {
+                          return q;
+                        }
+                      }),
+                    });
+                  } else {
+                    dispatch({
+                      type: "initialQuestions",
+                      payload: state.initialQuestions.map((q) => {
+                        if (q.id === question.id) {
+                          return {
+                            ...q,
+                            chosenAnswers: [...q.chosenAnswers, answer],
+                          };
+                        } else {
+                          return q;
+                        }
+                      }),
+                    });
+                  }
+                } else if (type === "files") {
+                }
+              }}
+            >
+              {chosen && <CheckCircle />}
+              {answer}
+            </AnswerButton>
+          );
+        })}
+        <AnswerButton
+          onClick={() => {
+            const questionInIds = state.openQuestionIds.find(
+              (id) => id === question.id
+            );
+            if (questionInIds) {
+              dispatch({
+                type: "openQuestionIds",
+                payload: state.openQuestionIds.filter(
+                  (id) => id !== question.id
+                ),
+              });
+              if (type === "initial") {
+                dispatch({
+                  type: "initialQuestions",
+                  payload: state.initialQuestions.map((q) => {
+                    if (q.id === question.id) {
+                      return {
+                        ...q,
+                        freeformAnswer: "",
+                      };
+                    } else {
+                      return q;
+                    }
+                  }),
+                });
+              } else if (type === "files") {
+              }
+            } else {
+              dispatch({
+                type: "openQuestionIds",
+                payload: [...(state.openQuestionIds || []), question.id],
+              });
+            }
+          }}
+        >
+          Add Your Own Answer
+        </AnswerButton>
+      </Box>
+      <Box sx={{ width: 600, padding: 1 }}>
+        <TextareaAutosize
+          style={{
+            width: "100%",
+            padding: "8px",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            outline: "none",
+            resize: "none",
+            display:
+              state.openQuestionIds &&
+              state.openQuestionIds.find((id) => id === question.id)
+                ? "block"
+                : "none",
+          }}
+          placeholder="Enter your own answer"
+          minRows={3}
+          onChange={(e) => {
+            if (type === "initial") {
+              dispatch({
+                type: "initialQuestions",
+                payload: state.initialQuestions.map((q) => {
+                  if (q.id === question.id) {
+                    return {
+                      ...q,
+                      freeformAnswer: e.target.value,
+                    };
+                  } else {
+                    return q;
+                  }
+                }),
+              });
+            }
+          }}
+          defaultValue={question.freeformAnswer}
+        />
+      </Box>
+    </Grid>
+  );
+}
+
 export default function FlowEditor({ id, prompt }) {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
@@ -237,6 +376,46 @@ export default function FlowEditor({ id, prompt }) {
         });
       }
     }
+    if (view === "questions") {
+      if (
+        !currentFileData.questions ||
+        currentFileData.questions.length === 0
+      ) {
+        getQuestionsData(
+          token,
+          `
+          File Title: "${currentFileData.name}"
+          Background Information: "${prompt}"
+        `,
+          "files"
+        ).then((data) => {
+          console.info("got file questions", data);
+
+          dispatch({
+            type: "files",
+            payload: state.files.map((file) => {
+              if (file.id === currentFileId) {
+                return {
+                  ...file,
+                  questions: data.questions.map((question) => {
+                    return {
+                      id: uuidv4(),
+                      type: "multipleChoice",
+                      question: question.question,
+                      possibleAnswers: question.answers,
+                      chosenAnswers: [],
+                      freeformAnswer: "",
+                    };
+                  }),
+                };
+              } else {
+                return file;
+              }
+            }),
+          });
+        });
+      }
+    }
   }, [view]);
 
   return (
@@ -253,142 +432,13 @@ export default function FlowEditor({ id, prompt }) {
           <Grid container gap={3}>
             {state.initialQuestions && state.initialQuestions.length > 0 ? (
               state.initialQuestions.map((question, i) => (
-                <Grid key={question.id} item xs={12} md={12}>
-                  <Typography variant="subtitle1">
-                    {question.question}
-                  </Typography>
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="flex-start"
-                    width="fit-content"
-                  >
-                    {question.possibleAnswers.map((answer, j) => {
-                      const chosen = question.chosenAnswers.find(
-                        (a) => a === answer
-                      )
-                        ? true
-                        : false;
-                      return (
-                        <AnswerButton
-                          key={j}
-                          onClick={() => {
-                            if (chosen) {
-                              dispatch({
-                                type: "initialQuestions",
-                                payload: state.initialQuestions.map((q) => {
-                                  if (q.id === question.id) {
-                                    return {
-                                      ...q,
-                                      chosenAnswers: q.chosenAnswers.filter(
-                                        (a) => a !== answer
-                                      ),
-                                    };
-                                  } else {
-                                    return q;
-                                  }
-                                }),
-                              });
-                            } else {
-                              dispatch({
-                                type: "initialQuestions",
-                                payload: state.initialQuestions.map((q) => {
-                                  if (q.id === question.id) {
-                                    return {
-                                      ...q,
-                                      chosenAnswers: [
-                                        ...q.chosenAnswers,
-                                        answer,
-                                      ],
-                                    };
-                                  } else {
-                                    return q;
-                                  }
-                                }),
-                              });
-                            }
-                          }}
-                        >
-                          {chosen && <CheckCircle />}
-                          {answer}
-                        </AnswerButton>
-                      );
-                    })}
-                    <AnswerButton
-                      onClick={() => {
-                        const questionInIds = state.openQuestionIds.find(
-                          (id) => id === question.id
-                        );
-                        if (questionInIds) {
-                          dispatch({
-                            type: "openQuestionIds",
-                            payload: state.openQuestionIds.filter(
-                              (id) => id !== question.id
-                            ),
-                          });
-                          dispatch({
-                            type: "initialQuestions",
-                            payload: state.initialQuestions.map((q) => {
-                              if (q.id === question.id) {
-                                return {
-                                  ...q,
-                                  freeformAnswer: "",
-                                };
-                              } else {
-                                return q;
-                              }
-                            }),
-                          });
-                        } else {
-                          dispatch({
-                            type: "openQuestionIds",
-                            payload: [
-                              ...(state.openQuestionIds || []),
-                              question.id,
-                            ],
-                          });
-                        }
-                      }}
-                    >
-                      Add Your Own Answer
-                    </AnswerButton>
-                  </Box>
-                  <Box sx={{ width: 600, padding: 1 }}>
-                    <TextareaAutosize
-                      style={{
-                        width: "100%",
-                        padding: "8px",
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                        outline: "none",
-                        resize: "none",
-                        display:
-                          state.openQuestionIds &&
-                          state.openQuestionIds.find((id) => id === question.id)
-                            ? "block"
-                            : "none",
-                      }}
-                      placeholder="Enter your own answer"
-                      minRows={3}
-                      onChange={(e) => {
-                        dispatch({
-                          type: "initialQuestions",
-                          payload: state.initialQuestions.map((q) => {
-                            if (q.id === question.id) {
-                              return {
-                                ...q,
-                                freeformAnswer: e.target.value,
-                              };
-                            } else {
-                              return q;
-                            }
-                          }),
-                        });
-                      }}
-                      defaultValue={question.freeformAnswer}
-                    />
-                  </Box>
-                </Grid>
+                <QuestionItem
+                  key={question.id}
+                  type="initial"
+                  question={question}
+                  state={state}
+                  dispatch={dispatch}
+                />
               ))
             ) : (
               <CircularProgress />
@@ -596,50 +646,25 @@ export default function FlowEditor({ id, prompt }) {
         <>
           <Grid container gap={3}>
             <Typography variant="h5">{currentFileData.name}</Typography>
-            {currentFileData.questions.map((question, i) => (
-              <Grid key={question.id} item xs={12} md={12}>
-                <Typography variant="subtitle1">{question.question}</Typography>
-                <Box
-                  display="flex"
-                  flexDirection="row"
-                  justifyContent="flex-start"
-                  width="fit-content"
-                >
-                  {question.possibleAnswers.map((answer, j) => (
-                    <AnswerButton
-                      key={j}
-                      onClick={() => {
-                        // dispatch({
-                        //     type: "files",
-                        //     payload: state.files.map((file) => {
-                        //     if (file.id === currentFileId) {
-                        //         return {
-                        //         ...file,
-                        //         questions: [
-                        //             ...(file.questions || []),
-                        //             {
-                        //             ...question,
-                        //             chosenAnswer: answer,
-                        //             },
-                        //         ],
-                        //         };
-                        //     } else {
-                        //         return file;
-                        //     }
-                        //     }),
-                        // });
-                      }}
-                    >
-                      {answer}
-                    </AnswerButton>
-                  ))}
-                </Box>
-              </Grid>
-            ))}
+            {currentFileData.questions &&
+            currentFileData.questions.length > 0 ? (
+              currentFileData.questions.map((question, i) => (
+                <QuestionItem
+                  key={question.id}
+                  type="files"
+                  question={question}
+                  state={state}
+                  dispatch={dispatch}
+                />
+              ))
+            ) : (
+              <CircularProgress />
+            )}
             <Button
-            // onClick={() => {
-            //     setCurrentFileId(null);
-            // }}
+              onClick={() => {
+                setCurrentFileId(null);
+                setView("files");
+              }}
             >
               Finish
             </Button>
