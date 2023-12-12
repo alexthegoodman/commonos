@@ -103,7 +103,7 @@ const FileTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-function QuestionItem({ type, question, state, dispatch }) {
+function QuestionItem({ type, fileId = null, question, state, dispatch }) {
   return (
     <Grid key={question.id} item xs={12} md={12}>
       <Typography variant="subtitle1">{question.question}</Typography>
@@ -154,6 +154,57 @@ function QuestionItem({ type, question, state, dispatch }) {
                     });
                   }
                 } else if (type === "files") {
+                  if (chosen) {
+                    dispatch({
+                      type: "files",
+                      payload: state.files.map((file) => {
+                        if (file.id === question.id) {
+                          return {
+                            ...file,
+                            questions: file.questions.map((q) => {
+                              if (q.id === question.id) {
+                                return {
+                                  ...q,
+                                  chosenAnswers: q.chosenAnswers.filter(
+                                    (a) => a !== answer
+                                  ),
+                                };
+                              } else {
+                                return q;
+                              }
+                            }),
+                          };
+                        } else {
+                          return file;
+                        }
+                      }),
+                    });
+                  } else {
+                    // update chosenAnswers and update skipQuestions to false
+                    dispatch({
+                      type: "files",
+                      payload: state.files.map((file) => {
+                        if (file.id === fileId) {
+                          return {
+                            ...file,
+                            skipQuestions: false,
+                            questions: file.questions.map((q) => {
+                              if (q.id === question.id) {
+                                return {
+                                  ...q,
+                                  chosenAnswers: [...q.chosenAnswers, answer],
+                                };
+                              } else {
+                                return q;
+                              }
+                            }),
+                          };
+                        } else {
+                          return file;
+                        }
+                      }),
+                    });
+                  }
                 }
               }}
             >
@@ -189,6 +240,29 @@ function QuestionItem({ type, question, state, dispatch }) {
                   }),
                 });
               } else if (type === "files") {
+                // update freeformAnswer
+                dispatch({
+                  type: "files",
+                  payload: state.files.map((file) => {
+                    if (file.id === fileId) {
+                      return {
+                        ...file,
+                        questions: file.questions.map((q) => {
+                          if (q.id === question.id) {
+                            return {
+                              ...q,
+                              freeformAnswer: "",
+                            };
+                          } else {
+                            return q;
+                          }
+                        }),
+                      };
+                    } else {
+                      return file;
+                    }
+                  }),
+                });
               }
             } else {
               dispatch({
@@ -230,6 +304,29 @@ function QuestionItem({ type, question, state, dispatch }) {
                     };
                   } else {
                     return q;
+                  }
+                }),
+              });
+            } else if (type === "files") {
+              dispatch({
+                type: "files",
+                payload: state.files.map((file) => {
+                  if (file.id === fileId) {
+                    return {
+                      ...file,
+                      questions: file.questions.map((q) => {
+                        if (q.id === question.id) {
+                          return {
+                            ...q,
+                            freeformAnswer: e.target.value,
+                          };
+                        } else {
+                          return q;
+                        }
+                      }),
+                    };
+                  } else {
+                    return file;
                   }
                 }),
               });
@@ -526,7 +623,24 @@ export default function FlowEditor({ id, prompt }) {
                             {/* <Button size="small">
                               Skip File {file.skipFile && <CheckCircle />}
                             </Button> */}
-                            <Button size="small">
+                            <Button
+                              size="small"
+                              onClick={() => {
+                                dispatch({
+                                  type: "files",
+                                  payload: state.files.map((f) => {
+                                    if (f.id === file.id) {
+                                      return {
+                                        ...f,
+                                        skipQuestions: true,
+                                      };
+                                    } else {
+                                      return f;
+                                    }
+                                  }),
+                                });
+                              }}
+                            >
                               Skip Questions{" "}
                               {file.skipQuestions && <CheckCircle />}
                             </Button>
@@ -651,6 +765,7 @@ export default function FlowEditor({ id, prompt }) {
               currentFileData.questions.map((question, i) => (
                 <QuestionItem
                   key={question.id}
+                  fileId={currentFileId}
                   type="files"
                   question={question}
                   state={state}
