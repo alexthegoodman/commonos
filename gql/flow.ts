@@ -63,7 +63,7 @@ export const getFileListQuery = gql`
 `;
 
 export const getQuestionsQuery = gql`
-  query getQuestions($fileTitle: String!, $getThis: String!) {
-    getQuestions(fileTitle: $fileTitle, getThis: $getThis)
+  query getQuestions($flowId: String!, $fileTitle: String!, $getThis: String!) {
+    getQuestions(flowId: $flowId, fileTitle: $fileTitle, getThis: $getThis)
   }
 `;

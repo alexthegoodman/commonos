@@ -384,7 +384,7 @@ export default function FlowEditor({ id, prompt }) {
   useEffect(() => {
     if (view === "initial") {
       if (!state.initialQuestions || state.initialQuestions.length === 0) {
-        getQuestionsData(token, prompt, "initial").then((data) => {
+        getQuestionsData(token, id, prompt, "initial").then((data) => {
           console.info("got initial questions", data);
 
           dispatch({
@@ -480,6 +480,7 @@ export default function FlowEditor({ id, prompt }) {
       ) {
         getQuestionsData(
           token,
+          id,
           `
           File Title: "${currentFileData.name}"
           Background Information: "${prompt}"
@@ -759,7 +760,11 @@ export default function FlowEditor({ id, prompt }) {
       {view === "questions" && (
         <>
           <Grid container gap={3}>
-            <Typography variant="h5">{currentFileData.name}</Typography>
+            <Box>
+              <Typography variant="overline">File Title</Typography>
+              <Typography variant="h5">{currentFileData.name}</Typography>
+            </Box>
+
             {currentFileData.questions &&
             currentFileData.questions.length > 0 ? (
               currentFileData.questions.map((question, i) => (

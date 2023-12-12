@@ -98,6 +98,7 @@ export const getFileListData = async (
 var callingQuestions = false;
 export const getQuestionsData = async (
   token: string,
+  flowId: string,
   fileTitle: string,
   getThis: string
 ) => {
@@ -114,6 +115,7 @@ export const getQuestionsData = async (
   const { getQuestions } = (await graphClient.client?.request(
     getQuestionsQuery,
     {
+      flowId,
       fileTitle,
       getThis,
     }
