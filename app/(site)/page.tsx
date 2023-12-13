@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 
 const Hero = styled(Box)(({ theme }) => ({
-  height: "500px",
   display: "flex",
   alignItems: "center",
   // justifyContent: "center",
@@ -30,9 +29,9 @@ const HistoryStepper = styled(Stepper)(({ theme }) => ({
 }));
 
 const HistoryStep = styled(Step)(({ theme }) => ({
-  width: "350px",
+  width: "300px",
   flex: "0 0 auto",
-  padding: "0 75px",
+  padding: "0 50px",
   // "& .MuiStepIcon-root": {
   //   color: "#000",
   // },
@@ -45,6 +44,13 @@ const HistoryLabel = styled(StepLabel)(({ theme }) => ({
   // },
 }));
 
+const HeroHeadline = styled(Typography)(({ theme }) => ({
+  background: "linear-gradient(90deg, #38efaf 0%, #38ef7d 100%)",
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+}));
+
 export default function Home() {
   const steps = [
     "For decades, people have been doing manual work",
@@ -54,15 +60,56 @@ export default function Home() {
 
   return (
     <>
-      <Hero>
+      <Hero
+        sx={{
+          height: {
+            xs: "auto",
+            md: "500px",
+          },
+        }}
+      >
         <InnerWrapper>
-          <Box position="relative" width={500}>
-            <Typography variant="h1">CommonOS</Typography>
-            <Typography variant="h2">
+          <Box
+            position="relative"
+            sx={{
+              width: {
+                xs: "100%",
+                md: "500px",
+              },
+            }}
+          >
+            <HeroHeadline
+              variant="h1"
+              sx={{
+                fontSize: {
+                  xs: "3rem",
+                  md: "4.5rem",
+                },
+              }}
+            >
+              CommonOS
+            </HeroHeadline>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: {
+                  xs: "2.5rem",
+                  md: "3.5rem",
+                },
+              }}
+            >
               Creating at the speed of thought
             </Typography>
             <Box
-              style={{ position: "absolute", bottom: "-125px", left: "300px" }}
+              sx={{
+                display: {
+                  xs: "none",
+                  md: "block",
+                },
+                position: "absolute",
+                bottom: "-125px",
+                left: "300px",
+              }}
             >
               <Typography variant="overline">
                 Watch the video{" "}
@@ -70,28 +117,64 @@ export default function Home() {
               </Typography>
             </Box>
           </Box>
-          <Box position="relative">
-            <video
-              style={{
+          <Box
+            position="relative"
+            sx={{
+              padding: {
+                xs: "0 50px",
+                md: "0",
+              },
+            }}
+          >
+            <Box
+              sx={{
                 aspectRatio: "16/9",
-                width: "880px",
+                width: {
+                  xs: "100%",
+                  md: "55%",
+                  xl: "880px",
+                },
+
                 backgroundColor: "grey",
-                position: "absolute",
-                right: "0",
-                bottom: "-275px",
+                position: {
+                  xs: "relative",
+                  md: "absolute",
+                },
+                right: {
+                  xs: "auto",
+                  md: "20px",
+                  xl: "0",
+                },
+                bottom: {
+                  xs: "auto",
+                  md: "-200px",
+                  xl: "-275px",
+                },
+                boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
               }}
             >
-              <source
-                src="https://commonos.s3.us-east-2.amazonaws.com/landing/landing.mp4"
-                type="video/mp4"
-              />
-            </video>
+              <video style={{ width: "100%", height: "100%" }}>
+                <source
+                  src="https://commonos.s3.us-east-2.amazonaws.com/landing/landing.mp4"
+                  type="video/mp4"
+                />
+              </video>
+            </Box>
           </Box>
         </InnerWrapper>
       </Hero>
       <Box pt={30}>
         <InnerWrapper>
-          <Box display="flex" justifyContent="center">
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "flex",
+              },
+            }}
+            display="flex"
+            justifyContent="center"
+          >
             <HistoryStepper
               alternativeLabel
               activeStep={3}
