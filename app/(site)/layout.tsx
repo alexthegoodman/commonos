@@ -1,5 +1,6 @@
 "use client";
 
+import SiteFooter from "@/components/site/nav/SiteFooter";
 import SiteHeader from "@/components/site/nav/SiteHeader";
 import { LauncherContext } from "@/context/LauncherContext";
 import { Box, styled } from "@mui/material";
@@ -14,6 +15,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Background>
       <SiteHeader />
       <Box mt={8}>{children}</Box>
+      <SiteFooter />
     </Background>
   );
 }

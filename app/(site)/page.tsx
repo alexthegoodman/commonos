@@ -3,6 +3,7 @@
 import { ArrowRightSharp } from "@mui/icons-material";
 import {
   Box,
+  Button,
   Grid,
   Step,
   StepLabel,
@@ -50,6 +51,17 @@ const HeroHeadline = styled(Typography)(({ theme }) => ({
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
+}));
+
+const BenefitsContainer = styled(Grid)(({ theme }) => ({
+  border: "1px rgba(255, 255, 255, 0.1) solid",
+}));
+
+const BenefitItem = styled(Grid)(({ theme }) => ({
+  padding: "35px",
+  "&:nth-of-type(2), &:nth-of-type(3)": {
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+  },
 }));
 
 export default function Home() {
@@ -205,6 +217,46 @@ export default function Home() {
                 learns what you want and how you want it. Then, it does the work
                 for you, so you can focus on what matters.
               </Typography>
+              <Typography
+                variant="overline"
+                sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
+              >
+                The Challenge
+              </Typography>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontSize: {
+                    xs: "1.2rem",
+                    md: "1.4rem",
+                  },
+                  lineHeight: "1.7",
+                }}
+              >
+                To build an OS that offered to do work for you, we had to build
+                a suite of uniform, integrated apps. We can't simply integrate
+                with existing tools because they offer limited customization and
+                are not designed to be automated.
+              </Typography>
+              <Typography
+                variant="overline"
+                sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
+              >
+                The Technology
+              </Typography>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontSize: {
+                    xs: "1.2rem",
+                    md: "1.4rem",
+                  },
+                  lineHeight: "1.7",
+                }}
+              >
+                CommonOS integrates the powerful AI behind ChatGPT with a suite
+                of apps that are designed to be automated.
+              </Typography>
             </Grid>
 
             <Grid
@@ -235,9 +287,93 @@ export default function Home() {
                   </HistoryStep>
                 ))}
               </HistoryStepper>
+              <Box padding="0 50px">
+                <Typography
+                  variant="overline"
+                  sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
+                >
+                  Benefits
+                </Typography>
+                <BenefitsContainer container>
+                  <BenefitItem item xs={12} md={6}>
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontSize: {
+                          xs: "1.2rem",
+                          md: "1.4rem",
+                        },
+                        lineHeight: "1.7",
+                      }}
+                    >
+                      Add the expertise of AI to your workflow
+                    </Typography>
+                  </BenefitItem>
+                  <BenefitItem item xs={12} md={6}>
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontSize: {
+                          xs: "1.2rem",
+                          md: "1.4rem",
+                        },
+                        lineHeight: "1.7",
+                      }}
+                    >
+                      Save time preparing a variety of files for every project
+                    </Typography>
+                  </BenefitItem>
+                  <BenefitItem item xs={12} md={6}>
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontSize: {
+                          xs: "1.2rem",
+                          md: "1.4rem",
+                        },
+                        lineHeight: "1.7",
+                      }}
+                    >
+                      Spend more time refining your work
+                    </Typography>
+                  </BenefitItem>
+                  <BenefitItem item xs={12} md={6}>
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontSize: {
+                          xs: "1.2rem",
+                          md: "1.4rem",
+                        },
+                        lineHeight: "1.7",
+                      }}
+                    >
+                      Guide the AI to achieve personalized results
+                    </Typography>
+                  </BenefitItem>
+                </BenefitsContainer>
+              </Box>
             </Grid>
           </Grid>
         </InnerWrapper>
+      </Box>
+      <Box padding="100px 0" display="flex" justifyContent="center">
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="h3" mb={2}>
+            Leap into the future
+          </Typography>
+          <Typography variant="body1" mb={2}>
+            Try CommonOS with our free Preview plan
+          </Typography>
+          <Box>
+            <Button size="large" href="/sign-up">
+              Sign Up
+            </Button>
+            <Button size="large" href="/pricing">
+              Pricing
+            </Button>
+          </Box>
+        </Box>
       </Box>
     </>
   );
