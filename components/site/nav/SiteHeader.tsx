@@ -15,6 +15,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { useCookies } from "react-cookie";
+import { CookieSettings } from "../../../helpers/CookieSettings";
+import { useRouter } from "next/navigation";
+import { styled } from "@mui/material";
 
 interface Props {
   /**
@@ -30,17 +34,49 @@ const navItems = [
     label: "Pricing",
     href: "/pricing",
   },
-  {
-    label: "Login",
-    href: "/login",
-  },
-  {
-    label: "Sign Up",
-    href: "/sign-up",
-  },
 ];
 
+const InnerWrappper = styled(Box)(({ theme }) => ({
+  width: "100%",
+  maxWidth: "1400px",
+  margin: "0 auto",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+}));
+
+function LoggedInButtons() {
+  const router = useRouter();
+  const [cookies, setCookie, removeCookie] = useCookies(["cmUserToken"]);
+
+  const logout = () => {
+    removeCookie("cmUserToken", {
+      ...CookieSettings,
+    });
+    // router.push("/login");
+  };
+
+  return (
+    <>
+      <Button href="/launcher">Enter CommonOS</Button>
+      <Button onClick={logout}>Logout</Button>
+    </>
+  );
+}
+
+function LoggedOutButtons() {
+  return (
+    <>
+      <Button href="/login">Login</Button>
+      <Button href="/sign-up">Sign Up</Button>
+    </>
+  );
+}
+
 export default function DrawerAppBar(props: Props) {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -62,6 +98,7 @@ export default function DrawerAppBar(props: Props) {
             </ListItemButton>
           </ListItem>
         ))}
+        {token ? <LoggedInButtons /> : <LoggedOutButtons />}
       </List>
     </Box>
   );
@@ -74,29 +111,32 @@ export default function DrawerAppBar(props: Props) {
       <CssBaseline />
       <AppBar component="nav">
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-          >
-            CommonOS
-          </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navItems.map((item) => (
-              <Button key={item.href} href={item.href} sx={{ color: "#fff" }}>
-                {item.label}
-              </Button>
-            ))}
-          </Box>
+          <InnerWrappper>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2, display: { sm: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            >
+              CommonOS
+            </Typography>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              {navItems.map((item) => (
+                <Button key={item.href} href={item.href} sx={{ color: "#fff" }}>
+                  {item.label}
+                </Button>
+              ))}
+              {token ? <LoggedInButtons /> : <LoggedOutButtons />}
+            </Box>
+          </InnerWrappper>
         </Toolbar>
       </AppBar>
       <nav>
