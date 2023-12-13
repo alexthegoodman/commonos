@@ -17,6 +17,7 @@ import {
   useReducer,
   useState,
 } from "react";
+import { useDarkMode, useLocalStorage } from "usehooks-ts";
 
 const inter = Inter({ subsets: ["latin"] });
 export default function RootLayout({
@@ -24,11 +25,18 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [mode, setMode] = useState<"light" | "dark">("dark");
+  const { isDarkMode, toggle, enable, disable } = useDarkMode();
+
+  console.log("isDarkMode", isDarkMode);
+
+  const [mode, setMode] = useState<"light" | "dark">(
+    isDarkMode ? "dark" : "light"
+  );
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+        toggle();
       },
     }),
     []
