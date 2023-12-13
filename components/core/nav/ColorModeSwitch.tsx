@@ -15,6 +15,7 @@ export default function ColorModeSwitch() {
         justifyContent: "center",
         bgcolor: "background.default",
         color: "text.primary",
+        marginRight: 2,
       }}
       onClick={colorMode.toggleColorMode}
     >
