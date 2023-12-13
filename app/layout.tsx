@@ -1,22 +1,41 @@
 "use client";
 
+import { ColorModeContext } from "@/context/ColorModeContext";
 import {
   LauncherContext,
   LauncherContextReducer,
   LauncherContextState,
 } from "@/context/LauncherContext";
-import theme from "@/theme";
-import { ThemeProvider } from "@mui/material";
+import { themeOptions, getThemeOptions } from "@/theme";
+import { ThemeProvider, createTheme } from "@mui/material";
 import { Inter } from "next/font/google";
-import { use, useEffect, useReducer } from "react";
+import {
+  createContext,
+  use,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 
 const inter = Inter({ subsets: ["latin"] });
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [mode, setMode] = useState<"light" | "dark">("dark");
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+      },
+    }),
+    []
+  );
+
+  const theme = useMemo(() => createTheme(getThemeOptions(mode)), [mode]);
+
   const [state, dispatch] = useReducer(
     LauncherContextReducer,
     LauncherContextState
@@ -30,11 +49,13 @@ export default function RootLayout({
           margin: 0,
         }}
       >
-        <ThemeProvider theme={theme}>
-          <LauncherContext.Provider value={{ state, dispatch }}>
-            {children}
-          </LauncherContext.Provider>
-        </ThemeProvider>
+        <ColorModeContext.Provider value={colorMode}>
+          <ThemeProvider theme={theme}>
+            <LauncherContext.Provider value={{ state, dispatch }}>
+              {children}
+            </LauncherContext.Provider>
+          </ThemeProvider>
+        </ColorModeContext.Provider>
         <style jsx global>{`
           *::selection {
             background: #38ef7d;

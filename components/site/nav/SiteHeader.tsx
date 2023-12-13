@@ -19,6 +19,7 @@ import { useCookies } from "react-cookie";
 import { CookieSettings } from "../../../helpers/CookieSettings";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/material";
+import ColorModeSwitch from "@/components/core/nav/ColorModeSwitch";
 
 interface Props {
   /**
@@ -128,9 +129,12 @@ export default function DrawerAppBar(props: Props) {
             >
               CommonOS
             </Typography>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Box
+              sx={{ display: { xs: "none", sm: "flex" }, flexDirection: "row" }}
+            >
+              <ColorModeSwitch />
               {navItems.map((item) => (
-                <Button key={item.href} href={item.href} sx={{ color: "#fff" }}>
+                <Button key={item.href} href={item.href}>
                   {item.label}
                 </Button>
               ))}
