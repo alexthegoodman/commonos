@@ -24,12 +24,23 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className} style={{ margin: 0 }}>
+      <body
+        className={inter.className}
+        style={{
+          margin: 0,
+        }}
+      >
         <ThemeProvider theme={theme}>
           <LauncherContext.Provider value={{ state, dispatch }}>
             {children}
           </LauncherContext.Provider>
         </ThemeProvider>
+        <style jsx global>{`
+          *::selection {
+            background: #38ef7d;
+            color: #000;
+          }
+        `}</style>
       </body>
     </html>
   );
