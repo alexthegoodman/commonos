@@ -7,7 +7,7 @@ import graphClient from "../../../helpers/GQLClient";
 import { updateDocumentMutation } from "../../../gql/document";
 import { mutate } from "swr";
 import { getDocumentsData } from "../../../fetchers/document";
-import { Box } from "@mui/material";
+import { Box, TextField, Typography } from "@mui/material";
 const { DateTime } = require("luxon");
 
 const EditorHeader = ({
@@ -63,16 +63,20 @@ const EditorHeader = ({
 
   return (
     <header>
-      <Box>
-        <input
+      <Box display="flex" flexDirection="row" alignItems="center">
+        <TextField
           onChange={onTitleChange}
           defaultValue={documentData?.title}
           placeholder="Document Title"
         />
-        <span>
-          Autosaved on{" "}
-          {DateTime.fromISO(lastSaved).toLocaleString(DateTime.DATETIME_FULL)}
-        </span>
+        {lastSaved ? (
+          <Typography ml={2} variant="body1">
+            Autosaved on{" "}
+            {DateTime.fromISO(lastSaved).toLocaleString(DateTime.DATETIME_MED)}
+          </Typography>
+        ) : (
+          <></>
+        )}
       </Box>
     </header>
   );

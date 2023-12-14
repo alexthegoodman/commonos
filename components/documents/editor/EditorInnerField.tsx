@@ -7,26 +7,18 @@ import "react-quill/dist/quill.snow.css";
 
 import { useDocumentsContext } from "../../../context/DocumentsContext";
 import EditorHeader from "./EditorHeader";
-import { Box, styled } from "@mui/material";
+import { Box, Typography, styled } from "@mui/material";
 
-const CustomToolbar = () => (
-  <div id="toolbar">
-    <button className={`ql-header`} value="1">
-      h
-    </button>
-    <button className={`ql-bold`}>b</button>
-    <button className={`ql-italic`}>i</button>
-    <button className={`ql-list`} value="ordered">
-      li
-    </button>
-    <button className={`ql-list`} value="bullet">
-      bl
-    </button>
-    <button className={`ql-link`} value="button">
-      link
-    </button>
-  </div>
-);
+// const CustomToolbar = () => (
+//   <div id="toolbar">
+//     <button className={`ql-toolbar-option ql-header`} value="1"></button>
+//     <button className={`ql-toolbar-option ql-bold`}></button>
+//     <button className={`ql-toolbar-option ql-italic`}></button>
+//     <button className={`ql-toolbar-option ql-list`} value="ordered"></button>
+//     <button className={`ql-toolbar-option ql-list`} value="bullet"></button>
+//     <button className={`ql-toolbar-option ql-link`} value="button"></button>
+//   </div>
+// );
 
 const formats = [
   // 'background',
@@ -55,7 +47,7 @@ const formats = [
 const QuillWrapper = styled(Box)(({ theme }) => ({
   ".ql-toolbar": {
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     alignItems: "center",
     padding: "0 10px",
     backgroundColor: theme.palette.background.default,
@@ -73,7 +65,9 @@ const QuillWrapper = styled(Box)(({ theme }) => ({
   ".ql-editor": {
     minHeight: "calc(100vh - 200px)",
     padding: "10px",
-    backgroundColor: theme.palette.background.paper,
+    // backgroundColor: theme.palette.background.paper,
+    color: "white",
+    fontSize: "1rem",
     zIndex: 1,
   },
 }));
@@ -88,12 +82,18 @@ const EditorInnerField = ({
   // console.info("Quill", Quill.default);
   var icons = Quill.default.import("ui/icons");
   // console.info("icons", icons);
-  icons["bold"] = `<i class="ph-text-bolder-thin"></i>`;
-  icons["italic"] = `<i class="ph-text-italic-thin"></i>`;
-  icons["header"] = `<i class="ph-text-h-one-thin"></i>`;
-  icons["list"]["bullet"] = `<i class="ph-list-bullets-thin"></i>`;
-  icons["list"]["ordered"] = `<i class="ph-list-numbers-thin"></i>`;
-  icons["link"] = `<i class="ph-link-thin"></i>`;
+  icons["bold"] = `<i class="ph ph-text-bolder-thin"></i>`;
+  icons["italic"] = `<i class="ph ph-text-italic-thin"></i>`;
+  icons["header"] = `<i class="ph ph-text-h-one-thin"></i>`;
+  icons["list"]["bullet"] = `<i class="ph ph-list-bullets-thin"></i>`;
+  icons["list"]["ordered"] = `<i class="ph ph-list-numbers-thin"></i>`;
+  icons["link"] = `<i class="ph ph-link-thin"></i>`;
+  icons["blockquote"] = `<i class="ph ph-text-quotes-left-thin"></i>`;
+  icons["code-block"] = `<i class="ph ph-code-thin"></i>`;
+  icons["strike"] = `<i class="ph ph-text-strikethrough-thin"></i>`;
+  icons["underline"] = `<i class="ph ph-text-underline-thin"></i>`;
+  icons["indent"]["-1"] = `<i class="ph ph-text-outdent"></i>`;
+  icons["indent"]["+1"] = `<i class="ph ph-text-indent"></i>`;
 
   const recentTextLength = 35;
 
@@ -186,11 +186,13 @@ const EditorInnerField = ({
           </section>
 
           <section>
-            <CustomToolbar />
-            <div>
-              <span>{totalWords} Words</span>
-              <span>{editorPlaintext.length} Characters</span>
-            </div>
+            <Box display="flex" flexDirection="row" gap={2}>
+              <Typography variant="body1">{totalWords} Words</Typography>
+              <Typography variant="body1">
+                {editorPlaintext.length} Characters
+              </Typography>
+            </Box>
+            {/* <CustomToolbar /> */}
           </section>
 
           <QuillWrapper>
@@ -199,9 +201,17 @@ const EditorInnerField = ({
               theme="snow"
               onChange={onFieldChange}
               modules={{
-                toolbar: {
-                  container: "#toolbar",
-                },
+                toolbar: [
+                  [{ header: 1 }],
+                  ["bold", "italic", "underline", "strike"],
+                  [
+                    { list: "ordered" },
+                    { list: "bullet" },
+                    { indent: "-1" },
+                    { indent: "+1" },
+                  ],
+                  ["link"],
+                ],
               }}
               placeholder="Begin typing here..."
               defaultValue={documentData?.content}
@@ -210,6 +220,20 @@ const EditorInnerField = ({
           </QuillWrapper>
         </div>
       </section>
+      <style jsx global>{`
+        .ph {
+          font-size: 1.5rem;
+          color: white;
+          padding: 0 !important;
+          position: relative;
+          top: -2px;
+          left: -2px;
+
+          &:hover {
+            color: #38ef7d !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

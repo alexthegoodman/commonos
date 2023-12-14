@@ -1,6 +1,6 @@
 import { LauncherContext, allTabs } from "@/context/LauncherContext";
 import { Add } from "@mui/icons-material";
-import { Box, Button, Icon, styled } from "@mui/material";
+import { Box, Button, Chip, Icon, Typography, styled } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext } from "react";
 
@@ -25,11 +25,12 @@ export default function PrimaryTabs() {
 
   const router = useRouter();
   const pathname = usePathname();
+  const slug1 = "/" + pathname.split("/")[1];
 
   const currentTabData = allTabs.find((tab) => tab.href === pathname);
 
   return (
-    <Box display="flex" flexDirection="row">
+    <Box display="flex" flexDirection="row" mb={2}>
       {state.openTabs.map((tab) => {
         const tabData = allTabs.find((t) => t.id === tab.id);
 
@@ -41,15 +42,27 @@ export default function PrimaryTabs() {
           <Tab
             key={tab.id}
             onClick={() => router.push(tabData.href)}
-            style={tabData.href === pathname ? { color: "#1976d2" } : {}}
+            style={
+              tabData.href === slug1
+                ? { borderBottom: "2px #FFF solid" }
+                : { borderBottom: "2px transparent solid" }
+            }
           >
             {tabData?.label}
+            {tabData?.badge && (
+              <Chip
+                variant="outlined"
+                size="small"
+                label={tabData?.badge}
+                style={{ marginLeft: "7px", fontSize: "0.7rem" }}
+              />
+            )}
           </Tab>
         );
       })}
-      <Tab>
+      {/* <Tab>
         <Add />
-      </Tab>
+      </Tab> */}
     </Box>
   );
 }

@@ -93,11 +93,19 @@ const PrimaryPromptForm = ({
           validation={{
             required: "Prompt Required",
           }}
-          minRows={3}
+          minRows={5}
           autoFocus={true}
+          style={{
+            fontSize: "1rem",
+          }}
         />
 
-        <Button type="submit" disabled={submitLoading}>
+        <Button
+          type="submit"
+          color="success"
+          variant="contained"
+          disabled={submitLoading}
+        >
           {submitButtonText}
         </Button>
       </CmForm>

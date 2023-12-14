@@ -5,7 +5,7 @@ const CmTextarea = styled(TextareaAutosize)(({ theme }) => ({
   width: "100%",
   padding: theme.spacing(1),
   border: "1px solid #ccc",
-  borderRadius: theme.spacing(1),
+  borderRadius: "0px",
   outline: "none",
   resize: "none",
   "&:focus": {

@@ -5,42 +5,50 @@ export const allTabs = [
     id: "launcher",
     label: "Launcher",
     href: "/launcher",
+    badge: null,
   },
   {
     id: "documents",
     label: "Documents",
     href: "/documents",
+    badge: null,
   },
   {
     id: "slides",
     label: "Slides",
     href: "/slides",
+    badge: null,
   },
   {
     id: "sheets",
     label: "Sheets",
     href: "/sheets",
+    badge: null,
   },
   {
     id: "drawings",
     label: "Drawings",
     href: "/drawings",
+    badge: null,
   },
   {
     id: "sounds",
     label: "Sounds",
     href: "/sounds",
+    badge: "Coming Soon",
   },
   {
     id: "videos",
     label: "Videos",
     href: "/videos",
+    badge: "Coming Soon",
   },
-  {
-    id: "code",
-    label: "Code",
-    href: "/code",
-  },
+  // {
+  //   id: "code",
+  //   label: "Code",
+  //   href: "/code",
+  //   badge: "Coming Soon",
+  // },
 ];
 
 // all tabs for now

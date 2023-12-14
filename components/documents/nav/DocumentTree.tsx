@@ -3,20 +3,22 @@ import useSWR, { mutate } from "swr";
 
 import { getDocumentsData } from "../../../fetchers/document";
 import { useCookies } from "react-cookie";
-import Link from "next/link";
 import { getUserData, updateUserData } from "../../../fetchers/user";
 import graphClient from "../../../helpers/GQLClient";
 import { newDocumentMutation } from "../../../gql/document";
-import { CircularProgress, Typography, styled } from "@mui/material";
+import { Box, CircularProgress, Link, Typography, styled } from "@mui/material";
 import { Add, ChevronRight } from "@mui/icons-material";
 
 const TreeWrapper = styled("section")(
   ({ theme }) => `
     height: calc(100vh - 100px);
-    margin-top: 25px;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px;
   
     .documentTreeInner {
-      padding-left: 10px;
+      .treeWrapper {
+        margin-left: -25px; // to offset padding on ul
+      }
   
       li {
         position: relative;
@@ -50,6 +52,7 @@ const TreeWrapper = styled("section")(
           span, p {
             display: flex;
             flex-direction: row;
+            padding: 3px 0;
   
             &.selected {
               background-color: grey;
@@ -64,7 +67,7 @@ const TreeWrapper = styled("section")(
             }
             a {
               display: block;
-              padding: 7px 2px;
+              padding: 2px 2px;
               text-decoration: none;
               line-height: 21px;
             }
@@ -75,7 +78,7 @@ const TreeWrapper = styled("section")(
             cursor: pointer;
   
             span {
-              line-height: 35px;
+              // line-height: 35px;
   
               > i {
                 &:hover {
@@ -106,7 +109,7 @@ const AddDocumentMenu = ({ id = null, addPageHandler }) => {
   return (
     <li className="addDocument" onClick={() => addPageHandler(id)}>
       <Typography variant="body2">
-        <Add /> Add Document
+        <Add /> <span>Add Document</span>
       </Typography>
       {/* {showMenu ? (
         <ul className="addDocumentMenu">
@@ -262,45 +265,47 @@ const DocumentTree = ({ documentId = "" }) => {
   return (
     <TreeWrapper>
       <div className="documentTreeInner">
-        <Typography variant="h5">Your Documents</Typography>
-        {treeData && typeof treeData === "object" && documentsData ? (
-          treeData.map((item) => {
-            const itemData = documentsData.filter(
-              (document) => document.id === item.id
-            )[0];
+        <Typography variant="overline">Your Documents</Typography>
+        <Box className="treeWrapper">
+          {treeData && typeof treeData === "object" && documentsData ? (
+            treeData.map((item) => {
+              const itemData = documentsData.filter(
+                (document) => document.id === item.id
+              )[0];
 
-            const newAddPage = (
-              <AddDocumentMenu id={item.id} addPageHandler={addPageHandler} />
-            );
+              const newAddPage = (
+                <AddDocumentMenu id={item.id} addPageHandler={addPageHandler} />
+              );
 
-            return (
-              <>
-                <ul>
-                  <>
-                    <li className={item.folded ? "folded" : ""}>
-                      <Typography
-                        variant="body2"
-                        className={documentId === item.id ? "selected" : ""}
-                      >
-                        <ChevronRight onClick={() => toggleFold(item.id)} />
+              return (
+                <>
+                  <ul>
+                    <>
+                      <li className={item.folded ? "folded" : ""}>
+                        <Typography
+                          variant="body2"
+                          className={documentId === item.id ? "selected" : ""}
+                        >
+                          <ChevronRight onClick={() => toggleFold(item.id)} />
 
-                        <Link href={`/documents/${item.id}`} draggable="true">
-                          {itemData?.title}
-                        </Link>
-                      </Typography>
+                          <Link href={`/documents/${item.id}`} draggable="true">
+                            {itemData?.title}
+                          </Link>
+                        </Typography>
 
-                      {item.id ? displayChildren(item, newAddPage) : <></>}
-                    </li>
-                  </>
-                  {/* {newAddPage} */}
-                </ul>
-              </>
-            );
-          })
-        ) : (
-          <></>
-        )}
-        {newTopLevelPage}
+                        {item.id ? displayChildren(item, newAddPage) : <></>}
+                      </li>
+                    </>
+                    {/* {newAddPage} */}
+                  </ul>
+                </>
+              );
+            })
+          ) : (
+            <></>
+          )}
+          {newTopLevelPage}
+        </Box>
       </div>
     </TreeWrapper>
   );
