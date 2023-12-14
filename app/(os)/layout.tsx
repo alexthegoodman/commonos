@@ -9,8 +9,12 @@ import { useContext } from "react";
 const Background = styled("main")(({ theme }) => ({
   width: "100%",
   height: "100vh",
-  backgroundColor: theme.palette.background.default,
+  // backgroundColor: theme.palette.background.default,
   overflowY: "scroll",
+
+  background: "linear-gradient(355deg, #b92b27, #1565C0)",
+  backgroundSize: "400% 400%",
+  animation: "AnimationName 15s ease infinite",
 }));
 
 const Container = styled("div")(({ theme }) => ({
@@ -31,6 +35,52 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <PrimaryTabs />
         <Box>{children}</Box>
       </Container>
+      <style jsx global>{`
+        @-webkit-keyframes AnimationName {
+          0% {
+            background-position: 0% 83%;
+          }
+          50% {
+            background-position: 100% 18%;
+          }
+          100% {
+            background-position: 0% 83%;
+          }
+        }
+        @-moz-keyframes AnimationName {
+          0% {
+            background-position: 0% 83%;
+          }
+          50% {
+            background-position: 100% 18%;
+          }
+          100% {
+            background-position: 0% 83%;
+          }
+        }
+        @-o-keyframes AnimationName {
+          0% {
+            background-position: 0% 83%;
+          }
+          50% {
+            background-position: 100% 18%;
+          }
+          100% {
+            background-position: 0% 83%;
+          }
+        }
+        @keyframes AnimationName {
+          0% {
+            background-position: 0% 83%;
+          }
+          50% {
+            background-position: 100% 18%;
+          }
+          100% {
+            background-position: 0% 83%;
+          }
+        }
+      `}</style>
     </Background>
   );
 }

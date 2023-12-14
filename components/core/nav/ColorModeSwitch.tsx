@@ -7,6 +7,8 @@ export default function ColorModeSwitch() {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
 
+  return <></>;
+
   return (
     <Button
       sx={{

@@ -10,7 +10,7 @@ const EditorHeader = ({ title, setTitle }) => {
   };
 
   return (
-    <header>
+    <header style={{ marginBottom: "10px" }}>
       <Box>
         <TextField
           onChange={onTitleChange}

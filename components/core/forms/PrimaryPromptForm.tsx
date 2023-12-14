@@ -75,7 +75,7 @@ const PrimaryPromptForm = ({
   return (
     <Box>
       <Alert severity="info">
-        <Typography variant="body1">
+        <Typography variant="body2">
           The magic of CommonOS is in the Flow experience.
           <br />
           Try it with a prompt!
@@ -93,10 +93,13 @@ const PrimaryPromptForm = ({
           validation={{
             required: "Prompt Required",
           }}
-          minRows={5}
+          minRows={3}
           autoFocus={true}
           style={{
             fontSize: "1rem",
+            lineHeight: "1.5rem",
+            padding: "20px",
+            boxSizing: "border-box",
           }}
         />
 

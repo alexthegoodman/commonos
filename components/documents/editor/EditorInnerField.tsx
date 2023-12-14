@@ -49,8 +49,9 @@ const QuillWrapper = styled(Box)(({ theme }) => ({
     display: "flex",
     justifyContent: "flex-start",
     alignItems: "center",
-    padding: "0 10px",
-    backgroundColor: theme.palette.background.default,
+    padding: "10px",
+    // backgroundColor: theme.palette.background.default,
+    backgroundColor: "white",
     borderBottom: "1px solid " + theme.palette.divider,
     zIndex: 1,
   },
@@ -58,7 +59,8 @@ const QuillWrapper = styled(Box)(({ theme }) => ({
     height: "calc(100vh - 200px)",
     overflow: "auto",
     padding: "10px",
-    backgroundColor: theme.palette.background.paper,
+    // backgroundColor: theme.palette.background.paper,
+    backgroundColor: "white",
     borderBottom: "1px solid " + theme.palette.divider,
     zIndex: 1,
   },
@@ -66,7 +68,7 @@ const QuillWrapper = styled(Box)(({ theme }) => ({
     minHeight: "calc(100vh - 200px)",
     padding: "10px",
     // backgroundColor: theme.palette.background.paper,
-    color: "white",
+    color: "black",
     fontSize: "1rem",
     zIndex: 1,
   },
@@ -186,7 +188,12 @@ const EditorInnerField = ({
           </section>
 
           <section>
-            <Box display="flex" flexDirection="row" gap={2}>
+            <Box
+              display="flex"
+              flexDirection="row"
+              gap={2}
+              justifyContent="flex-end"
+            >
               <Typography variant="body1">{totalWords} Words</Typography>
               <Typography variant="body1">
                 {editorPlaintext.length} Characters
@@ -223,7 +230,7 @@ const EditorInnerField = ({
       <style jsx global>{`
         .ph {
           font-size: 1.5rem;
-          color: white;
+          color: black;
           padding: 0 !important;
           position: relative;
           top: -2px;

@@ -30,7 +30,8 @@ export default function RootLayout({
   console.log("isDarkMode", isDarkMode);
 
   const [mode, setMode] = useState<"light" | "dark">(
-    isDarkMode ? "dark" : "light"
+    // isDarkMode ? "dark" : "light"
+    "dark"
   );
   const colorMode = useMemo(
     () => ({

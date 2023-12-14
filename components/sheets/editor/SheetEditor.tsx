@@ -30,9 +30,11 @@ const applyChangesToRow = (
 };
 
 const GridWrapper = styled("div")(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
+  // backgroundColor: theme.palette.background.paper,
+  backgroundColor: "rbga(255, 255, 255, 0.3)",
   width: "100%",
-  height: "calc(100vh - 100px)",
+  maxHeight: "calc(100vh - 100px)",
+  overflow: "scroll",
 }));
 
 export default function SheetEditor() {
@@ -105,22 +107,29 @@ export default function SheetEditor() {
   };
 
   return (
-    <GridWrapper>
-      <ReactGrid
-        rows={rows}
-        columns={columns}
-        onCellsChanged={handleChanges}
-        onColumnResized={handleColumnResize}
-        enableRangeSelection
-        enableRowSelection
-        enableColumnSelection
-      />
+    <>
+      <GridWrapper>
+        <ReactGrid
+          rows={rows}
+          columns={columns}
+          onCellsChanged={handleChanges}
+          onColumnResized={handleColumnResize}
+          enableRangeSelection
+          enableRowSelection
+          enableColumnSelection
+        />
+      </GridWrapper>
       <Button variant="contained" color="success" onClick={addColumn}>
         Add Column
       </Button>
       <Button variant="contained" color="success" onClick={addRow}>
         Add Row
       </Button>
-    </GridWrapper>
+      <style jsx global>{`
+        .rg-cell {
+          color: white !important;
+        }
+      `}</style>
+    </>
   );
 }

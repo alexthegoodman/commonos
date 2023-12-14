@@ -6,15 +6,7 @@ import LauncherFooter from "@/components/core/launcher/LauncherFooter";
 import { Box, Typography, styled } from "@mui/material";
 import Link from "next/link";
 
-const LauncherBox = styled(Box)(({ theme }) => ({
-  background: "linear-gradient(355deg, #26e8b6, #ff1de8)",
-  backgroundSize: "400% 400%",
-
-  // -webkit-animation: AnimationName 30s ease infinite;
-  // -moz-animation: AnimationName 30s ease infinite;
-  // -o-animation: AnimationName 30s ease infinite;
-  animation: "AnimationName 9s ease infinite",
-}));
+const LauncherBox = styled(Box)(({ theme }) => ({}));
 
 export default function Launcher() {
   return (
@@ -36,52 +28,6 @@ export default function Launcher() {
         <LauncherFooter />
         {/* <AppGrid /> */}
       </LauncherBox>
-      <style jsx global>{`
-        @-webkit-keyframes AnimationName {
-          0% {
-            background-position: 0% 83%;
-          }
-          50% {
-            background-position: 100% 18%;
-          }
-          100% {
-            background-position: 0% 83%;
-          }
-        }
-        @-moz-keyframes AnimationName {
-          0% {
-            background-position: 0% 83%;
-          }
-          50% {
-            background-position: 100% 18%;
-          }
-          100% {
-            background-position: 0% 83%;
-          }
-        }
-        @-o-keyframes AnimationName {
-          0% {
-            background-position: 0% 83%;
-          }
-          50% {
-            background-position: 100% 18%;
-          }
-          100% {
-            background-position: 0% 83%;
-          }
-        }
-        @keyframes AnimationName {
-          0% {
-            background-position: 0% 83%;
-          }
-          50% {
-            background-position: 100% 18%;
-          }
-          100% {
-            background-position: 0% 83%;
-          }
-        }
-      `}</style>
     </>
   );
 }

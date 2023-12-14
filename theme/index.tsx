@@ -72,6 +72,14 @@ export const getThemeOptions = (mode: string) => {
           disableRipple: true,
         },
       },
+      MuiInputBase: {
+        styleOverrides: {
+          root: {
+            borderRadius: "0px !important",
+            border: "1px solid white !important",
+          },
+        },
+      },
     },
   };
 
