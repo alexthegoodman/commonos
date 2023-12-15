@@ -3,6 +3,7 @@
 import { useFlowQuestionsContext } from "@/context/FlowQuestionsContext";
 import { getFileListData, getQuestionsData } from "@/fetchers/flow";
 import {
+  AutoAwesome,
   Check,
   CheckCircle,
   Close,
@@ -31,6 +32,7 @@ import useSWR from "swr";
 import { v4 as uuidv4 } from "uuid";
 import FormSelect from "../fields/FormSelect";
 import FormInput from "../fields/FormInput";
+import { useRouter } from "next/navigation";
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -343,6 +345,7 @@ export default function FlowEditor({ id, prompt }) {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
+  const router = useRouter();
   const [state, dispatch] = useFlowQuestionsContext();
   const [currentFileId, setCurrentFileId] = useState(null);
   const [gotFiles, setGotFiles] = useState(false);
@@ -744,10 +747,12 @@ export default function FlowEditor({ id, prompt }) {
               </Box>
               <Box display="flex" justifyContent="center">
                 <Button
+                  endIcon={<AutoAwesome />}
                   color="success"
                   variant="contained"
                   onClick={() => {
                     // TODO
+                    router.push(`/flows/${id}/results`);
                   }}
                 >
                   Create Files
