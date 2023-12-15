@@ -1,14 +1,21 @@
 "use client";
 
 import { useFlowResultsContext } from "@/context/FlowResultsContext";
-import { AutoAwesome } from "@mui/icons-material";
+import {
+  AutoAwesome,
+  DocumentScanner,
+  Image,
+  PresentToAllOutlined,
+  List,
+} from "@mui/icons-material";
 import { Box, Button, Chip, Grid, Typography, styled } from "@mui/material";
+import { FileItem, IconBox } from "./FlowEditor";
 
 const CSSGrid = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
   gap: theme.spacing(2),
-  padding: theme.spacing(2),
+  marginTop: theme.spacing(2),
 }));
 
 export default function ResultsViewer() {
@@ -18,29 +25,47 @@ export default function ResultsViewer() {
     <CSSGrid>
       {state.files.map((file) => {
         return (
-          <Box
+          <FileItem
             key={file.id}
             display="flex"
-            flexDirection="column"
-            justifyContent="center"
+            flexDirection="row"
+            justifyContent="space-between"
             alignItems="center"
-            border="1px solid black"
-            borderRadius="5px"
-            padding="10px"
           >
             <Typography variant="body1">{file.name}</Typography>
-            <Typography variant="body2">{file.app}</Typography>
-            <Chip
-              label={file.status}
-              color={
-                file.status === "SUCCESS"
-                  ? "success"
-                  : file.status === "IN_PROGRESS"
-                    ? "warning"
-                    : "error"
-              }
-            />
-          </Box>
+
+            <Box display="flex" flexDirection="row" alignItems="center">
+              <Typography
+                variant="body2"
+                width={175}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                flexDirection="row"
+                textTransform="capitalize"
+                textAlign="center"
+              >
+                <IconBox app={file.app}>
+                  {file.app === "documents" && <DocumentScanner />}
+                  {file.app === "slides" && <PresentToAllOutlined />}
+                  {file.app === "sheets" && <List />}
+                  {file.app === "images" && <Image />}
+                </IconBox>
+
+                {file.app}
+              </Typography>
+              <Chip
+                label={file.status}
+                color={
+                  file.status === "SUCCESS"
+                    ? "success"
+                    : file.status === "IN_PROGRESS"
+                      ? "warning"
+                      : "error"
+                }
+              />
+            </Box>
+          </FileItem>
         );
       })}
     </CSSGrid>

@@ -67,7 +67,7 @@ const PromptTitle = styled(Typography)(({ theme }) => ({
   padding: "4px",
 }));
 
-const IconBox = styled(Box)(({ theme, app }) => {
+export const IconBox = styled(Box)(({ theme, app }) => {
   const backgroundColor = {
     documents: "rgba(155,255,255,0.2)",
     slides: "rgba(255,155,255,0.2)",
@@ -87,7 +87,7 @@ const IconBox = styled(Box)(({ theme, app }) => {
   };
 });
 
-const FileItem = styled(Box)(({ theme }) => ({
+export const FileItem = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: "rgba(255,255,255,0.1)",
   borderRadius: "0px",

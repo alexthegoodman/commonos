@@ -86,7 +86,7 @@ export default function ResultsHeader() {
 
   return (
     <Box display="flex" flexDirection="row" justifyContent="space-between">
-      <Typography variant="h2">Flow Results</Typography>
+      <Typography variant="h3">Flow Results</Typography>
       <Button
         variant="contained"
         color={paused ? "success" : "warning"}
