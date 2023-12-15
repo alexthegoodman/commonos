@@ -94,8 +94,8 @@ const EditorInnerField = ({
   icons["code-block"] = `<i class="ph ph-code-thin"></i>`;
   icons["strike"] = `<i class="ph ph-text-strikethrough-thin"></i>`;
   icons["underline"] = `<i class="ph ph-text-underline-thin"></i>`;
-  icons["indent"]["-1"] = `<i class="ph ph-text-outdent"></i>`;
-  icons["indent"]["+1"] = `<i class="ph ph-text-indent"></i>`;
+  icons["indent"]["-1"] = `<i class="ph ph-text-outdent-thin"></i>`;
+  icons["indent"]["+1"] = `<i class="ph ph-text-indent-thin"></i>`;
 
   const recentTextLength = 35;
 
@@ -179,15 +179,17 @@ const EditorInnerField = ({
     <>
       <section>
         <div>
-          <section>
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <EditorHeader
               documentId={documentId}
               documentData={documentData}
               refetchDocument={refetch}
             />
-          </section>
-
-          <section>
             <Box
               display="flex"
               flexDirection="row"
@@ -199,8 +201,7 @@ const EditorInnerField = ({
                 {editorPlaintext.length} Characters
               </Typography>
             </Box>
-            {/* <CustomToolbar /> */}
-          </section>
+          </Box>
 
           <QuillWrapper>
             <ReactQuill.default

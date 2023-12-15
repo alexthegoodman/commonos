@@ -13,7 +13,7 @@ const TreeWrapper = styled("section")(
   ({ theme }) => `
     height: calc(100vh - 100px);
     background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px;
+    padding: 15px 25px;
   
     .documentTreeInner {
       .treeWrapper {

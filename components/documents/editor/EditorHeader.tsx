@@ -68,6 +68,9 @@ const EditorHeader = ({
           onChange={onTitleChange}
           defaultValue={documentData?.title}
           placeholder="Document Title"
+          style={{
+            width: "400px",
+          }}
         />
         {lastSaved ? (
           <Typography ml={2} variant="body1">

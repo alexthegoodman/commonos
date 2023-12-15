@@ -77,6 +77,8 @@ export const getThemeOptions = (mode: string) => {
           root: {
             borderRadius: "0px !important",
             border: "1px solid white !important",
+            backgroundColor: "#FFF",
+            color: "black",
           },
         },
       },

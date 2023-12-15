@@ -14,7 +14,7 @@ const CmContent = styled("section")(({ theme }) => ({
   width: "calc(100% - 400px)",
   height: "100%",
   // backgroundColor: theme.palette.background.paper,
-  borderRight: `1px solid ${theme.palette.divider}`,
+  // borderRight: `1px solid ${theme.palette.divider}`,
   overflow: "auto",
 }));
 
