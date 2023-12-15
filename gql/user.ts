@@ -7,6 +7,8 @@ export const getCurrentUserQuery = gql`
       role
       subscription
       frequency
+      lastTokenReset
+      periodTokenUsage
       documentTree
       updatedAt
       createdAt
@@ -21,6 +23,8 @@ export const updateUserMutation = gql`
       role
       subscription
       frequency
+      lastTokenReset
+      periodTokenUsage
       documentTree
       updatedAt
       createdAt

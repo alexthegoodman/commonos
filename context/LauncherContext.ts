@@ -34,13 +34,13 @@ export const allTabs = [
   {
     id: "sounds",
     label: "Sounds",
-    href: "/sounds",
+    href: "",
     badge: "Coming Soon",
   },
   {
     id: "videos",
     label: "Videos",
-    href: "/videos",
+    href: "",
     badge: "Coming Soon",
   },
   // {

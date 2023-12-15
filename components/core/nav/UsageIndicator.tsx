@@ -1,0 +1,29 @@
+import { getUserData } from "@/fetchers/user";
+import { Box, CircularProgress, Tooltip } from "@mui/material";
+import { useCookies } from "react-cookie";
+import useSWR from "swr";
+
+export default function UsageIndicator() {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
+
+  let usageMax = 0;
+  if (userData?.subscription === "NONE") {
+    usageMax = 50000;
+  } else if (userData?.subscription === "STANDARD") {
+    usageMax = 2000000;
+  }
+  const usagePerc = Math.floor((userData?.periodTokenUsage / usageMax) * 100);
+
+  return (
+    <Box>
+      <Tooltip title={`${usagePerc}% tokens used`}>
+        <CircularProgress variant="determinate" value={usagePerc} />
+      </Tooltip>
+    </Box>
+  );
+}

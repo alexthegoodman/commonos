@@ -1,12 +1,32 @@
 import { LauncherContext, allTabs } from "@/context/LauncherContext";
-import { Add } from "@mui/icons-material";
-import { Box, Button, Chip, Icon, Typography, styled } from "@mui/material";
+import {
+  Add,
+  Apps,
+  Article,
+  DocumentScanner,
+  GridOn,
+  InsertPhoto,
+  Launch,
+  LibraryMusic,
+  Slideshow,
+  VideoLibrary,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Chip,
+  Grid,
+  Icon,
+  Typography,
+  styled,
+} from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext } from "react";
 
 const Tab = styled(Button)(({ theme }) => ({
   textTransform: "none",
-  fontWeight: theme.typography.fontWeightRegular,
+  fontSize: "0.9rem",
+  fontWeight: "semibold",
   "&:hover": {
     color: theme.palette.primary.main,
     opacity: 1,
@@ -41,6 +61,7 @@ export default function PrimaryTabs() {
         return (
           <Tab
             key={tab.id}
+            disabled={tabData.href === ""}
             onClick={() => router.push(tabData.href)}
             style={
               tabData.href === slug1
@@ -48,13 +69,28 @@ export default function PrimaryTabs() {
                 : { borderBottom: "2px transparent solid" }
             }
           >
+            <Box mr={0.5} position="relative" top="3px">
+              {tabData?.id === "launcher" && <Apps />}
+              {tabData?.id === "documents" && <Article />}
+              {tabData?.id === "slides" && <Slideshow />}
+              {tabData?.id === "sheets" && <GridOn />}
+              {tabData?.id === "drawings" && <InsertPhoto />}
+              {tabData?.id === "sounds" && <LibraryMusic />}
+              {tabData?.id === "videos" && <VideoLibrary />}
+            </Box>
+
             {tabData?.label}
             {tabData?.badge && (
               <Chip
                 variant="outlined"
                 size="small"
                 label={tabData?.badge}
-                style={{ marginLeft: "7px", fontSize: "0.7rem" }}
+                style={{
+                  marginLeft: "7px",
+                  fontSize: "0.7rem",
+                  borderColor: "white",
+                  opacity: 0.4,
+                }}
               />
             )}
           </Tab>
