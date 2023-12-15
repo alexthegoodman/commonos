@@ -2,7 +2,7 @@
 
 import { useFlowResultsContext } from "@/context/FlowResultsContext";
 import { AutoAwesome } from "@mui/icons-material";
-import { Box, Button, Grid, Typography, styled } from "@mui/material";
+import { Box, Button, Chip, Grid, Typography, styled } from "@mui/material";
 
 const CSSGrid = styled(Box)(({ theme }) => ({
   display: "grid",
@@ -30,7 +30,16 @@ export default function ResultsViewer() {
           >
             <Typography variant="body1">{file.name}</Typography>
             <Typography variant="body2">{file.app}</Typography>
-            <Typography variant="body2">{file.status}</Typography>
+            <Chip
+              label={file.status}
+              color={
+                file.status === "SUCCESS"
+                  ? "success"
+                  : file.status === "IN_PROGRESS"
+                    ? "warning"
+                    : "error"
+              }
+            />
           </Box>
         );
       })}

@@ -2,6 +2,7 @@
 
 import InnerResults from "@/components/core/flows/InnerResults";
 import { getFlowData } from "@/fetchers/flow";
+import { Status } from "@/helpers/defs";
 import { AutoAwesome } from "@mui/icons-material";
 import {
   Box,
@@ -13,12 +14,6 @@ import {
 } from "@mui/material";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
-
-enum Status {
-  PENDING = "PENDING",
-  SUCCESS = "SUCCESS",
-  ERROR = "ERROR",
-}
 
 export default function FlowResults(props) {
   const { params } = props;
