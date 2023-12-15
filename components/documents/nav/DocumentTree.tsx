@@ -3,7 +3,7 @@ import useSWR, { mutate } from "swr";
 
 import { getDocumentsData } from "../../../fetchers/document";
 import { useCookies } from "react-cookie";
-import { getUserData, updateUserData } from "../../../fetchers/user";
+import { getUserData, updateDocumentTree } from "../../../fetchers/user";
 import graphClient from "../../../helpers/GQLClient";
 import { newDocumentMutation } from "../../../gql/document";
 import { Box, CircularProgress, Link, Typography, styled } from "@mui/material";
@@ -194,7 +194,7 @@ const DocumentTree = ({ documentId = "" }) => {
     // save new tree
 
     mutate("browseKey", () => getDocumentsData(token));
-    mutate("homeLayout", () => updateUserData(token, newTree), {
+    mutate("homeLayout", () => updateDocumentTree(token, newTree), {
       optimisticData: { ...userData, documentTree: newTree },
     });
   };
@@ -210,7 +210,7 @@ const DocumentTree = ({ documentId = "" }) => {
     });
 
     // save tree
-    mutate("homeLayout", () => updateUserData(token, newTree), {
+    mutate("homeLayout", () => updateDocumentTree(token, newTree), {
       optimisticData: { ...userData, documentTree: newTree },
     });
   };
