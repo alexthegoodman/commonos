@@ -387,23 +387,28 @@ export default function FlowEditor({ id, prompt }) {
   useEffect(() => {
     if (view === "initial") {
       if (!state.initialQuestions || state.initialQuestions.length === 0) {
-        getQuestionsData(token, id, "", prompt, "initial").then((data) => {
-          console.info("got initial questions", data);
+        getQuestionsData(token, id, "", prompt, "initial")
+          .then((data) => {
+            console.info("got initial questions", data);
 
-          dispatch({
-            type: "initialQuestions",
-            payload: data.questions.map((question) => {
-              return {
-                id: uuidv4(),
-                type: "multipleChoice",
-                question: question.question,
-                possibleAnswers: question.answers,
-                chosenAnswers: [],
-                freeformAnswer: "",
-              };
-            }),
+            dispatch({
+              type: "initialQuestions",
+              payload: data.questions.map((question) => {
+                return {
+                  id: uuidv4(),
+                  type: "multipleChoice",
+                  question: question.question,
+                  possibleAnswers: question.answers,
+                  chosenAnswers: [],
+                  freeformAnswer: "",
+                };
+              }),
+            });
+          })
+          .catch((err) => {
+            console.error("caught error", err);
+            // TODO: display error
           });
-        });
       }
     }
     if (view === "files") {
@@ -411,69 +416,79 @@ export default function FlowEditor({ id, prompt }) {
         // fetch file list from api and add to context
         console.info("fetch file list");
 
-        getFileListData(token, id, "documents").then((data1) => {
-          console.info("got file list 1", data1);
+        getFileListData(token, id, "documents")
+          .then((data1) => {
+            console.info("got file list 1", data1);
 
-          let files = data1.documents.map((file) => {
-            return {
-              id: uuidv4(),
-              name: file,
-              app: "documents",
-              questions: [],
-              skipQuestions: true,
-            };
-          });
-
-          if (data1?.documents?.length) {
-            getFileListData(token, id, "additionalFiles").then((data2) => {
-              console.info("got file list 2", data2);
-
-              if (
-                data2?.spreadsheets?.length &&
-                data2?.presentations?.length &&
-                data2?.images?.length
-              ) {
-                files = [
-                  ...files,
-                  ...data2.presentations.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "slides",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                  ...data2.spreadsheets.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "sheets",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                  ...data2.images.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "images",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-
-                console.info("dispatch files", files);
-                dispatch({
-                  type: "files",
-                  payload: files,
-                });
-                setGotFiles(true);
-              }
+            let files = data1.documents.map((file) => {
+              return {
+                id: uuidv4(),
+                name: file,
+                app: "documents",
+                questions: [],
+                skipQuestions: true,
+              };
             });
-          }
-        });
+
+            if (data1?.documents?.length) {
+              getFileListData(token, id, "additionalFiles")
+                .then((data2) => {
+                  console.info("got file list 2", data2);
+
+                  if (
+                    data2?.spreadsheets?.length &&
+                    data2?.presentations?.length &&
+                    data2?.images?.length
+                  ) {
+                    files = [
+                      ...files,
+                      ...data2.presentations.map((file) => {
+                        return {
+                          id: uuidv4(),
+                          name: file,
+                          app: "slides",
+                          questions: [],
+                          skipQuestions: true,
+                        };
+                      }),
+                      ...data2.spreadsheets.map((file) => {
+                        return {
+                          id: uuidv4(),
+                          name: file,
+                          app: "sheets",
+                          questions: [],
+                          skipQuestions: true,
+                        };
+                      }),
+                      ...data2.images.map((file) => {
+                        return {
+                          id: uuidv4(),
+                          name: file,
+                          app: "images",
+                          questions: [],
+                          skipQuestions: true,
+                        };
+                      }),
+                    ];
+
+                    console.info("dispatch files", files);
+                    dispatch({
+                      type: "files",
+                      payload: files,
+                    });
+                    setGotFiles(true);
+                  }
+                })
+                .catch((err) => {
+                  console.error("caught error", err);
+                  // TODO: display error
+                });
+            }
+          })
+          .catch((err) => {
+            console.error("caught error", err);
+            // TODO: display error
+          });
       }
     }
     if (view === "questions") {
@@ -490,32 +505,37 @@ export default function FlowEditor({ id, prompt }) {
           Background Information: "${prompt}"
         `,
           "files"
-        ).then((data) => {
-          console.info("got file questions", data);
+        )
+          .then((data) => {
+            console.info("got file questions", data);
 
-          dispatch({
-            type: "files",
-            payload: state.files.map((file) => {
-              if (file.id === currentFileId) {
-                return {
-                  ...file,
-                  questions: data.questions.map((question) => {
-                    return {
-                      id: uuidv4(),
-                      type: "multipleChoice",
-                      question: question.question,
-                      possibleAnswers: question.answers,
-                      chosenAnswers: [],
-                      freeformAnswer: "",
-                    };
-                  }),
-                };
-              } else {
-                return file;
-              }
-            }),
+            dispatch({
+              type: "files",
+              payload: state.files.map((file) => {
+                if (file.id === currentFileId) {
+                  return {
+                    ...file,
+                    questions: data.questions.map((question) => {
+                      return {
+                        id: uuidv4(),
+                        type: "multipleChoice",
+                        question: question.question,
+                        possibleAnswers: question.answers,
+                        chosenAnswers: [],
+                        freeformAnswer: "",
+                      };
+                    }),
+                  };
+                } else {
+                  return file;
+                }
+              }),
+            });
+          })
+          .catch((err) => {
+            console.error("caught error", err);
+            // TODO: display error
           });
-        });
       }
     }
   }, [view]);

@@ -20,7 +20,7 @@ export default function UsageIndicator() {
   const usagePerc = Math.floor((userData?.periodTokenUsage / usageMax) * 100);
 
   return (
-    <Box position="relative" mr={2}>
+    <Box position="relative" mx={2}>
       <>
         <CircularProgress variant="determinate" value={usagePerc} />
       </>

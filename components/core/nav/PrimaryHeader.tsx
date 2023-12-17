@@ -1,10 +1,14 @@
-import { Box } from "@mui/material";
+"use client";
+
+import { Box, Button } from "@mui/material";
 import ProfileMenu from "./ProfileMenu";
 import NotificationList from "./NotificationList";
 import SystemWeather from "./SystemWeather";
 import SystemClock from "./SystemClock";
 import ColorModeSwitch from "./ColorModeSwitch";
 import UsageIndicator from "./UsageIndicator";
+import { Star, Upgrade } from "@mui/icons-material";
+import UpgradeButton from "./UpgradeButton";
 
 export default function PrimaryHeader() {
   return (
@@ -14,6 +18,7 @@ export default function PrimaryHeader() {
         <NotificationList />
       </Box>
       <Box display="flex" flexDirection="row">
+        <UpgradeButton />
         <ColorModeSwitch />
         <UsageIndicator />
         <SystemWeather />
