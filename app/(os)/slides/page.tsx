@@ -2,6 +2,7 @@
 
 import { getSlideData, getSlidesData, newSlide } from "@/fetchers/slide";
 import { getUserData, updatePresentationFiles } from "@/fetchers/user";
+import Directories from "@/helpers/Directories";
 import { FileCopy, Folder } from "@mui/icons-material";
 import { Button, CircularProgress, Grid, Typography } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
@@ -13,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 const { DateTime } = require("luxon");
 
 export default function Slides(props) {
+  const directories = new Directories();
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
@@ -33,44 +35,13 @@ export default function Slides(props) {
     revalidateOnMount: true,
   });
 
-  const recursiveSetFolderFiles = (folderId, files, newFolderFile) => {
-    if (files) {
-      files.forEach((file) => {
-        if (file.type === "folder") {
-          if (file.id === folderId) {
-            file.files.push(newFolderFile);
-          }
-        }
-        console.info("file", folderId, file);
-        recursiveSetFolderFiles(folderId, file.files, newFolderFile);
-      });
-    }
-  };
-
-  const recursiveGetFolderFiles = (folderId, files) => {
-    if (files) {
-      for (const file of files) {
-        if (file.type === "folder") {
-          if (file.id === folderId) {
-            console.info("match", file);
-            return file.files;
-          }
-          const nestedFiles = recursiveGetFolderFiles(folderId, file.files);
-          if (nestedFiles) {
-            return nestedFiles;
-          }
-        }
-      }
-    }
-  };
-
   const addPresentation = async () => {
     const { id } = await newSlide(token);
 
     if (openFolder) {
       const newFolderFile = { id, type: "file" };
       const newFiles = userData?.presentationFiles;
-      recursiveSetFolderFiles(openFolder, newFiles, newFolderFile);
+      directories.recursiveSetFolderFiles(openFolder, newFiles, newFolderFile);
       mutate("homeLayout", () => updatePresentationFiles(token, newFiles), {
         optimisticData: { ...userData, presentationFiles: newFiles },
       });
@@ -100,7 +71,7 @@ export default function Slides(props) {
 
     if (openFolder) {
       const newFiles = userData?.presentationFiles;
-      recursiveSetFolderFiles(openFolder, newFiles, newFolder);
+      directories.recursiveSetFolderFiles(openFolder, newFiles, newFolder);
       mutate("homeLayout", () => updatePresentationFiles(token, newFiles), {
         optimisticData: { ...userData, presentationFiles: newFiles },
       });
@@ -117,7 +88,10 @@ export default function Slides(props) {
   };
 
   const folderFiles = openFolder
-    ? recursiveGetFolderFiles(openFolder, userData?.presentationFiles)
+    ? directories.recursiveGetFolderFiles(
+        openFolder,
+        userData?.presentationFiles
+      )
     : userData?.presentationFiles;
 
   console.info(
@@ -138,10 +112,10 @@ export default function Slides(props) {
           const fileData = slidesData?.find((file) => file.id === slide.id);
           const creationDate = fileData?.createdAt
             ? DateTime.fromISO(fileData?.createdAt).toLocaleString(
-                DateTime.DATE_FULL
+                DateTime.DATE_MED
               )
             : DateTime.fromISO(slide?.folderCreatedAt).toLocaleString(
-                DateTime.DATE_FULL
+                DateTime.DATE_MED
               );
 
           return (
