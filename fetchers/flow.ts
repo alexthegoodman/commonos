@@ -99,6 +99,7 @@ var callingQuestions = false;
 export const getQuestionsData = async (
   token: string,
   flowId: string,
+  fileApp: string,
   fileTitle: string,
   getThis: string
 ) => {
@@ -116,6 +117,7 @@ export const getQuestionsData = async (
     getQuestionsQuery,
     {
       flowId,
+      fileApp,
       fileTitle,
       getThis,
     }

@@ -387,7 +387,7 @@ export default function FlowEditor({ id, prompt }) {
   useEffect(() => {
     if (view === "initial") {
       if (!state.initialQuestions || state.initialQuestions.length === 0) {
-        getQuestionsData(token, id, prompt, "initial").then((data) => {
+        getQuestionsData(token, id, "", prompt, "initial").then((data) => {
           console.info("got initial questions", data);
 
           dispatch({
@@ -484,6 +484,7 @@ export default function FlowEditor({ id, prompt }) {
         getQuestionsData(
           token,
           id,
+          currentFileData.app,
           `
           File Title: "${currentFileData.name}"
           Background Information: "${prompt}"
