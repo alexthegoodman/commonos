@@ -172,8 +172,21 @@ const EditorInnerField = ({
   }, [editorRef.current]);
 
   React.useEffect(() => {
-    console.info("documentData?.content", documentData?.content);
-  }, [documentData?.content]);
+    console.info(
+      "documentData?.plaintext",
+      documentData?.content,
+      documentData?.plaintext
+    );
+    if (typeof editorRef.current !== "undefined") {
+      if (documentData?.plaintext && !documentData?.content) {
+        // dispatch({ type: "editorPlaintext", payload: documentData?.plaintext });
+        const elem = editorRef.current as any;
+        const quill = elem.getEditor();
+
+        quill.setText(documentData?.plaintext);
+      }
+    }
+  }, [documentData?.plaintext]);
 
   return (
     <>

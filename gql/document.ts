@@ -43,6 +43,7 @@ export const documentQuery = gql`
       id
       title
       content
+      plaintext
 
       creator {
         email
