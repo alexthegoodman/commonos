@@ -1,4 +1,5 @@
 import {
+  createFileMutation,
   flowQuery,
   getFileListQuery,
   getQuestionsQuery,
@@ -126,4 +127,26 @@ export const getQuestionsData = async (
   callingQuestions = false;
 
   return getQuestions;
+};
+
+export const createFile = async (
+  token: string,
+  prompt: string,
+  flowId: string,
+  fileId: string
+) => {
+  graphClient.setupClient(token);
+
+  const variables: any = {
+    prompt,
+    flowId,
+    fileId,
+  };
+
+  const { createFile } = (await graphClient.client?.request(
+    createFileMutation,
+    variables
+  )) as any;
+
+  return createFile;
 };

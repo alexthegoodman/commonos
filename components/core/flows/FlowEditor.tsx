@@ -435,11 +435,7 @@ export default function FlowEditor({ id, prompt }) {
                 .then((data2) => {
                   console.info("got file list 2", data2);
 
-                  if (
-                    data2?.spreadsheets?.length &&
-                    data2?.presentations?.length &&
-                    data2?.images?.length
-                  ) {
+                  if (data2?.presentations?.length) {
                     files = [
                       ...files,
                       ...data2.presentations.map((file) => {
@@ -451,6 +447,12 @@ export default function FlowEditor({ id, prompt }) {
                           skipQuestions: true,
                         };
                       }),
+                    ];
+                  }
+
+                  if (data2?.spreadsheets?.length) {
+                    files = [
+                      ...files,
                       ...data2.spreadsheets.map((file) => {
                         return {
                           id: uuidv4(),
@@ -460,6 +462,12 @@ export default function FlowEditor({ id, prompt }) {
                           skipQuestions: true,
                         };
                       }),
+                    ];
+                  }
+
+                  if (data2?.images?.length) {
+                    files = [
+                      ...files,
                       ...data2.images.map((file) => {
                         return {
                           id: uuidv4(),
@@ -470,7 +478,14 @@ export default function FlowEditor({ id, prompt }) {
                         };
                       }),
                     ];
+                  }
 
+                  if (
+                    data1.documents.length ||
+                    data2?.spreadsheets?.length ||
+                    data2?.presentations?.length ||
+                    data2?.images?.length
+                  ) {
                     console.info("dispatch files", files);
                     dispatch({
                       type: "files",

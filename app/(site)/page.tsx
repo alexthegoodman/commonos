@@ -118,7 +118,7 @@ export default function Home() {
                   },
                 }}
               >
-                Creating at the speed of thought
+                Do more. Save loads of time.
               </Typography>
 
               <Box
@@ -221,7 +221,22 @@ export default function Home() {
                 variant="overline"
                 sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
               >
-                The Challenge
+                The Challenges
+              </Typography>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontSize: {
+                    xs: "1.2rem",
+                    md: "1.4rem",
+                  },
+                  lineHeight: "1.7",
+                  mb: 1,
+                }}
+              >
+                1. To build an OS that offered to do work for you, it had to
+                have a suite of uniform, integrated apps. It couldn't simply
+                integrate with existing tools.
               </Typography>
               <Typography
                 variant="h3"
@@ -233,10 +248,9 @@ export default function Home() {
                   lineHeight: "1.7",
                 }}
               >
-                To build an OS that offered to do work for you, we had to build
-                a suite of uniform, integrated apps. We can't simply integrate
-                with existing tools because they offer limited customization and
-                are not designed to be automated.
+                2. CommonOS is centered around freeform prompts and answering
+                questions, which is a new way of working. This means that it's
+                not always immediately obvious how to use it.
               </Typography>
               <Typography
                 variant="overline"

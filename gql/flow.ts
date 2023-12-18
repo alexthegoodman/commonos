@@ -77,3 +77,9 @@ export const getQuestionsQuery = gql`
     )
   }
 `;
+
+export const createFileMutation = gql`
+  mutation createFile($prompt: String!, $flowId: String!, $fileId: String!) {
+    createFile(prompt: $prompt, flowId: $flowId, fileId: $fileId)
+  }
+`;

@@ -17,7 +17,7 @@ export default function InnerResults({ flowId, prompt, context }) {
       value={useReducer(FlowResultsContextReducer, context)}
     >
       <ResultsAutosaver id={flowId} />
-      <ResultsHeader />
+      <ResultsHeader id={flowId} prompt={prompt} />
       <Box>
         <ResultsViewer />
       </Box>
