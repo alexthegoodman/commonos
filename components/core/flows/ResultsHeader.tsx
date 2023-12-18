@@ -16,7 +16,12 @@ export default function ResultsHeader({ id, prompt }) {
 
   const [files, setFiles] = useState(state.files);
   const [paused, setPaused] = useState(true);
-  const [currentFile, setCurrentFile] = useState(0);
+  // set current file to first pending file
+  const initialFile = files
+    ? files?.findIndex((file) => file.status === Status.PENDING)
+    : 0;
+  // console.info("initialFile", initialFile);
+  const [currentFile, setCurrentFile] = useState(initialFile);
 
   const handleAPI = async (currentFile, currentFileData) => {
     setFiles((files) => {
@@ -51,68 +56,39 @@ export default function ResultsHeader({ id, prompt }) {
     });
   };
 
-  // var fileTimeout;
-  // const handleCreateFile = () => {
-  //   clearTimeout(fileTimeout);
-  //   fileTimeout = setTimeout(() => {
-  //     setFiles((files) => {
-  //       setPaused((paused) => {
-  //         setCurrentFile((currentFile) => {
-  //           if (currentFile < files.length) {
-  //             const currentFileData = files[currentFile];
-  //             if (
-  //               currentFileData.status === Status.IN_PROGRESS ||
-  //               currentFileData.status === Status.SUCCESS
-  //             ) {
-  //               // skip file
-  //               console.log("Skipping file...");
-  //               return currentFile + 1;
-  //             } else {
-  //               // handle file
-  //               if (!paused && currentFileData.status === Status.PENDING) {
-  //                 console.log("Creating file...");
-
-  //                 handleAPI(currentFile, currentFileData);
-
-  //                 return currentFile + 1;
-  //               }
-  //             }
-  //           }
-
-  //           return currentFile;
-  //         });
-
-  //         return paused;
-  //       });
-
-  //       return files;
-  //     });
-  //   }, 5000);
-  // };
-
   var fileTimeout;
   const handleCreateFile = () => {
     clearTimeout(fileTimeout);
     fileTimeout = setTimeout(async () => {
-      if (currentFile < files.length) {
+      if (currentFile > -1 && currentFile < files.length) {
         const currentFileData = files[currentFile];
         if (
           currentFileData.status === Status.IN_PROGRESS ||
           currentFileData.status === Status.SUCCESS
         ) {
           // skip file
-          console.log("Skipping file...");
+          console.log("Skipping file...", currentFile);
           setCurrentFile(currentFile + 1);
+
+          if (currentFile + 1 > files.length) {
+            setPaused(true);
+          }
         } else {
           // handle file
           if (!paused && currentFileData.status === Status.PENDING) {
-            console.log("Creating file...");
+            console.log("Creating file...", currentFile);
 
             await handleAPI(currentFile, currentFileData);
 
             setCurrentFile(currentFile + 1);
+
+            if (currentFile + 1 > files.length) {
+              setPaused(true);
+            }
           }
         }
+      } else if (currentFile === -1) {
+        setPaused(true);
       }
     }, 5000);
   };
