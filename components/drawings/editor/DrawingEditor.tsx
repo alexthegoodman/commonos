@@ -20,8 +20,15 @@ import FormUpload from "@/components/core/fields/FormUpload";
 import { FormProvider, useForm } from "react-hook-form";
 import { simpleUpload } from "@/fetchers/drawing";
 import { useCookies } from "react-cookie";
+import useImage from "use-image";
 
 var lastLine = null;
+
+const KonvaUrlImage = ({ imageUrl, ...props }) => {
+  const [image] = useImage(imageUrl);
+
+  return <KonvaImage image={image} {...props} />;
+};
 
 export default function DrawingEditor() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
@@ -122,27 +129,41 @@ export default function DrawingEditor() {
       base64
     );
 
-    var imageObj = new Image();
-    imageObj.onload = function () {
-      dispatch({
-        type: "images",
-        payload: [
-          ...state.images,
-          {
-            id: uuidv4(),
-            imageData: imageObj,
-            x: 0,
-            y: 0,
-            width: stageWidth,
-            height: stageHeight,
-          },
-        ],
-      });
+    // var imageObj = new Image();
+    // imageObj.onload = function () {
+    //   dispatch({
+    //     type: "images",
+    //     payload: [
+    //       ...state.images,
+    //       {
+    //         id: uuidv4(),
+    //         imageData: imageObj,
+    //         x: 0,
+    //         y: 0,
+    //         width: stageWidth,
+    //         height: stageHeight,
+    //       },
+    //     ],
+    //   });
 
-      setIsUploading(false);
-      console.info("onFinishUpload blob", blob);
-    };
-    imageObj.src = blob.url;
+    //   setIsUploading(false);
+    //   console.info("onFinishUpload blob", blob);
+    // };
+    // imageObj.src = blob.url;
+    dispatch({
+      type: "images",
+      payload: [
+        ...state.images,
+        {
+          id: uuidv4(),
+          imageUrl: blob.url,
+          x: 0,
+          y: 0,
+          width: stageWidth,
+          height: stageHeight,
+        },
+      ],
+    });
   };
 
   return (
@@ -187,9 +208,9 @@ export default function DrawingEditor() {
         </Layer>
         <Layer>
           {state.images?.map((image) => (
-            <KonvaImage
+            <KonvaUrlImage
               key={image.id}
-              image={image.imageData}
+              imageUrl={image.imageUrl}
               x={image.x}
               y={image.y}
               width={image.width}
