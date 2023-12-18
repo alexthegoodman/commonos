@@ -70,7 +70,7 @@ export default function ResultsHeader({ id, prompt }) {
           console.log("Skipping file...", currentFile);
           setCurrentFile(currentFile + 1);
 
-          if (currentFile + 1 > files.length) {
+          if (currentFile + 1 >= files.length) {
             setPaused(true);
           }
         } else {
@@ -82,7 +82,7 @@ export default function ResultsHeader({ id, prompt }) {
 
             setCurrentFile(currentFile + 1);
 
-            if (currentFile + 1 > files.length) {
+            if (currentFile + 1 >= files.length) {
               setPaused(true);
             }
           }
