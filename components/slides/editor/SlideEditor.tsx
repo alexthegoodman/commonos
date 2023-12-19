@@ -60,6 +60,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                     content: "New Text",
                     x: 50,
                     y: 50,
+                    width: 200,
                     fontSize: 24,
                     fontStyle: "normal",
                     fontFamily: "Arial",
@@ -236,6 +237,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                 lineHeight={text?.lineHeight ?? 1}
                 x={text.x}
                 y={text.y}
+                width={text?.width ?? 200}
                 draggable
                 onDragEnd={(e) => {
                   dispatch({
