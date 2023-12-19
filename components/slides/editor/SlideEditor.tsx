@@ -7,7 +7,7 @@ import { Stage, Layer, Star, Text, Rect, Transformer } from "react-konva";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import { Box, Button, MenuItem, Select, styled } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import { Check } from "@mui/icons-material";
+import { Check, Delete } from "@mui/icons-material";
 import { MuiColorInput } from "mui-color-input";
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
@@ -31,7 +31,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
         (_, i) => textNodeTransformerRefs.current[i] ?? createRef()
       );
     }
-  }, [slide]);
+  }, [slide?.texts.length]);
 
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   const [selectedItemId, setSelectedItemId] = useState(null);
@@ -47,14 +47,16 @@ export default function SlideEditor({ slide, state, dispatch }) {
       const activeIndex = slide.texts.findIndex(
         (text) => text.id === activeItemId
       );
-      textNodeTransformerRefs.current[activeIndex].current.nodes([
-        textNodeRefs.current[activeIndex].current,
-      ]);
-      textNodeTransformerRefs.current[activeIndex].current
-        .getLayer()
-        .batchDraw();
+      if (textNodeTransformerRefs.current[activeIndex]) {
+        textNodeTransformerRefs.current[activeIndex].current.nodes([
+          textNodeRefs.current[activeIndex].current,
+        ]);
+        textNodeTransformerRefs.current[activeIndex].current
+          .getLayer()
+          .batchDraw();
+      }
     }
-  }, [activeItemId]);
+  }, [activeItemId, textNodeTransformerRefs.current]);
 
   const stageWidth = 1000;
   const stageHeight = 650;
@@ -122,6 +124,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
               // update preview
               const textarea = document.getElementById("slidesTextBox");
               textarea.style.fontSize = e.target.value + "px";
+              textarea.style.lineHeight = 1.35;
               // update actual
               dispatch({
                 type: "slides",
@@ -130,7 +133,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                     slide.texts = slide.texts.map((t) => {
                       if (t.id === selectedItemId) {
                         t.fontSize = e.target.value;
-                        t.lineHeight = e.target.value * 1.2; // TODO: set server side
+                        t.lineHeight = 1.35; // TODO: set server side
                       }
                       return t;
                     });
@@ -145,6 +148,8 @@ export default function SlideEditor({ slide, state, dispatch }) {
             <MenuItem value={18}>18</MenuItem>
             <MenuItem value={24}>24</MenuItem>
             <MenuItem value={32}>32</MenuItem>
+            <MenuItem value={48}>48</MenuItem>
+            <MenuItem value={64}>64</MenuItem>
           </Select>
 
           <Select
@@ -284,10 +289,11 @@ export default function SlideEditor({ slide, state, dispatch }) {
                   )[0]?.fill
                 : "black"
             }
-            onChange={(e) => {
+            onChange={(color) => {
+              console.info("color onChange", color);
               // update preview
               const textarea = document.getElementById("slidesTextBox");
-              textarea.style.color = e.target.value;
+              textarea.style.color = color;
               // update actual
               dispatch({
                 type: "slides",
@@ -295,7 +301,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                   if (slide.id === state.currentSlideId) {
                     slide.texts = slide.texts.map((t) => {
                       if (t.id === selectedItemId) {
-                        t.fill = e.target.value;
+                        t.fill = color;
                       }
                       return t;
                     });
@@ -339,6 +345,37 @@ export default function SlideEditor({ slide, state, dispatch }) {
             }}
           >
             <Check />
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={() => {
+              const text = slide.texts.filter(
+                (text) => text.id === selectedItemId
+              )[0];
+              const textarea = document.getElementById("slidesTextBox");
+              textarea.parentNode.removeChild(textarea);
+              textNodeRefs.current[selectedItemIndex].current.show();
+
+              dispatch({
+                type: "slides",
+                payload: state.slides.map((slide) => {
+                  if (slide.id === state.currentSlideId) {
+                    slide.texts = slide.texts.filter(
+                      (text) => text.id !== selectedItemId
+                    );
+                  }
+                  return slide;
+                }),
+              });
+
+              setSelectedItemId(null);
+              setSelectedItemType(null);
+              setSelectedItemX(null);
+              setSelectedItemY(null);
+            }}
+          >
+            <Delete />
           </Button>
         </ToolbarWrapper>
       </Box>
@@ -613,6 +650,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                 {activeItemId === text.id && (
                   <Transformer
                     ref={textNodeTransformerRefs.current[i]}
+                    rotateEnabled={false}
                     flipEnabled={false}
                     boundBoxFunc={(oldBox, newBox) => {
                       // limit resize
