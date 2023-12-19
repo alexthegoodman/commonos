@@ -2,8 +2,25 @@
 import "client-only";
 
 import { useSlidesContext } from "@/context/SlidesContext";
-import { createRef, forwardRef, useEffect, useRef, useState } from "react";
-import { Stage, Layer, Star, Text, Rect, Transformer } from "react-konva";
+import {
+  Fragment,
+  createRef,
+  forwardRef,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  Stage,
+  Layer,
+  Star,
+  Text,
+  Rect,
+  Transformer,
+  RegularPolygon,
+  Circle,
+  Ellipse,
+} from "react-konva";
 import { useWindowSize } from "@/hooks/useWindowSize";
 import {
   Box,
@@ -24,11 +41,25 @@ const ToolbarWrapper = styled(Box)(({ theme }) => ({
 export default function SlideEditor({ slide, state, dispatch }) {
   const stageRef = useRef(null);
   const textToolbarRef = useRef(null);
+
   const textNodeRefs = useRef([]);
   const textNodeTransformerRefs = useRef([]);
 
+  const shapeNodeRefs = useRef([]);
+  const shapeNodeTransformerRefs = useRef([]);
+
   console.info("textNodeRefs", textNodeRefs);
 
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedItemType, setSelectedItemType] = useState(null);
+  const [selectedItemX, setSelectedItemX] = useState(null);
+  const [selectedItemY, setSelectedItemY] = useState(null);
+
+  const [activeItemType, setActiveItemType] = useState(null);
+  const [activeItemId, setActiveItemId] = useState(null);
+
+  // set up transformers useEffects for resizing nodes
   useEffect(() => {
     if (slide?.texts) {
       textNodeRefs.current = slide.texts.map(
@@ -40,16 +71,19 @@ export default function SlideEditor({ slide, state, dispatch }) {
     }
   }, [slide?.texts.length]);
 
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-  const [selectedItemId, setSelectedItemId] = useState(null);
-  const [selectedItemType, setSelectedItemType] = useState(null);
-  const [selectedItemX, setSelectedItemX] = useState(null);
-  const [selectedItemY, setSelectedItemY] = useState(null);
-
-  const [activeItemId, setActiveItemId] = useState(null);
+  useEffect(() => {
+    if (slide?.shapes) {
+      shapeNodeRefs.current = slide.shapes.map(
+        (_, i) => shapeNodeRefs.current[i] ?? createRef()
+      );
+      shapeNodeTransformerRefs.current = slide.shapes.map(
+        (_, i) => shapeNodeTransformerRefs.current[i] ?? createRef()
+      );
+    }
+  }, [slide?.shapes.length]);
 
   useEffect(() => {
-    if (activeItemId) {
+    if (activeItemId && activeItemType === "texts") {
       // we need to attach transformer manually
       const activeIndex = slide.texts.findIndex(
         (text) => text.id === activeItemId
@@ -64,6 +98,23 @@ export default function SlideEditor({ slide, state, dispatch }) {
       }
     }
   }, [activeItemId, textNodeTransformerRefs.current]);
+
+  useEffect(() => {
+    if (activeItemId && activeItemType === "shapes") {
+      // we need to attach transformer manually
+      const activeIndex = slide.shapes.findIndex(
+        (shape) => shape.id === activeItemId
+      );
+      if (shapeNodeTransformerRefs.current[activeIndex]) {
+        shapeNodeTransformerRefs.current[activeIndex].current.nodes([
+          shapeNodeRefs.current[activeIndex].current,
+        ]);
+        shapeNodeTransformerRefs.current[activeIndex].current
+          .getLayer()
+          .batchDraw();
+      }
+    }
+  }, [activeItemId, shapeNodeTransformerRefs.current]);
 
   const stageWidth = 1000;
   const stageHeight = 650;
@@ -100,6 +151,8 @@ export default function SlideEditor({ slide, state, dispatch }) {
       </Box>
       <Box display="flex" flexDirection="row">
         <Button
+          color="success"
+          variant="contained"
           onClick={() => {
             dispatch({
               type: "slides",
@@ -127,6 +180,48 @@ export default function SlideEditor({ slide, state, dispatch }) {
         >
           Add Text
         </Button>
+        <Select
+          // label="Add Shape"
+          placeholder="Add Shape"
+          style={{
+            height: "40px",
+          }}
+          value={
+            state.slides.filter((slide) => slide.id === state.currentSlideId)[0]
+              ?.shapes?.[0]?.kind ?? ""
+          }
+          onChange={(e) => {
+            const value = e.target.value;
+            console.info("add shape", value);
+            dispatch({
+              type: "slides",
+              payload: state.slides.map((slide) => {
+                if (slide.id === state.currentSlideId) {
+                  slide.shapes.push({
+                    id: uuidv4(),
+                    x: 50,
+                    y: 50,
+                    width: 100,
+                    height: 100,
+                    sides: value === "triangle" ? 3 : 4,
+                    radius: 100,
+                    fill: "black",
+                    kind: value,
+                  });
+                }
+                return slide;
+              }),
+            });
+          }}
+        >
+          <MenuItem value={""}>Select Shape</MenuItem>
+          <MenuItem value={"star"}>Star</MenuItem>
+          <MenuItem value={"circle"}>Circle</MenuItem>
+          <MenuItem value={"ellipse"}>Ellipse</MenuItem>
+          <MenuItem value={"rectangle"}>Rectangle</MenuItem>
+          <MenuItem value={"triangle"}>Triangle</MenuItem>
+          <MenuItem value={"polygon"}>Polygon</MenuItem>
+        </Select>
       </Box>
       <Box>
         <ToolbarWrapper
@@ -645,6 +740,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                     // });
                   }}
                   onClick={(e) => {
+                    setActiveItemType("texts");
                     setActiveItemId(text.id);
                   }}
                   onTransformEnd={(e) => {
@@ -681,9 +777,122 @@ export default function SlideEditor({ slide, state, dispatch }) {
                     });
                   }}
                 />
-                {activeItemId === text.id && (
+                {activeItemType === "texts" && activeItemId === text.id && (
                   <Transformer
                     ref={textNodeTransformerRefs.current[i]}
+                    rotateEnabled={false}
+                    flipEnabled={false}
+                    boundBoxFunc={(oldBox, newBox) => {
+                      // limit resize
+                      if (
+                        Math.abs(newBox.width) < 5 ||
+                        Math.abs(newBox.height) < 5
+                      ) {
+                        return oldBox;
+                      }
+                      return newBox;
+                    }}
+                  />
+                )}
+              </>
+            );
+          })}
+          {slide?.shapes?.map((shape, i) => {
+            let ShapeComponent = Rect;
+            switch (shape.kind) {
+              case "star":
+                ShapeComponent = Star;
+                break;
+              case "circle":
+                ShapeComponent = Circle;
+                break;
+              case "ellipse":
+                ShapeComponent = Ellipse;
+                break;
+              case "rectangle":
+                ShapeComponent = Rect;
+                break;
+              case "triangle":
+                ShapeComponent = RegularPolygon;
+                break;
+              case "polygon":
+                ShapeComponent = RegularPolygon;
+                break;
+              default:
+                ShapeComponent = Rect;
+                break;
+            }
+
+            return (
+              <>
+                <ShapeComponent
+                  key={shape.id}
+                  ref={shapeNodeRefs.current[i]}
+                  x={shape.x ?? 0}
+                  y={shape.y ?? 0}
+                  width={shape.width ?? 100}
+                  height={shape.height ?? 100}
+                  sides={shape.sides ?? 4}
+                  radius={shape.radius ?? 100}
+                  fill={shape.fill ?? "black"}
+                  draggable
+                  onDragEnd={(e) => {
+                    dispatch({
+                      type: "slides",
+                      payload: state.slides.map((slide) => {
+                        if (slide.id === state.currentSlideId) {
+                          slide.shapes = slide.shapes.map((s) => {
+                            if (s.id === shape.id) {
+                              s.x = e.target.x();
+                              s.y = e.target.y();
+                            }
+                            return s;
+                          });
+                        }
+                        return slide;
+                      }),
+                    });
+                  }}
+                  onClick={(e) => {
+                    setActiveItemType("shapes");
+                    setActiveItemId(shape.id);
+                  }}
+                  onTransformEnd={(e) => {
+                    // transformer is changing scale of the node
+                    // and NOT its width or height
+                    // but in the store we have only width and height
+                    // to match the data better we will reset scale on transform end
+                    const node = e.target;
+                    const scaleX = node.scaleX();
+                    const scaleY = node.scaleY();
+
+                    // we will reset it back
+                    node.scaleX(1);
+                    node.scaleY(1);
+
+                    dispatch({
+                      type: "slides",
+                      payload: state.slides.map((slide) => {
+                        if (slide.id === state.currentSlideId) {
+                          slide.shapes = slide.shapes.map((s) => {
+                            if (s.id === shape.id) {
+                              s.x = node.x();
+                              s.y = node.y();
+                              s.width = Math.max(5, node.width() * scaleX);
+                              s.height = Math.max(node.height() * scaleY);
+                              s.radius = Math.max(s.radius * scaleX);
+                            }
+                            return s;
+                          });
+                        }
+                        return slide;
+                      }),
+                    });
+                  }}
+                />
+                {activeItemType === "shapes" && activeItemId === shape.id && (
+                  <Transformer
+                    ref={shapeNodeTransformerRefs.current[i]}
                     rotateEnabled={false}
                     flipEnabled={false}
                     boundBoxFunc={(oldBox, newBox) => {
