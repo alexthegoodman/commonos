@@ -18,7 +18,7 @@ export default function SystemClock() {
 
     updateTime();
 
-    const updater = setInterval(updateTime, 1000);
+    const updater = setInterval(updateTime, 10000);
 
     return () => {
       clearInterval(updater);
