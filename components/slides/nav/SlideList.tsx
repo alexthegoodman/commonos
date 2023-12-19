@@ -1,5 +1,5 @@
 import { useSlidesContext } from "@/context/SlidesContext";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 
 export default function SlideList() {
@@ -14,6 +14,7 @@ export default function SlideList() {
 
   return (
     <Box display="flex" flexDirection="column">
+      <Typography variant="overline">Your Slides</Typography>
       {state.slides.map((slide) => {
         return (
           <Button key={slide.id} onClick={() => selectSlide(slide.id)}>

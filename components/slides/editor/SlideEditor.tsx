@@ -5,7 +5,14 @@ import { useSlidesContext } from "@/context/SlidesContext";
 import { createRef, forwardRef, useEffect, useRef, useState } from "react";
 import { Stage, Layer, Star, Text, Rect, Transformer } from "react-konva";
 import { useWindowSize } from "@/hooks/useWindowSize";
-import { Box, Button, MenuItem, Select, styled } from "@mui/material";
+import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  TextField,
+  styled,
+} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { Check, Delete } from "@mui/icons-material";
 import { MuiColorInput } from "mui-color-input";
@@ -71,7 +78,26 @@ export default function SlideEditor({ slide, state, dispatch }) {
 
   return (
     <>
-      {slide.title}
+      <Box>
+        <TextField
+          // label="Slide Title"
+          value={slide?.title}
+          onChange={(e) => {
+            dispatch({
+              type: "slides",
+              payload: state.slides.map((s) => {
+                if (s.id === state.currentSlideId) {
+                  s.title = e.target.value;
+                }
+                return s;
+              }),
+            });
+          }}
+          style={{
+            width: "400px",
+          }}
+        />
+      </Box>
       <Box display="flex" flexDirection="row">
         <Button
           onClick={() => {
@@ -111,6 +137,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
             left: selectedItemX,
             zIndex: 10,
             display: !selectedItemY && !selectedItemX ? "none" : "block",
+            boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.15)",
           }}
         >
           <Select
@@ -282,6 +309,13 @@ export default function SlideEditor({ slide, state, dispatch }) {
           </Select>
 
           <MuiColorInput
+            sx={{
+              height: "40px",
+              "& .MuiInputBase-root": {
+                height: "40px",
+                width: "200px",
+              },
+            }}
             value={
               slide && slide[selectedItemType]
                 ? slide[selectedItemType].filter(
