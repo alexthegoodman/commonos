@@ -8,6 +8,7 @@ import { useWindowSize } from "@/hooks/useWindowSize";
 import { Box, Button, MenuItem, Select, styled } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { Check } from "@mui/icons-material";
+import { MuiColorInput } from "mui-color-input";
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -129,6 +130,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                     slide.texts = slide.texts.map((t) => {
                       if (t.id === selectedItemId) {
                         t.fontSize = e.target.value;
+                        t.lineHeight = e.target.value * 1.2; // TODO: set server side
                       }
                       return t;
                     });
@@ -143,6 +145,45 @@ export default function SlideEditor({ slide, state, dispatch }) {
             <MenuItem value={18}>18</MenuItem>
             <MenuItem value={24}>24</MenuItem>
             <MenuItem value={32}>32</MenuItem>
+          </Select>
+
+          <Select
+            label="Font Style"
+            style={{
+              height: "40px",
+            }}
+            disabled={disabled}
+            value={
+              slide && slide[selectedItemType]
+                ? slide[selectedItemType].filter(
+                    (text) => text.id === selectedItemId
+                  )[0]?.fontStyle
+                : "normal"
+            }
+            onChange={(e) => {
+              // update preview
+              const textarea = document.getElementById("slidesTextBox");
+              textarea.style.fontStyle = e.target.value;
+              // update actual
+              dispatch({
+                type: "slides",
+                payload: state.slides.map((slide) => {
+                  if (slide.id === state.currentSlideId) {
+                    slide.texts = slide.texts.map((t) => {
+                      if (t.id === selectedItemId) {
+                        t.fontStyle = e.target.value;
+                      }
+                      return t;
+                    });
+                  }
+                  return slide;
+                }),
+              });
+            }}
+          >
+            <MenuItem value="normal">Normal</MenuItem>
+            <MenuItem value="italic">Italic</MenuItem>
+            <MenuItem value="bold">Bold</MenuItem>
           </Select>
 
           <Select
@@ -195,6 +236,75 @@ export default function SlideEditor({ slide, state, dispatch }) {
             <MenuItem value="Arial Black">Arial Black</MenuItem>
             <MenuItem value="Impact">Impact</MenuItem>
           </Select>
+
+          <Select
+            label="Align"
+            style={{
+              height: "40px",
+            }}
+            disabled={disabled}
+            value={
+              slide && slide[selectedItemType]
+                ? slide[selectedItemType].filter(
+                    (text) => text.id === selectedItemId
+                  )[0]?.align
+                : "left"
+            }
+            onChange={(e) => {
+              // update preview
+              const textarea = document.getElementById("slidesTextBox");
+              textarea.style.textAlign = e.target.value;
+              // update actual
+              dispatch({
+                type: "slides",
+                payload: state.slides.map((slide) => {
+                  if (slide.id === state.currentSlideId) {
+                    slide.texts = slide.texts.map((t) => {
+                      if (t.id === selectedItemId) {
+                        t.align = e.target.value;
+                      }
+                      return t;
+                    });
+                  }
+                  return slide;
+                }),
+              });
+            }}
+          >
+            <MenuItem value="left">Left</MenuItem>
+            <MenuItem value="center">Center</MenuItem>
+            <MenuItem value="right">Right</MenuItem>
+          </Select>
+
+          <MuiColorInput
+            value={
+              slide && slide[selectedItemType]
+                ? slide[selectedItemType].filter(
+                    (text) => text.id === selectedItemId
+                  )[0]?.fill
+                : "black"
+            }
+            onChange={(e) => {
+              // update preview
+              const textarea = document.getElementById("slidesTextBox");
+              textarea.style.color = e.target.value;
+              // update actual
+              dispatch({
+                type: "slides",
+                payload: state.slides.map((slide) => {
+                  if (slide.id === state.currentSlideId) {
+                    slide.texts = slide.texts.map((t) => {
+                      if (t.id === selectedItemId) {
+                        t.fill = e.target.value;
+                      }
+                      return t;
+                    });
+                  }
+                  return slide;
+                }),
+              });
+            }}
+          />
 
           <Button
             color="success"
@@ -254,6 +364,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
                   fontStyle={text?.fontStyle ?? "normal"}
                   fontFamily={text?.fontFamily ?? "Arial"}
                   fontVariant={text?.fontVariant ?? "normal"}
+                  textDecoration={text?.textDecoration ?? ""}
                   fill={text?.fill ?? "black"}
                   align={text?.align ?? "left"}
                   lineHeight={text?.lineHeight ?? 1}
