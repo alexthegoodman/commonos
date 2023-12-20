@@ -101,6 +101,7 @@ export default function AutoSidebar() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
+  const [loading, setLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
   const [state, dispatch] = useSlidesContext();
   const debouncedState = useDebounce(state, 500);
@@ -133,6 +134,7 @@ export default function AutoSidebar() {
         },
       ],
     });
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -151,15 +153,41 @@ export default function AutoSidebar() {
   }, []);
 
   useEffect(() => {
+    // do not call on first mount, only after currentSlideId changes
     if (hasMounted && debouncedState.currentSlideId && state?.messages) {
-      const sectionContent = slide.texts.map((text) => ({
-        id: text.id,
-        text: text.content,
-      }));
-
-      getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
-        dispatchNewMessage
+      const lastMessageRegardingSlide = state.messages.filter(
+        (message) => message.regarding === debouncedState.currentSlideId
+      )[0];
+      const questionsAnswered = lastMessageRegardingSlide?.questions?.filter(
+        (question) =>
+          question.chosenAnswers.length > 0 || question.freeformAnswer
       );
+
+      console.log(
+        "questionsAnswered",
+        lastMessageRegardingSlide,
+        questionsAnswered
+      );
+
+      // if last message regarding this slide has questions answered, then fetch more questions
+      if (
+        (!lastMessageRegardingSlide && !questionsAnswered) ||
+        (questionsAnswered && questionsAnswered.length > 0)
+      ) {
+        const sectionContent = slide.texts.map((text) => ({
+          id: text.id,
+          text: text.content,
+        }));
+
+        setLoading(true);
+
+        getGuideQuestionsData(
+          token,
+          "slides",
+          slide.title,
+          sectionContent
+        ).then(dispatchNewMessage);
+      }
     }
   }, [debouncedState.currentSlideId]);
 
@@ -201,7 +229,7 @@ export default function AutoSidebar() {
               );
             }
           })}
-        {!state?.messages && <CircularProgress />}
+        {(!state?.messages || loading) && <CircularProgress />}
       </Box>
     </SidebarWrapper>
   );
