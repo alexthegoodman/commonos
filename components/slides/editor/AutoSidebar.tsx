@@ -2,7 +2,7 @@
 
 import { useSlidesContext } from "@/context/SlidesContext";
 import { getGuideQuestionsData } from "@/fetchers/flow";
-import { CheckCircle } from "@mui/icons-material";
+import { CheckCircle, Refresh } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -18,7 +18,9 @@ import { useDebounce } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 
 const SidebarWrapper = styled("aside")(({ theme }) => ({
-  width: "400px",
+  minWidth: "400px",
+  width: "25vw",
+  maxWidth: "600px",
   height: "100vh",
   position: "fixed",
   top: "0",
@@ -30,7 +32,7 @@ const SidebarWrapper = styled("aside")(({ theme }) => ({
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: "90px",
+  width: "28%",
   height: "90px",
   fontSize: "0.7rem",
   backgroundColor: "rgba(255,255,255,0.1)",
@@ -137,6 +139,33 @@ export default function AutoSidebar() {
     setLoading(false);
   };
 
+  const replaceMessage = (data, messageId) => {
+    const prevMessages = state?.messages ? state.messages : [];
+    const newMessages = prevMessages.map((message) => {
+      if (message.id === messageId) {
+        return {
+          ...message,
+          questions: data.questions.map((question) => {
+            return {
+              id: uuidv4(),
+              type: "multipleChoice",
+              question: question.question,
+              possibleAnswers: question.answers,
+              chosenAnswers: [],
+              freeformAnswer: "",
+            };
+          }),
+        };
+      }
+      return message;
+    });
+    dispatch({
+      type: "messages",
+      payload: newMessages,
+    });
+    setLoading(false);
+  };
+
   useEffect(() => {
     setHasMounted(true);
     if (!state?.messages) {
@@ -155,9 +184,11 @@ export default function AutoSidebar() {
   useEffect(() => {
     // do not call on first mount, only after currentSlideId changes
     if (hasMounted && debouncedState.currentSlideId && state?.messages) {
-      const lastMessageRegardingSlide = state.messages.filter(
+      const messagesRegardingSlide = state.messages.filter(
         (message) => message.regarding === debouncedState.currentSlideId
-      )[0];
+      );
+      const lastMessageRegardingSlide =
+        messagesRegardingSlide[messagesRegardingSlide.length - 1];
       const questionsAnswered = lastMessageRegardingSlide?.questions?.filter(
         (question) =>
           question.chosenAnswers.length > 0 || question.freeformAnswer
@@ -212,10 +243,43 @@ export default function AutoSidebar() {
             if (message.type === "questions") {
               return (
                 <MessageItem key={message.id} container spacing={2}>
-                  <Box>
-                    <Typography variant="subtitle1" mb={2}>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="space-between"
+                    mb={2}
+                  >
+                    <Typography variant="subtitle1">
                       Regarding {regardingData.title}
                     </Typography>
+                    <Button
+                      variant="contained"
+                      color="info"
+                      size="small"
+                      disabled={loading}
+                      onClick={() => {
+                        const messageSlide = state.slides.filter(
+                          (slide) => slide.id === message.regarding
+                        )[0];
+                        const sectionContent = messageSlide.texts.map(
+                          (text) => ({
+                            id: text.id,
+                            text: text.content,
+                          })
+                        );
+
+                        setLoading(true);
+
+                        getGuideQuestionsData(
+                          token,
+                          "slides",
+                          slide.title,
+                          sectionContent
+                        ).then((data) => replaceMessage(data, message.id));
+                      }}
+                    >
+                      <Refresh />
+                    </Button>
                   </Box>
                   {message.questions.map((question) => (
                     <SidebarQuestionItem
