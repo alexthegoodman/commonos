@@ -83,3 +83,17 @@ export const createFileMutation = gql`
     createFile(prompt: $prompt, flowId: $flowId, fileId: $fileId)
   }
 `;
+
+export const getGuideQuestionsQuery = gql`
+  query getGuideQuestions(
+    $fileApp: String!
+    $fileTitle: String!
+    $sectionContent: String!
+  ) {
+    getGuideQuestions(
+      fileApp: $fileApp
+      fileTitle: $fileTitle
+      sectionContent: $sectionContent
+    )
+  }
+`;

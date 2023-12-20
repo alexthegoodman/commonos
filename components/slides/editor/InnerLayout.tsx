@@ -11,6 +11,7 @@ import {
 import { Button, Grid } from "@mui/material";
 import { useReducer, useState } from "react";
 import EditorHeader from "./EditorHeader";
+import AutoSidebar from "./AutoSidebar";
 
 export default function InnerLayout({ presentationId, slideData }) {
   const [title, setTitle] = useState(slideData.title);
@@ -22,13 +23,14 @@ export default function InnerLayout({ presentationId, slideData }) {
       <Autosaver id={presentationId} title={title} />
       <EditorHeader title={title} setTitle={setTitle} />
       <Grid container spacing={2}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={2}>
           <SlideList />
         </Grid>
-        <Grid item xs={12} md={9}>
+        <Grid item xs={12} md={10}>
           <EditorWrapper />
         </Grid>
       </Grid>
+      <AutoSidebar />
     </SlidesContext.Provider>
   );
 }

@@ -18,7 +18,7 @@ const EditorHeader = ({ title, setTitle }) => {
 
   return (
     <header>
-      <Box>
+      <Box pb={2}>
         <TextField
           onChange={onTitleChange}
           defaultValue={title}

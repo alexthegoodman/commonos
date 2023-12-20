@@ -2,6 +2,7 @@ import {
   createFileMutation,
   flowQuery,
   getFileListQuery,
+  getGuideQuestionsQuery,
   getQuestionsQuery,
   myFlowsQuery,
   newFlowMutation,
@@ -149,4 +150,24 @@ export const createFile = async (
   )) as any;
 
   return createFile;
+};
+
+export const getGuideQuestionsData = async (
+  token: string,
+  fileApp: string,
+  fileTitle: string,
+  sectionContent: any
+) => {
+  graphClient.setupClient(token);
+
+  const { getGuideQuestions } = (await graphClient.client?.request(
+    getGuideQuestionsQuery,
+    {
+      fileApp,
+      fileTitle,
+      sectionContent: JSON.stringify(sectionContent),
+    }
+  )) as any;
+
+  return getGuideQuestions;
 };
