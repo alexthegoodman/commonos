@@ -41,6 +41,7 @@ const ToolbarWrapper = styled(Box)(({ theme }) => ({
 export default function SlideEditor({ slide, state, dispatch }) {
   const stageRef = useRef(null);
   const textToolbarRef = useRef(null);
+  const shapeToolbarRef = useRef(null);
 
   const textNodeRefs = useRef([]);
   const textNodeTransformerRefs = useRef([]);
@@ -181,18 +182,21 @@ export default function SlideEditor({ slide, state, dispatch }) {
           Add Text
         </Button>
         <Select
-          // label="Add Shape"
+          label="Add Shape"
           placeholder="Add Shape"
           style={{
             height: "40px",
           }}
-          value={
-            state.slides.filter((slide) => slide.id === state.currentSlideId)[0]
-              ?.shapes?.[0]?.kind ?? ""
-          }
+          value={"init"}
           onChange={(e) => {
             const value = e.target.value;
+
+            if (value === "init") {
+              return;
+            }
+
             console.info("add shape", value);
+
             dispatch({
               type: "slides",
               payload: state.slides.map((slide) => {
@@ -214,7 +218,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
             });
           }}
         >
-          <MenuItem value={""}>Select Shape</MenuItem>
+          <MenuItem value={"init"}>Select Shape</MenuItem>
           <MenuItem value={"star"}>Star</MenuItem>
           <MenuItem value={"circle"}>Circle</MenuItem>
           <MenuItem value={"ellipse"}>Ellipse</MenuItem>
@@ -224,289 +228,381 @@ export default function SlideEditor({ slide, state, dispatch }) {
         </Select>
       </Box>
       <Box>
-        <ToolbarWrapper
-          ref={textToolbarRef}
-          style={{
-            position: "absolute",
-            top: selectedItemY - 75,
-            left: selectedItemX,
-            zIndex: 10,
-            display: !selectedItemY && !selectedItemX ? "none" : "block",
-            boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.15)",
-          }}
-        >
-          <Select
-            label="Font Size"
+        {selectedItemType === "texts" && (
+          <ToolbarWrapper
+            ref={textToolbarRef}
             style={{
-              height: "40px",
-            }}
-            disabled={disabled}
-            value={currentFontSize}
-            onChange={(e) => {
-              // update preview
-              const textarea = document.getElementById("slidesTextBox");
-              textarea.style.fontSize = e.target.value + "px";
-              textarea.style.lineHeight = 1.35;
-              // update actual
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.map((t) => {
-                      if (t.id === selectedItemId) {
-                        t.fontSize = e.target.value;
-                        t.lineHeight = 1.35; // TODO: set server side
-                      }
-                      return t;
-                    });
-                  }
-                  return slide;
-                }),
-              });
+              position: "absolute",
+              top: selectedItemY - 75,
+              left: selectedItemX,
+              zIndex: 10,
+              display: !selectedItemY && !selectedItemX ? "none" : "block",
+              boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.15)",
             }}
           >
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={14}>14</MenuItem>
-            <MenuItem value={18}>18</MenuItem>
-            <MenuItem value={24}>24</MenuItem>
-            <MenuItem value={32}>32</MenuItem>
-            <MenuItem value={48}>48</MenuItem>
-            <MenuItem value={64}>64</MenuItem>
-          </Select>
-
-          <Select
-            label="Font Style"
-            style={{
-              height: "40px",
-            }}
-            disabled={disabled}
-            value={
-              slide && slide[selectedItemType]
-                ? slide[selectedItemType].filter(
-                    (text) => text.id === selectedItemId
-                  )[0]?.fontStyle
-                : "normal"
-            }
-            onChange={(e) => {
-              // update preview
-              const textarea = document.getElementById("slidesTextBox");
-              textarea.style.fontStyle = e.target.value;
-              // update actual
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.map((t) => {
-                      if (t.id === selectedItemId) {
-                        t.fontStyle = e.target.value;
-                      }
-                      return t;
-                    });
-                  }
-                  return slide;
-                }),
-              });
-            }}
-          >
-            <MenuItem value="normal">Normal</MenuItem>
-            <MenuItem value="italic">Italic</MenuItem>
-            <MenuItem value="bold">Bold</MenuItem>
-          </Select>
-
-          <Select
-            label="Font Family"
-            style={{
-              height: "40px",
-            }}
-            disabled={disabled}
-            value={
-              slide && slide[selectedItemType]
-                ? slide[selectedItemType].filter(
-                    (text) => text.id === selectedItemId
-                  )[0]?.fontFamily
-                : "Arial"
-            }
-            onChange={(e) => {
-              // update preview
-              const textarea = document.getElementById("slidesTextBox");
-              textarea.style.fontFamily = e.target.value;
-              // update actual
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.map((t) => {
-                      if (t.id === selectedItemId) {
-                        t.fontFamily = e.target.value;
-                      }
-                      return t;
-                    });
-                  }
-                  return slide;
-                }),
-              });
-            }}
-          >
-            <MenuItem value="Arial">Arial</MenuItem>
-            <MenuItem value="Helvetica">Helvetica</MenuItem>
-            <MenuItem value="Times New Roman">Times New Roman</MenuItem>
-            <MenuItem value="Times">Times</MenuItem>
-            <MenuItem value="Courier New">Courier New</MenuItem>
-            <MenuItem value="Courier">Courier</MenuItem>
-            <MenuItem value="Verdana">Verdana</MenuItem>
-            <MenuItem value="Georgia">Georgia</MenuItem>
-            <MenuItem value="Palatino">Palatino</MenuItem>
-            <MenuItem value="Garamond">Garamond</MenuItem>
-            <MenuItem value="Bookman">Bookman</MenuItem>
-            <MenuItem value="Comic Sans MS">Comic Sans MS</MenuItem>
-            <MenuItem value="Trebuchet MS">Trebuchet MS</MenuItem>
-            <MenuItem value="Arial Black">Arial Black</MenuItem>
-            <MenuItem value="Impact">Impact</MenuItem>
-          </Select>
-
-          <Select
-            label="Align"
-            style={{
-              height: "40px",
-            }}
-            disabled={disabled}
-            value={
-              slide && slide[selectedItemType]
-                ? slide[selectedItemType].filter(
-                    (text) => text.id === selectedItemId
-                  )[0]?.align
-                : "left"
-            }
-            onChange={(e) => {
-              // update preview
-              const textarea = document.getElementById("slidesTextBox");
-              textarea.style.textAlign = e.target.value;
-              // update actual
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.map((t) => {
-                      if (t.id === selectedItemId) {
-                        t.align = e.target.value;
-                      }
-                      return t;
-                    });
-                  }
-                  return slide;
-                }),
-              });
-            }}
-          >
-            <MenuItem value="left">Left</MenuItem>
-            <MenuItem value="center">Center</MenuItem>
-            <MenuItem value="right">Right</MenuItem>
-          </Select>
-
-          <MuiColorInput
-            sx={{
-              height: "40px",
-              "& .MuiInputBase-root": {
+            <Select
+              label="Font Size"
+              style={{
                 height: "40px",
-                width: "200px",
-              },
-            }}
-            value={
-              slide && slide[selectedItemType]
-                ? slide[selectedItemType].filter(
-                    (text) => text.id === selectedItemId
-                  )[0]?.fill
-                : "black"
-            }
-            onChange={(color) => {
-              console.info("color onChange", color);
-              // update preview
-              const textarea = document.getElementById("slidesTextBox");
-              textarea.style.color = color;
-              // update actual
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.map((t) => {
-                      if (t.id === selectedItemId) {
-                        t.fill = color;
-                      }
-                      return t;
-                    });
-                  }
-                  return slide;
-                }),
-              });
-            }}
-          />
+              }}
+              disabled={disabled}
+              value={currentFontSize}
+              onChange={(e) => {
+                // update preview
+                const textarea = document.getElementById("slidesTextBox");
+                textarea.style.fontSize = e.target.value + "px";
+                textarea.style.lineHeight = 1.35;
+                // update actual
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.map((t) => {
+                        if (t.id === selectedItemId) {
+                          t.fontSize = e.target.value;
+                          t.lineHeight = 1.35; // TODO: set server side
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={14}>14</MenuItem>
+              <MenuItem value={18}>18</MenuItem>
+              <MenuItem value={24}>24</MenuItem>
+              <MenuItem value={32}>32</MenuItem>
+              <MenuItem value={48}>48</MenuItem>
+              <MenuItem value={64}>64</MenuItem>
+            </Select>
 
-          <Button
-            color="success"
-            variant="contained"
-            onClick={() => {
-              const text = slide.texts.filter(
-                (text) => text.id === selectedItemId
-              )[0];
-              const textarea = document.getElementById("slidesTextBox");
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.map((t) => {
-                      if (t.id === text.id) {
-                        t.content = textarea.value;
-                      }
-                      return t;
-                    });
-                  }
-                  return slide;
-                }),
-              });
+            <Select
+              label="Font Style"
+              style={{
+                height: "40px",
+              }}
+              disabled={disabled}
+              value={
+                slide && slide[selectedItemType]
+                  ? slide[selectedItemType].filter(
+                      (text) => text.id === selectedItemId
+                    )[0]?.fontStyle
+                  : "normal"
+              }
+              onChange={(e) => {
+                // update preview
+                const textarea = document.getElementById("slidesTextBox");
+                textarea.style.fontStyle = e.target.value;
+                // update actual
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.map((t) => {
+                        if (t.id === selectedItemId) {
+                          t.fontStyle = e.target.value;
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            >
+              <MenuItem value="normal">Normal</MenuItem>
+              <MenuItem value="italic">Italic</MenuItem>
+              <MenuItem value="bold">Bold</MenuItem>
+            </Select>
 
-              textarea.parentNode.removeChild(textarea);
-              textNodeRefs.current[selectedItemIndex].current.show();
+            <Select
+              label="Font Family"
+              style={{
+                height: "40px",
+              }}
+              disabled={disabled}
+              value={
+                slide && slide[selectedItemType]
+                  ? slide[selectedItemType].filter(
+                      (text) => text.id === selectedItemId
+                    )[0]?.fontFamily
+                  : "Arial"
+              }
+              onChange={(e) => {
+                // update preview
+                const textarea = document.getElementById("slidesTextBox");
+                textarea.style.fontFamily = e.target.value;
+                // update actual
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.map((t) => {
+                        if (t.id === selectedItemId) {
+                          t.fontFamily = e.target.value;
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            >
+              <MenuItem value="Arial">Arial</MenuItem>
+              <MenuItem value="Helvetica">Helvetica</MenuItem>
+              <MenuItem value="Times New Roman">Times New Roman</MenuItem>
+              <MenuItem value="Times">Times</MenuItem>
+              <MenuItem value="Courier New">Courier New</MenuItem>
+              <MenuItem value="Courier">Courier</MenuItem>
+              <MenuItem value="Verdana">Verdana</MenuItem>
+              <MenuItem value="Georgia">Georgia</MenuItem>
+              <MenuItem value="Palatino">Palatino</MenuItem>
+              <MenuItem value="Garamond">Garamond</MenuItem>
+              <MenuItem value="Bookman">Bookman</MenuItem>
+              <MenuItem value="Comic Sans MS">Comic Sans MS</MenuItem>
+              <MenuItem value="Trebuchet MS">Trebuchet MS</MenuItem>
+              <MenuItem value="Arial Black">Arial Black</MenuItem>
+              <MenuItem value="Impact">Impact</MenuItem>
+            </Select>
 
-              setSelectedItemId(null);
-              setSelectedItemType(null);
-              setSelectedItemX(null);
-              setSelectedItemY(null);
+            <Select
+              label="Align"
+              style={{
+                height: "40px",
+              }}
+              disabled={disabled}
+              value={
+                slide && slide[selectedItemType]
+                  ? slide[selectedItemType].filter(
+                      (text) => text.id === selectedItemId
+                    )[0]?.align
+                  : "left"
+              }
+              onChange={(e) => {
+                // update preview
+                const textarea = document.getElementById("slidesTextBox");
+                textarea.style.textAlign = e.target.value;
+                // update actual
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.map((t) => {
+                        if (t.id === selectedItemId) {
+                          t.align = e.target.value;
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            >
+              <MenuItem value="left">Left</MenuItem>
+              <MenuItem value="center">Center</MenuItem>
+              <MenuItem value="right">Right</MenuItem>
+            </Select>
+
+            <MuiColorInput
+              sx={{
+                height: "40px",
+                "& .MuiInputBase-root": {
+                  height: "40px",
+                  width: "200px",
+                },
+              }}
+              value={
+                slide && slide[selectedItemType]
+                  ? slide[selectedItemType].filter(
+                      (text) => text.id === selectedItemId
+                    )[0]?.fill
+                  : "black"
+              }
+              onChange={(color) => {
+                console.info("color onChange", color);
+                // update preview
+                const textarea = document.getElementById("slidesTextBox");
+                textarea.style.color = color;
+                // update actual
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.map((t) => {
+                        if (t.id === selectedItemId) {
+                          t.fill = color;
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            />
+
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => {
+                const text = slide.texts.filter(
+                  (text) => text.id === selectedItemId
+                )[0];
+                const textarea = document.getElementById("slidesTextBox");
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.map((t) => {
+                        if (t.id === text.id) {
+                          t.content = textarea.value;
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+
+                textarea.parentNode.removeChild(textarea);
+                textNodeRefs.current[selectedItemIndex].current.show();
+
+                setSelectedItemId(null);
+                setSelectedItemType(null);
+                setSelectedItemX(null);
+                setSelectedItemY(null);
+              }}
+            >
+              <Check />
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={() => {
+                const text = slide.texts.filter(
+                  (text) => text.id === selectedItemId
+                )[0];
+                const textarea = document.getElementById("slidesTextBox");
+                textarea.parentNode.removeChild(textarea);
+                textNodeRefs.current[selectedItemIndex].current.show();
+
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts = slide.texts.filter(
+                        (text) => text.id !== selectedItemId
+                      );
+                    }
+                    return slide;
+                  }),
+                });
+
+                setSelectedItemId(null);
+                setSelectedItemType(null);
+                setSelectedItemX(null);
+                setSelectedItemY(null);
+              }}
+            >
+              <Delete />
+            </Button>
+          </ToolbarWrapper>
+        )}
+        {selectedItemType === "shapes" && (
+          <ToolbarWrapper
+            ref={shapeToolbarRef}
+            style={{
+              position: "absolute",
+              top: selectedItemY - 75,
+              left: selectedItemX,
+              zIndex: 10,
+              display: !selectedItemY && !selectedItemX ? "none" : "block",
+              boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.15)",
             }}
           >
-            <Check />
-          </Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => {
-              const text = slide.texts.filter(
-                (text) => text.id === selectedItemId
-              )[0];
-              const textarea = document.getElementById("slidesTextBox");
-              textarea.parentNode.removeChild(textarea);
-              textNodeRefs.current[selectedItemIndex].current.show();
+            <MuiColorInput
+              sx={{
+                height: "40px",
+                "& .MuiInputBase-root": {
+                  height: "40px",
+                  width: "200px",
+                },
+              }}
+              value={
+                slide && slide[selectedItemType]
+                  ? slide[selectedItemType].filter(
+                      (shape) => shape.id === selectedItemId
+                    )[0]?.fill
+                  : "black"
+              }
+              onChange={(color) => {
+                console.info("color onChange", color);
+                // update actual
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.shapes = slide.shapes.map((t) => {
+                        if (t.id === selectedItemId) {
+                          t.fill = color;
+                        }
+                        return t;
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            />
 
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((slide) => {
-                  if (slide.id === state.currentSlideId) {
-                    slide.texts = slide.texts.filter(
-                      (text) => text.id !== selectedItemId
-                    );
-                  }
-                  return slide;
-                }),
-              });
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => {
+                setSelectedItemId(null);
+                setSelectedItemType(null);
+                setSelectedItemX(null);
+                setSelectedItemY(null);
+              }}
+            >
+              <Check />
+            </Button>
+            <Button
+              color="error"
+              variant="contained"
+              onClick={() => {
+                const shape = slide.shapes.filter(
+                  (shape) => shape.id === selectedItemId
+                )[0];
+                shapeNodeRefs.current[selectedItemIndex].current.show();
 
-              setSelectedItemId(null);
-              setSelectedItemType(null);
-              setSelectedItemX(null);
-              setSelectedItemY(null);
-            }}
-          >
-            <Delete />
-          </Button>
-        </ToolbarWrapper>
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.shapes = slide.shapes.filter(
+                        (shape) => shape.id !== selectedItemId
+                      );
+                    }
+                    return slide;
+                  }),
+                });
+
+                setSelectedItemId(null);
+                setSelectedItemType(null);
+                setSelectedItemX(null);
+                setSelectedItemY(null);
+              }}
+            >
+              <Delete />
+            </Button>
+          </ToolbarWrapper>
+        )}
       </Box>
       <Stage ref={stageRef} width={stageWidth} height={stageHeight}>
         <Layer>
@@ -852,6 +948,26 @@ export default function SlideEditor({ slide, state, dispatch }) {
                         return slide;
                       }),
                     });
+                  }}
+                  onDblClick={(e) => {
+                    const textNodeRef = shapeNodeRefs.current[i].current;
+
+                    setSelectedItemIndex(i);
+                    setSelectedItemId(shape.id);
+                    setSelectedItemType("shapes");
+
+                    var textPosition = textNodeRef.absolutePosition();
+                    var areaPosition = {
+                      x:
+                        stageRef.current.container().offsetLeft +
+                        textPosition.x,
+                      y:
+                        stageRef.current.container().offsetTop + textPosition.y,
+                    };
+
+                    // move texttoolbar to this position
+                    setSelectedItemX(areaPosition.x);
+                    setSelectedItemY(areaPosition.y);
                   }}
                   onClick={(e) => {
                     setActiveItemType("shapes");
