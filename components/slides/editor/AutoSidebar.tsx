@@ -229,28 +229,30 @@ export default function AutoSidebar() {
     }
   }, [debouncedState.currentSlideId]);
 
-  // TODO: on Konva textarea confirm, if value different, get questions with replaceMessage
   useEffect(() => {
-    console.info("slide.texts changed... replace questions");
+    // do not call on first mount, only after currentSlideId changes
+    if (hasMounted && debouncedState.currentSlideId === slide.id) {
+      console.info("slide.texts changed... replace questions");
 
-    const messagesRegardingSlide = state.messages.filter(
-      (message) => message.regarding === state.currentSlideId
-    );
-    const lastMessageRegardingSlide =
-      messagesRegardingSlide[messagesRegardingSlide.length - 1];
+      const messagesRegardingSlide = state.messages.filter(
+        (message) => message.regarding === state.currentSlideId
+      );
+      const lastMessageRegardingSlide =
+        messagesRegardingSlide[messagesRegardingSlide.length - 1];
 
-    const sectionContent = slide.texts.map((text) => ({
-      id: text.id,
-      text: text.content,
-    }));
+      const sectionContent = slide.texts.map((text) => ({
+        id: text.id,
+        text: text.content,
+      }));
 
-    if (!sectionContent.length) return;
+      if (!sectionContent.length) return;
 
-    setLoading(true);
+      setLoading(true);
 
-    getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
-      (data) => replaceMessage(data, lastMessageRegardingSlide.id)
-    );
+      getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
+        (data) => replaceMessage(data, lastMessageRegardingSlide.id)
+      );
+    }
   }, [slide?.texts]);
 
   return (

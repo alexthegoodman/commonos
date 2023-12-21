@@ -33,12 +33,24 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { Check, Delete } from "@mui/icons-material";
 import { MuiColorInput } from "mui-color-input";
+import { jsPDF } from "jspdf";
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
-export default function SlideEditor({ slide, state, dispatch }) {
+export default function SlideEditor({
+  slide,
+  state,
+  dispatch,
+  exporting,
+  setExporting,
+  exportDoc,
+  setExportDoc,
+  slidesExported,
+  setSlidesExported,
+  title,
+}) {
   const stageRef = useRef(null);
   const textToolbarRef = useRef(null);
   const shapeToolbarRef = useRef(null);
@@ -128,27 +140,83 @@ export default function SlideEditor({ slide, state, dispatch }) {
 
   const disabled = !selectedItemId || !selectedItemType;
 
+  const captureNextSlide = () => {
+    const dataURL = stageRef.current.toDataURL({
+      mimeType: "image/jpeg",
+      // quality: 0.5,
+      pixelRatio: 2,
+    });
+    exportDoc.addImage(
+      dataURL,
+      0,
+      slidesExported * stageHeight,
+      stageWidth,
+      stageHeight
+    );
+  };
+
+  useEffect(() => {
+    if (exporting) {
+      captureNextSlide();
+    }
+  }, [exporting]);
+
   return (
     <>
-      <Box mb={2}>
-        <TextField
-          // label="Slide Title"
-          value={slide?.title}
-          onChange={(e) => {
-            dispatch({
-              type: "slides",
-              payload: state.slides.map((s) => {
-                if (s.id === state.currentSlideId) {
-                  s.title = e.target.value;
-                }
-                return s;
-              }),
-            });
-          }}
-          style={{
-            width: "400px",
-          }}
-        />
+      <Box
+        display="flex"
+        flexDirection="row"
+        justifyContent="space-between"
+        mb={2}
+      >
+        <Box>
+          <TextField
+            // label="Slide Title"
+            value={slide?.title}
+            onChange={(e) => {
+              dispatch({
+                type: "slides",
+                payload: state.slides.map((s) => {
+                  if (s.id === state.currentSlideId) {
+                    s.title = e.target.value;
+                  }
+                  return s;
+                }),
+              });
+            }}
+            style={{
+              width: "400px",
+            }}
+          />
+        </Box>
+        <Box>
+          <Button
+            color="success"
+            variant="contained"
+            onClick={() => {
+              setSelectedItemId(null);
+              setSelectedItemType(null);
+              setSelectedItemX(null);
+              setSelectedItemY(null);
+              setActiveItemId(null);
+              setActiveItemType(null);
+              // disable slidelist buttons, scroll through slides, adding image data to jspdf
+              const doc = new jsPDF("p", "px", [
+                stageWidth,
+                stageHeight * state.slides.length,
+              ]);
+              setExportDoc(doc);
+              setSlidesExported(0);
+              setExporting(true);
+              dispatch({
+                type: "currentSlideId",
+                payload: state.slides[0]?.id ?? null,
+              });
+            }}
+          >
+            Export PDF
+          </Button>
+        </Box>
       </Box>
       <Box display="flex" flexDirection="row">
         <Button

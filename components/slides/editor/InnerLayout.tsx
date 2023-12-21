@@ -15,6 +15,9 @@ import AutoSidebar from "./AutoSidebar";
 
 export default function InnerLayout({ presentationId, slideData }) {
   const [title, setTitle] = useState(slideData.title);
+  const [exporting, setExporting] = useState(false);
+  const [exportDoc, setExportDoc] = useState(null);
+  const [slidesExported, setSlidesExported] = useState(null); // initially null for useEffect detection
 
   return (
     <SlidesContext.Provider
@@ -24,10 +27,18 @@ export default function InnerLayout({ presentationId, slideData }) {
       <EditorHeader title={title} setTitle={setTitle} />
       <Grid container spacing={2}>
         <Grid item xs={12} md={2}>
-          <SlideList />
+          <SlideList exporting={exporting} />
         </Grid>
         <Grid item xs={12} md={10}>
-          <EditorWrapper />
+          <EditorWrapper
+            title={title}
+            exporting={exporting}
+            setExporting={setExporting}
+            exportDoc={exportDoc}
+            setExportDoc={setExportDoc}
+            slidesExported={slidesExported}
+            setSlidesExported={setSlidesExported}
+          />
         </Grid>
       </Grid>
       <AutoSidebar />

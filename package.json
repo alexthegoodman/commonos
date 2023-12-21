@@ -30,6 +30,7 @@
     "graphql-scalars": "^1.22.4",
     "graphql-shield": "^7.6.5",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.1",
     "konva": "^9.2.3",
     "luxon": "^3.4.4",
     "mixpanel": "^0.18.0",
