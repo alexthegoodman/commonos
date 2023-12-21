@@ -51,7 +51,7 @@ const MessageItem = styled(Box)(({ theme }) => ({
   boxSizing: "border-box",
 }));
 
-function SidebarQuestionItem({ question, state, dispatch }) {
+function SidebarQuestionItem({ question, state, dispatch, disabled = false }) {
   return (
     <Grid key={question.id} item xs={12} md={12}>
       <Typography variant="subtitle2">{question.question}</Typography>
@@ -66,13 +66,15 @@ function SidebarQuestionItem({ question, state, dispatch }) {
             ? true
             : false;
           return (
-            <AnswerButton key={j} onClick={() => {}}>
+            <AnswerButton key={j} disabled={disabled} onClick={() => {}}>
               {chosen && <CheckCircle />}
               {answer}
             </AnswerButton>
           );
         })}
-        <AnswerButton onClick={() => {}}>Add Your Own Answer</AnswerButton>
+        <AnswerButton disabled={disabled} onClick={() => {}}>
+          Add Your Own Answer
+        </AnswerButton>
       </Box>
       <Box sx={{ width: 600, padding: 1 }}>
         <TextareaAutosize
@@ -93,6 +95,7 @@ function SidebarQuestionItem({ question, state, dispatch }) {
           minRows={3}
           onChange={(e) => {}}
           defaultValue={question.freeformAnswer}
+          disabled={disabled}
         />
       </Box>
     </Grid>
@@ -175,6 +178,8 @@ export default function AutoSidebar() {
         text: text.content,
       }));
 
+      if (!sectionContent.length) return;
+
       getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
         dispatchNewMessage
       );
@@ -210,6 +215,8 @@ export default function AutoSidebar() {
           text: text.content,
         }));
 
+        if (!sectionContent.length) return;
+
         setLoading(true);
 
         getGuideQuestionsData(
@@ -221,6 +228,30 @@ export default function AutoSidebar() {
       }
     }
   }, [debouncedState.currentSlideId]);
+
+  // TODO: on Konva textarea confirm, if value different, get questions with replaceMessage
+  useEffect(() => {
+    console.info("slide.texts changed... replace questions");
+
+    const messagesRegardingSlide = state.messages.filter(
+      (message) => message.regarding === state.currentSlideId
+    );
+    const lastMessageRegardingSlide =
+      messagesRegardingSlide[messagesRegardingSlide.length - 1];
+
+    const sectionContent = slide.texts.map((text) => ({
+      id: text.id,
+      text: text.content,
+    }));
+
+    if (!sectionContent.length) return;
+
+    setLoading(true);
+
+    getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
+      (data) => replaceMessage(data, lastMessageRegardingSlide.id)
+    );
+  }, [slide?.texts]);
 
   return (
     <SidebarWrapper>
@@ -287,6 +318,7 @@ export default function AutoSidebar() {
                       question={question}
                       state={state}
                       dispatch={dispatch}
+                      disabled={loading}
                     />
                   ))}
                 </MessageItem>

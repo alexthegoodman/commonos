@@ -130,7 +130,7 @@ export default function SlideEditor({ slide, state, dispatch }) {
 
   return (
     <>
-      <Box>
+      <Box mb={2}>
         <TextField
           // label="Slide Title"
           value={slide?.title}
