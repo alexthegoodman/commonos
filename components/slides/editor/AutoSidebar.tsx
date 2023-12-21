@@ -61,7 +61,7 @@ function SidebarQuestionItem({ question, state, dispatch, disabled = false }) {
         justifyContent="flex-start"
         flexWrap="wrap"
       >
-        {question.possibleAnswers.map((answer, j) => {
+        {question?.possibleAnswers?.map((answer, j) => {
           const chosen = question.chosenAnswers.find((a) => a === answer)
             ? true
             : false;
@@ -126,6 +126,7 @@ export default function AutoSidebar() {
           type: "questions",
           from: "system",
           regarding: slide.id,
+          originalText: slide.texts.map((text) => text.content).join(" "),
           questions: data.questions.map((question) => {
             return {
               id: uuidv4(),
@@ -171,7 +172,7 @@ export default function AutoSidebar() {
 
   useEffect(() => {
     setHasMounted(true);
-    if (!state?.messages) {
+    if (!state?.messages && slide?.texts) {
       // first set of questions
       const sectionContent = slide.texts.map((text) => ({
         id: text.id,
@@ -184,7 +185,7 @@ export default function AutoSidebar() {
         dispatchNewMessage
       );
     }
-  }, []);
+  }, [debouncedState.currentSlideId]);
 
   useEffect(() => {
     // do not call on first mount, only after currentSlideId changes
@@ -230,7 +231,8 @@ export default function AutoSidebar() {
   }, [debouncedState.currentSlideId]);
 
   useEffect(() => {
-    // do not call on first mount, only after currentSlideId changes
+    // do not call on first mount, make sure slide didn't just change
+    // also make sure it was the text content that changed, not its other properties
     if (hasMounted && debouncedState.currentSlideId === slide.id) {
       console.info("slide.texts changed... replace questions");
 
@@ -239,6 +241,12 @@ export default function AutoSidebar() {
       );
       const lastMessageRegardingSlide =
         messagesRegardingSlide[messagesRegardingSlide.length - 1];
+
+      if (!lastMessageRegardingSlide) return;
+
+      const currentText = slide.texts.map((text) => text.content).join(" ");
+
+      if (lastMessageRegardingSlide.originalText === currentText) return;
 
       const sectionContent = slide.texts.map((text) => ({
         id: text.id,
