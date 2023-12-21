@@ -61,8 +61,6 @@ export default function SlideEditor({
   const shapeNodeRefs = useRef([]);
   const shapeNodeTransformerRefs = useRef([]);
 
-  console.info("textNodeRefs", textNodeRefs);
-
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [selectedItemType, setSelectedItemType] = useState(null);

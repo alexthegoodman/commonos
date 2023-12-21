@@ -143,12 +143,17 @@ export default function AutoSidebar() {
     setLoading(false);
   };
 
-  const replaceMessage = (data, messageId) => {
+  const replaceMessage = (data, messageId, originalText) => {
     const prevMessages = state?.messages ? state.messages : [];
     const newMessages = prevMessages.map((message) => {
       if (message.id === messageId) {
+        let addtProps = {};
+        if (originalText) {
+          addtProps = { originalText };
+        }
         return {
           ...message,
+          ...addtProps,
           questions: data.questions.map((question) => {
             return {
               id: uuidv4(),
@@ -258,7 +263,8 @@ export default function AutoSidebar() {
       setLoading(true);
 
       getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
-        (data) => replaceMessage(data, lastMessageRegardingSlide.id)
+        (data) =>
+          replaceMessage(data, lastMessageRegardingSlide.id, currentText)
       );
     }
   }, [slide?.texts]);
