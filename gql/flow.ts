@@ -97,3 +97,19 @@ export const getGuideQuestionsQuery = gql`
     )
   }
 `;
+
+export const getRevisedContentQuery = gql`
+  query getRevisedContent(
+    $fileApp: String!
+    $fileTitle: String!
+    $sectionContent: String!
+    $sectionQuestions: String!
+  ) {
+    getRevisedContent(
+      fileApp: $fileApp
+      fileTitle: $fileTitle
+      sectionContent: $sectionContent
+      sectionQuestions: $sectionQuestions
+    )
+  }
+`;

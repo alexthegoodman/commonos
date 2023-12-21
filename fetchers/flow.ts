@@ -4,6 +4,7 @@ import {
   getFileListQuery,
   getGuideQuestionsQuery,
   getQuestionsQuery,
+  getRevisedContentQuery,
   myFlowsQuery,
   newFlowMutation,
   updateFlowMutation,
@@ -170,4 +171,26 @@ export const getGuideQuestionsData = async (
   )) as any;
 
   return getGuideQuestions;
+};
+
+export const getRevisedContentData = async (
+  token: string,
+  fileApp: string,
+  fileTitle: string,
+  sectionContent: any,
+  sectionQuestions: any
+) => {
+  graphClient.setupClient(token);
+
+  const { getRevisedContent } = (await graphClient.client?.request(
+    getRevisedContentQuery,
+    {
+      fileApp,
+      fileTitle,
+      sectionContent: JSON.stringify(sectionContent),
+      sectionQuestions: JSON.stringify(sectionQuestions),
+    }
+  )) as any;
+
+  return getRevisedContent;
 };

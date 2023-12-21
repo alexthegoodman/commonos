@@ -1,7 +1,7 @@
 "use client";
 
 import { useSlidesContext } from "@/context/SlidesContext";
-import { getGuideQuestionsData } from "@/fetchers/flow";
+import { getGuideQuestionsData, getRevisedContentData } from "@/fetchers/flow";
 import { CheckCircle, Refresh } from "@mui/icons-material";
 import {
   Box,
@@ -51,7 +51,13 @@ const MessageItem = styled(Box)(({ theme }) => ({
   boxSizing: "border-box",
 }));
 
-function SidebarQuestionItem({ question, state, dispatch, disabled = false }) {
+function SidebarQuestionItem({
+  messageData,
+  question,
+  state,
+  dispatch,
+  disabled = false,
+}) {
   return (
     <Grid key={question.id} item xs={12} md={12}>
       <Typography variant="subtitle2">{question.question}</Typography>
@@ -66,13 +72,103 @@ function SidebarQuestionItem({ question, state, dispatch, disabled = false }) {
             ? true
             : false;
           return (
-            <AnswerButton key={j} disabled={disabled} onClick={() => {}}>
+            <AnswerButton
+              key={j}
+              disabled={disabled}
+              onClick={() => {
+                if (chosen) {
+                  dispatch({
+                    type: "messages",
+                    payload: state.messages.map((message) => {
+                      if (message.id === messageData.id) {
+                        return {
+                          ...message,
+                          questions: message.questions.map((q) => {
+                            if (q.id === question.id) {
+                              return {
+                                ...q,
+                                chosenAnswers: q.chosenAnswers.filter(
+                                  (a) => a !== answer
+                                ),
+                              };
+                            }
+                            return q;
+                          }),
+                        };
+                      }
+                      return message;
+                    }),
+                  });
+                } else {
+                  dispatch({
+                    type: "messages",
+                    payload: state.messages.map((message) => {
+                      if (message.id === messageData.id) {
+                        return {
+                          ...message,
+                          questions: message.questions.map((q) => {
+                            if (q.id === question.id) {
+                              return {
+                                ...q,
+                                chosenAnswers: [...q.chosenAnswers, answer],
+                              };
+                            }
+                            return q;
+                          }),
+                        };
+                      }
+                      return message;
+                    }),
+                  });
+                }
+              }}
+            >
               {chosen && <CheckCircle />}
               {answer}
             </AnswerButton>
           );
         })}
-        <AnswerButton disabled={disabled} onClick={() => {}}>
+        <AnswerButton
+          disabled={disabled}
+          onClick={() => {
+            const questionInIds = state.openQuestionIds.find(
+              (id) => id === question.id
+            );
+            if (questionInIds) {
+              dispatch({
+                type: "openQuestionIds",
+                payload: state.openQuestionIds.filter(
+                  (id) => id !== question.id
+                ),
+              });
+              dispatch({
+                type: "messages",
+                payload: state.messages.map((message) => {
+                  if (message.id === messageData.id) {
+                    return {
+                      ...message,
+                      questions: message.questions.map((q) => {
+                        if (q.id === question.id) {
+                          return {
+                            ...q,
+                            freeformAnswer: "",
+                          };
+                        }
+                        return q;
+                      }),
+                    };
+                  }
+                  return message;
+                }),
+              });
+            } else {
+              dispatch({
+                type: "openQuestionIds",
+                payload: [...state.openQuestionIds, question.id],
+              });
+            }
+          }}
+        >
           Add Your Own Answer
         </AnswerButton>
       </Box>
@@ -93,7 +189,28 @@ function SidebarQuestionItem({ question, state, dispatch, disabled = false }) {
           }}
           placeholder="Enter your own answer"
           minRows={3}
-          onChange={(e) => {}}
+          onChange={(e) => {
+            dispatch({
+              type: "messages",
+              payload: state.messages.map((message) => {
+                if (message.id === question.id) {
+                  return {
+                    ...message,
+                    questions: message.questions.map((q) => {
+                      if (q.id === question.id) {
+                        return {
+                          ...q,
+                          freeformAnswer: e.target.value,
+                        };
+                      }
+                      return q;
+                    }),
+                  };
+                }
+                return message;
+              }),
+            });
+          }}
           defaultValue={question.freeformAnswer}
           disabled={disabled}
         />
@@ -141,6 +258,8 @@ export default function AutoSidebar() {
       ],
     });
     setLoading(false);
+
+    // TODO: scroll to bottom
   };
 
   const replaceMessage = (data, messageId, originalText) => {
@@ -288,6 +407,10 @@ export default function AutoSidebar() {
             )[0];
 
             if (message.type === "questions") {
+              const questionsAnswered = message.questions.filter(
+                (question) =>
+                  question.chosenAnswers.length > 0 || question.freeformAnswer
+              );
               return (
                 <MessageItem key={message.id} container spacing={2}>
                   <Box
@@ -331,12 +454,68 @@ export default function AutoSidebar() {
                   {message.questions.map((question) => (
                     <SidebarQuestionItem
                       key={question.id}
+                      messageData={message}
                       question={question}
                       state={state}
                       dispatch={dispatch}
                       disabled={loading}
                     />
                   ))}
+                  <Button
+                    color="success"
+                    variant="contained"
+                    disabled={loading || questionsAnswered.length === 0}
+                    onClick={() => {
+                      const sectionContent = slide.texts.map((text) => ({
+                        id: text.id,
+                        text: text.content,
+                      }));
+
+                      if (!sectionContent.length) return;
+
+                      setLoading(true);
+
+                      getRevisedContentData(
+                        token,
+                        "slides",
+                        slide.title,
+                        sectionContent,
+                        message.questions
+                      ).then((data) => {
+                        let sections = data["Slide Sections"];
+                        sections = Object.keys(sections).map((key) => ({
+                          section: key,
+                          content: sections[key],
+                        }));
+                        console.log("sections", sections);
+                        dispatch({
+                          type: "slides",
+                          payload: state.slides.map((slide) => {
+                            if (slide.id === message.regarding) {
+                              return {
+                                ...slide,
+                                texts: slide.texts.map((text, i) => {
+                                  // const section = sections.find(
+                                  //   (section) => section.section === i + 1
+                                  // );
+                                  const section = sections[i];
+                                  console.info("section", section);
+                                  return {
+                                    ...text,
+                                    content: section?.content ?? text.content,
+                                  };
+                                }),
+                              };
+                            }
+                            return slide;
+                          }),
+                        });
+                        setLoading(false);
+                      });
+                    }}
+                  >
+                    Update Content
+                  </Button>
                 </MessageItem>
               );
             }
