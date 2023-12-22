@@ -216,7 +216,7 @@ export default function SlideEditor({
           </Button>
         </Box>
       </Box>
-      <Box display="flex" flexDirection="row">
+      <Box display="flex" flexDirection="row" mb={1}>
         <Button
           color="success"
           variant="contained"

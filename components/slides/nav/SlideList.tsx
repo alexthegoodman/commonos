@@ -20,7 +20,10 @@ export default function SlideList({ exporting }) {
           <Button
             key={slide.id}
             disabled={exporting}
-            onClick={() => selectSlide(slide.id)}
+            onClick={() => {
+              // TODO: scroll sidebar to most recent message
+              selectSlide(slide.id);
+            }}
           >
             {slide.title}
           </Button>
