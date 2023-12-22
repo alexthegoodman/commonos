@@ -33,6 +33,7 @@
     "jspdf": "^2.5.1",
     "konva": "^9.2.3",
     "luxon": "^3.4.4",
+    "micromodal": "^0.4.10",
     "mixpanel": "^0.18.0",
     "mui-color-input": "^2.0.1",
     "next": "14.0.3",
@@ -60,6 +61,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/micromodal": "^0.3.5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -44,7 +44,73 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <PrimaryTabs />
         <Box>{children}</Box>
       </Container>
+
+      <div
+        id="tokenLimitReached"
+        aria-hidden="true"
+        style={{ display: "none" }}
+      >
+        <div tabIndex="-1" data-micromodal-close>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tokenLimitReached-title"
+          >
+            <header>
+              <h2 id="tokenLimitReached-title">Ready to upgrade?</h2>
+            </header>
+
+            <div id="tokenLimitReached-content">
+              <p>
+                Sadly, you have used up all of your tokens! However, you can
+                upgrade to the Standard plan for $10/mo!
+              </p>
+              <p>
+                <a href="/pricing">See Pricing</a>
+                <a href="#!" aria-label="Close modal" data-micromodal-close>
+                  Close Modal
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <style jsx global>{`
+        #tokenLimitReached {
+          display: none;
+          position: fixed;
+          z-index: 1000;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          overflow: auto;
+          outline: 0;
+          background-color: rgba(0, 0, 0, 0.8);
+          justify-content: center;
+          align-items: center;
+          color: #fff;
+        }
+
+        #tokenLimitReached-content {
+          max-width: 500px;
+        }
+
+        #tokenLimitReached-content p {
+          font-size: 16px;
+          line-height: 1.5;
+        }
+
+        #tokenLimitReached a {
+          color: #fff;
+          margin-right: 10px;
+        }
+
+        #tokenLimitReached.is-open {
+          display: flex !important;
+        }
+
         @-webkit-keyframes AnimationName {
           0% {
             background-position: 0% 83%;
