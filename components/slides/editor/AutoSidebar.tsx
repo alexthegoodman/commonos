@@ -12,7 +12,7 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useDebounce } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
@@ -227,10 +227,27 @@ export default function AutoSidebar() {
   const [hasMounted, setHasMounted] = useState(false);
   const [state, dispatch] = useSlidesContext();
   const debouncedState = useDebounce(state, 500);
+  const messagesContainerRef = useRef(null);
 
   const slide = state.slides.filter(
     (slide) => slide.id === state.currentSlideId
   )[0];
+
+  const scrollToMessage = (messageId) => {
+    const replacedMessageTop = document.getElementById(
+      `messageItem${messageId}`
+    ).offsetTop;
+    const padding = 90;
+    const newScrollTop = replacedMessageTop - padding;
+
+    // console.info(
+    //   "scrollToMessage",
+    //   replacedMessageTop,
+    //   newScrollTop
+    // );
+
+    messagesContainerRef.current.scrollTop = newScrollTop;
+  };
 
   const dispatchNewMessage = (data) => {
     const prevMessages = state?.messages ? state.messages : [];
@@ -259,7 +276,11 @@ export default function AutoSidebar() {
     });
     setLoading(false);
 
-    // TODO: scroll to bottom
+    // scroll sidebar to bottom
+    setTimeout(() => {
+      messagesContainerRef.current.scrollTop =
+        messagesContainerRef.current.scrollHeight;
+    }, 500);
   };
 
   const replaceMessage = (data, messageId, originalText) => {
@@ -292,6 +313,13 @@ export default function AutoSidebar() {
       payload: newMessages,
     });
     setLoading(false);
+
+    // scroll sidebar to replacedMessage
+    const replacedMessage = newMessages.find(
+      (message) => message.id === messageId
+    );
+    const replacedMessageIndex = newMessages.indexOf(replacedMessage);
+    scrollToMessage(replacedMessage.regarding + replacedMessageIndex);
   };
 
   useEffect(() => {
@@ -388,12 +416,33 @@ export default function AutoSidebar() {
     }
   }, [slide?.texts]);
 
+  useEffect(() => {
+    // scroll sidebar to most recent message regarding current slide
+    if (debouncedState.currentSlideId && state?.messages) {
+      const messagesRegardingSlide = state.messages.filter(
+        (message) => message.regarding === debouncedState.currentSlideId
+      );
+      const lastMessageRegardingSlide =
+        messagesRegardingSlide[messagesRegardingSlide.length - 1];
+
+      if (lastMessageRegardingSlide) {
+        const lastMessageRegardingSlideIndex = state.messages.indexOf(
+          lastMessageRegardingSlide
+        );
+        scrollToMessage(
+          debouncedState.currentSlideId + lastMessageRegardingSlideIndex
+        );
+      }
+    }
+  }, [debouncedState.currentSlideId]);
+
   return (
     <SidebarWrapper>
       <Typography variant="overline" px={3}>
         Live Guide
       </Typography>
       <Box
+        ref={messagesContainerRef}
         sx={{
           height: "calc(100vh - 200px)",
           overflowY: "scroll",
@@ -401,7 +450,7 @@ export default function AutoSidebar() {
         }}
       >
         {state?.messages &&
-          state.messages.map((message) => {
+          state.messages.map((message, i) => {
             const regardingData = state.slides.filter(
               (slide) => slide.id === message.regarding
             )[0];
@@ -412,7 +461,12 @@ export default function AutoSidebar() {
                   question.chosenAnswers.length > 0 || question.freeformAnswer
               );
               return (
-                <MessageItem key={message.id} container spacing={2}>
+                <MessageItem
+                  key={message.id}
+                  id={`messageItem${message.regarding + i}`}
+                  container
+                  spacing={2}
+                >
                   <Box
                     display="flex"
                     flexDirection="row"

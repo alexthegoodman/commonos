@@ -32,17 +32,23 @@ export const allTabs = [
     badge: null,
   },
   {
-    id: "sounds",
-    label: "Sounds",
+    id: "rss",
+    label: "RSS News",
     href: "",
     badge: "Coming Soon",
   },
-  {
-    id: "videos",
-    label: "Videos",
-    href: "",
-    badge: "Coming Soon",
-  },
+  // {
+  //   id: "sounds",
+  //   label: "Sounds",
+  //   href: "",
+  //   badge: "Coming Soon",
+  // },
+  // {
+  //   id: "videos",
+  //   label: "Videos",
+  //   href: "",
+  //   badge: "Coming Soon",
+  // },
   // {
   //   id: "code",
   //   label: "Code",
