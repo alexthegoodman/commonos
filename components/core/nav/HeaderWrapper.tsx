@@ -11,10 +11,9 @@ const FixedHeader = styled("div")(({ theme, opaque }) => ({
   left: 0,
   width: "100%",
   zIndex: 10,
-  backgroundColor: opaque ? "#1565C0 !important" : "transparent !important",
 }));
 
-const Container = styled(Box)(({ theme, hasSidebar }) => ({
+const Container = styled(Box)(({ theme, opaque, hasSidebar }) => ({
   maxWidth: hasSidebar ? "1600px" : "1400px",
   paddingRight: hasSidebar ? "400px" : "0px",
   width: "100%",
@@ -22,17 +21,24 @@ const Container = styled(Box)(({ theme, hasSidebar }) => ({
   boxSizing: "border-box",
 }));
 
+const InnerContainer = styled(Box)(({ theme, opaque }) => ({
+  transition: "background-color 0.2s ease",
+  backgroundColor: opaque ? "#1565C0 !important" : "transparent !important",
+}));
+
 export default function HeaderWrapper({ hasSidebar }) {
   const scrollPosition = useScrollPosition();
   const isScrolling = scrollPosition > 0;
 
-  console.info("scrollPosition", scrollPosition);
+  //   console.info("scrollPosition", scrollPosition);
 
   return (
     <FixedHeader opaque={isScrolling}>
       <Container hasSidebar={hasSidebar}>
-        <PrimaryHeader />
-        <PrimaryTabs />
+        <InnerContainer opaque={isScrolling}>
+          <PrimaryHeader />
+          <PrimaryTabs />
+        </InnerContainer>
       </Container>
     </FixedHeader>
   );

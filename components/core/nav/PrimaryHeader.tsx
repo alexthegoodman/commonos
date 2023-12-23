@@ -12,7 +12,12 @@ import UpgradeButton from "./UpgradeButton";
 
 export default function PrimaryHeader() {
   return (
-    <Box display="flex" flexDirection="row" justifyContent="space-between">
+    <Box
+      display="flex"
+      flexDirection="row"
+      justifyContent="space-between"
+      px={1}
+    >
       <Box>
         <ProfileMenu />
         <NotificationList />
