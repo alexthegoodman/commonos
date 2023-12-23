@@ -101,8 +101,10 @@ const EditorInnerField = ({
 
   const editorRef = React.useRef<any>();
 
-  const [{ editorPlaintext, focusModeEnabled, messages }, dispatch] =
-    useDocumentsContext();
+  const [
+    { editorPlaintext, revisedPlaintext, focusModeEnabled, messages },
+    dispatch,
+  ] = useDocumentsContext();
 
   const [textLoaded, setTextLoaded] = React.useState(false);
 
@@ -116,7 +118,8 @@ const EditorInnerField = ({
     const selectionData = instance.getSelection();
 
     if (selectionData) {
-      const plaintext = html.replace(/<(.|\n)*?>/g, "");
+      // const plaintext = html.replace(/<(.|\n)*?>/g, "");
+      const plaintext = instance.getText();
 
       const recentText = instance.getText(
         selectionData.index - recentTextLength,
@@ -219,6 +222,22 @@ const EditorInnerField = ({
       });
     }
   }, [documentData?.messages]);
+
+  React.useEffect(() => {
+    if (revisedPlaintext) {
+      console.info("set revisedPlaintext...", revisedPlaintext);
+      const elem = editorRef.current as any;
+      const quill = elem.getEditor();
+
+      quill.setText(revisedPlaintext);
+
+      dispatch({ type: "editorJson", payload: quill.getContents() });
+      dispatch({
+        type: "editorPlaintext",
+        payload: revisedPlaintext,
+      });
+    }
+  }, [revisedPlaintext]);
 
   return (
     <>

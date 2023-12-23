@@ -254,7 +254,26 @@ export default function AutoSidebar({ documentId, documentData }) {
                         sectionContent,
                         message.questions
                       ).then((data) => {
-                        setLoading(false);
+                        const newPlaintext = data.text;
+
+                        dispatch({
+                          type: "revisedPlaintext",
+                          payload: newPlaintext,
+                        });
+
+                        const newSectionContent = [
+                          {
+                            id: "1",
+                            text: newPlaintext,
+                          },
+                        ];
+
+                        getGuideQuestionsData(
+                          token,
+                          "documents",
+                          fileTitle,
+                          newSectionContent
+                        ).then((data) => replaceMessage(data, message.id));
                       });
                     }}
                   >
