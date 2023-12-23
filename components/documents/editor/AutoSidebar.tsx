@@ -132,6 +132,31 @@ export default function AutoSidebar({ documentId, documentData }) {
     scrollToMessage(replacedMessage.regarding + replacedMessageIndex);
   };
 
+  useEffect(() => {
+    setHasMounted(true);
+    console.info(
+      "mounted",
+      hasMounted,
+      debouncedState?.messages,
+      debouncedState.editorPlaintext
+    );
+    if (!debouncedState?.messages && debouncedState.editorPlaintext) {
+      // first set of questions
+      const sectionContent = [
+        {
+          id: "1",
+          text: debouncedState.editorPlaintext,
+        },
+      ];
+
+      console.info("documents getGuideQuestionsData...");
+
+      getGuideQuestionsData(token, "documents", fileTitle, sectionContent).then(
+        dispatchNewMessage
+      );
+    }
+  }, [debouncedState.editorPlaintext]);
+
   return (
     <SidebarWrapper>
       <Typography variant="overline" px={3}>
@@ -178,15 +203,12 @@ export default function AutoSidebar({ documentId, documentData }) {
                       size="small"
                       disabled={loading}
                       onClick={() => {
-                        const messageDocument = state.documents.filter(
-                          (document) => document.id === message.regarding
-                        )[0];
-                        const sectionContent = messageDocument.texts.map(
-                          (text) => ({
-                            id: text.id,
-                            text: text.content,
-                          })
-                        );
+                        const sectionContent = [
+                          {
+                            id: "1",
+                            text: state.editorPlaintext,
+                          },
+                        ];
 
                         setLoading(true);
 
@@ -216,12 +238,12 @@ export default function AutoSidebar({ documentId, documentData }) {
                     variant="contained"
                     disabled={loading || questionsAnswered.length === 0}
                     onClick={() => {
-                      const sectionContent = document.texts.map((text) => ({
-                        id: text.id,
-                        text: text.content,
-                      }));
-
-                      if (!sectionContent.length) return;
+                      const sectionContent = [
+                        {
+                          id: "1",
+                          text: state.editorPlaintext,
+                        },
+                      ];
 
                       setLoading(true);
 

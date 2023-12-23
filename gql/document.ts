@@ -14,12 +14,16 @@ export const updateDocumentMutation = gql`
     $title: String
     $content: String
     $plaintext: String
+    $html: String
+    $messages: String
   ) {
     updateDocument(
       documentId: $documentId
       title: $title
       content: $content
       plaintext: $plaintext
+      html: $html
+      messages: $messages
     ) {
       id
     }
@@ -50,6 +54,8 @@ export const documentQuery = gql`
       title
       content
       plaintext
+      html
+      messages
 
       creator {
         email

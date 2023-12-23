@@ -20,10 +20,11 @@ const EditorHeader = ({
 
   graphClient.setupClient(token);
 
-  const [{ editorJson, editorPlaintext, editorTitle }, dispatch] =
+  const [{ editorJson, editorPlaintext, editorTitle, messages }, dispatch] =
     useDocumentsContext();
   const debouncedTitle = useDebounce(editorTitle, 500);
   const debouncedJson = useDebounce(editorJson, 500);
+  const debouncedMessages = useDebounce(messages, 500);
   const [lastSaved, setLastSaved] = React.useState<string | null>(null);
 
   const updateDocument = async (args: any) => {
@@ -59,6 +60,13 @@ const EditorHeader = ({
       });
     }
   }, [debouncedJson]);
+
+  React.useEffect(() => {
+    if (debouncedMessages) {
+      // console.info("messages", messages);
+      updateDocument({ messages: JSON.stringify(debouncedMessages) });
+    }
+  }, [debouncedMessages]);
 
   const onTitleChange = (e: any) => {
     console.info("title change", e.target.value);

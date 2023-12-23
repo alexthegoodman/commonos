@@ -101,7 +101,7 @@ const EditorInnerField = ({
 
   const editorRef = React.useRef<any>();
 
-  const [{ editorPlaintext, focusModeEnabled }, dispatch] =
+  const [{ editorPlaintext, focusModeEnabled, messages }, dispatch] =
     useDocumentsContext();
 
   const [textLoaded, setTextLoaded] = React.useState(false);
@@ -210,6 +210,15 @@ const EditorInnerField = ({
       }
     }
   }, [documentData?.plaintext]);
+
+  React.useEffect(() => {
+    if (documentData?.messages && !messages) {
+      dispatch({
+        type: "messages",
+        payload: documentData.messages,
+      });
+    }
+  }, [documentData?.messages]);
 
   return (
     <>
