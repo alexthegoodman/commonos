@@ -1,5 +1,6 @@
 "use client";
 
+import EmptyNotice from "@/components/core/layout/EmptyNotice";
 import { useSlidesContext } from "@/context/SlidesContext";
 import { getGuideQuestionsData, getRevisedContentData } from "@/fetchers/flow";
 import { CheckCircle, Refresh } from "@mui/icons-material";
@@ -219,7 +220,7 @@ function SidebarQuestionItem({
   );
 }
 
-export default function AutoSidebar() {
+export default function AutoSidebar({ title }) {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
@@ -232,6 +233,8 @@ export default function AutoSidebar() {
   const slide = state.slides.filter(
     (slide) => slide.id === state.currentSlideId
   )[0];
+
+  const fileTitle = title + " - " + slide.title;
 
   const scrollToMessage = (messageId) => {
     const replacedMessageTop = document.getElementById(
@@ -333,7 +336,7 @@ export default function AutoSidebar() {
 
       if (!sectionContent.length) return;
 
-      getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
+      getGuideQuestionsData(token, "slides", fileTitle, sectionContent).then(
         dispatchNewMessage
       );
     }
@@ -372,12 +375,9 @@ export default function AutoSidebar() {
 
         setLoading(true);
 
-        getGuideQuestionsData(
-          token,
-          "slides",
-          slide.title,
-          sectionContent
-        ).then(dispatchNewMessage);
+        getGuideQuestionsData(token, "slides", fileTitle, sectionContent).then(
+          dispatchNewMessage
+        );
       }
     }
   }, [debouncedState.currentSlideId]);
@@ -387,6 +387,8 @@ export default function AutoSidebar() {
     // also make sure it was the text content that changed, not its other properties
     if (hasMounted && debouncedState.currentSlideId === slide.id) {
       console.info("slide.texts changed... replace questions");
+
+      if (!state.messages) return;
 
       const messagesRegardingSlide = state.messages.filter(
         (message) => message.regarding === state.currentSlideId
@@ -409,7 +411,7 @@ export default function AutoSidebar() {
 
       setLoading(true);
 
-      getGuideQuestionsData(token, "slides", slide.title, sectionContent).then(
+      getGuideQuestionsData(token, "slides", fileTitle, sectionContent).then(
         (data) =>
           replaceMessage(data, lastMessageRegardingSlide.id, currentText)
       );
@@ -497,7 +499,7 @@ export default function AutoSidebar() {
                         getGuideQuestionsData(
                           token,
                           "slides",
-                          slide.title,
+                          fileTitle,
                           sectionContent
                         ).then((data) => replaceMessage(data, message.id));
                       }}
@@ -532,7 +534,7 @@ export default function AutoSidebar() {
                       getRevisedContentData(
                         token,
                         "slides",
-                        slide.title,
+                        fileTitle,
                         sectionContent,
                         message.questions
                       ).then((data) => {
@@ -574,7 +576,13 @@ export default function AutoSidebar() {
               );
             }
           })}
-        {(!state?.messages || loading) && <CircularProgress />}
+        {(!state?.messages || loading) && slide?.texts?.length > 0 && (
+          <CircularProgress />
+        )}
+        {(!state?.messages || loading) &&
+          (!slide?.texts || slide?.texts?.length === 0) && (
+            <EmptyNotice message="Add some text to a slide!" />
+          )}
       </Box>
     </SidebarWrapper>
   );

@@ -237,7 +237,7 @@ export default function SlideEditor({
                     fontVariant: "normal",
                     fill: "black",
                     align: "left",
-                    lineHeight: 1,
+                    lineHeight: 1.35,
                   });
                 }
                 return slide;
@@ -815,7 +815,7 @@ export default function SlideEditor({
 
                     function removeTextarea() {
                       textarea.parentNode.removeChild(textarea);
-                      window.removeEventListener("click", handleOutsideClick);
+                      // window.removeEventListener("click", handleOutsideClick);
                       textNodeRef.show();
                       // tr.show();
                       // tr.forceUpdate();

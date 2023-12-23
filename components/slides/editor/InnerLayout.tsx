@@ -41,7 +41,7 @@ export default function InnerLayout({ presentationId, slideData }) {
           />
         </Grid>
       </Grid>
-      <AutoSidebar />
+      <AutoSidebar title={title} />
     </SlidesContext.Provider>
   );
 }

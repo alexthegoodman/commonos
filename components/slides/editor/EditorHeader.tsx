@@ -12,7 +12,7 @@ const { DateTime } = require("luxon");
 
 const EditorHeader = ({ title, setTitle }) => {
   const onTitleChange = (e: any) => {
-    console.info("title change", e.target.value);
+    // console.info("title change", e.target.value);
     setTitle(e.target.value);
   };
 
