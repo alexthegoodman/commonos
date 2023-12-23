@@ -1,29 +1,35 @@
 "use client";
 
+import HeaderWrapper from "@/components/core/nav/HeaderWrapper";
 import PrimaryHeader from "@/components/core/nav/PrimaryHeader";
 import PrimaryTabs from "@/components/core/nav/PrimaryTabs";
 import { LauncherContext } from "@/context/LauncherContext";
+import useScrollPosition from "@/hooks/useScrollPosition";
 import { Box, styled } from "@mui/material";
 import { usePathname } from "next/navigation";
 import { useContext } from "react";
 
 const Background = styled("main")(({ theme }) => ({
   width: "100%",
-  height: "100vh",
-  // backgroundColor: theme.palette.background.default,
-  overflowY: "scroll",
+  // height: "100vh",
+  // // backgroundColor: theme.palette.background.default,
+  // overflowY: "scroll",
 
   background: "linear-gradient(355deg, #b92b27, #1565C0)",
   backgroundSize: "400% 400%",
   animation: "AnimationName 15s ease infinite",
 }));
 
-const Container = styled("div")(({ theme, hasSidebar }) => ({
+const Container = styled(Box)(({ theme, hasSidebar }) => ({
   maxWidth: hasSidebar ? "1600px" : "1400px",
   paddingRight: hasSidebar ? "400px" : "0px",
   width: "100%",
   margin: "0 auto",
   boxSizing: "border-box",
+}));
+
+const Spacer = styled("div")(({ theme }) => ({
+  paddingTop: "100px",
 }));
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -39,9 +45,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <Background>
+      <HeaderWrapper hasSidebar={hasSidebar} />
       <Container hasSidebar={hasSidebar}>
-        <PrimaryHeader />
-        <PrimaryTabs />
+        <Spacer />
         <Box>{children}</Box>
       </Container>
 

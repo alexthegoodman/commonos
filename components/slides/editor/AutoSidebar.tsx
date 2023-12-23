@@ -24,6 +24,7 @@ export const SidebarWrapper = styled("aside")(({ theme }) => ({
   maxWidth: "600px",
   height: "100vh",
   position: "fixed",
+  zIndex: "20",
   top: "0",
   right: "0",
   backgroundColor: "rgba(255, 255, 255, 0.1)",

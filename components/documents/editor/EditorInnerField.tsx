@@ -56,7 +56,8 @@ const QuillWrapper = styled(Box)(({ theme }) => ({
     zIndex: 1,
   },
   ".ql-container": {
-    height: "calc(100vh - 200px)",
+    minHeight: "calc(100vh - 200px)",
+    height: "auto",
     overflow: "auto",
     padding: "10px",
     // backgroundColor: theme.palette.background.paper,
@@ -66,6 +67,7 @@ const QuillWrapper = styled(Box)(({ theme }) => ({
   },
   ".ql-editor": {
     minHeight: "calc(100vh - 200px)",
+    height: "auto",
     padding: "10px",
     // backgroundColor: theme.palette.background.paper,
     color: "black",
