@@ -13,8 +13,14 @@ export const updateDocumentMutation = gql`
     $documentId: String!
     $title: String
     $content: String
+    $plaintext: String
   ) {
-    updateDocument(documentId: $documentId, title: $title, content: $content) {
+    updateDocument(
+      documentId: $documentId
+      title: $title
+      content: $content
+      plaintext: $plaintext
+    ) {
       id
     }
   }

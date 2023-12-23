@@ -18,7 +18,7 @@ import { useCookies } from "react-cookie";
 import { useDebounce } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 
-const SidebarWrapper = styled("aside")(({ theme }) => ({
+export const SidebarWrapper = styled("aside")(({ theme }) => ({
   minWidth: "400px",
   width: "25vw",
   maxWidth: "600px",
@@ -45,14 +45,14 @@ const AnswerButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const MessageItem = styled(Box)(({ theme }) => ({
+export const MessageItem = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
   backgroundColor: "rgba(0,0,0,0.1)",
   padding: theme.spacing(2),
   boxSizing: "border-box",
 }));
 
-function SidebarQuestionItem({
+export function SidebarQuestionItem({
   messageData,
   question,
   state,
@@ -386,8 +386,6 @@ export default function AutoSidebar({ title }) {
     // do not call on first mount, make sure slide didn't just change
     // also make sure it was the text content that changed, not its other properties
     if (hasMounted && debouncedState.currentSlideId === slide.id) {
-      console.info("slide.texts changed... replace questions");
-
       if (!state.messages) return;
 
       const messagesRegardingSlide = state.messages.filter(
@@ -408,6 +406,8 @@ export default function AutoSidebar({ title }) {
       }));
 
       if (!sectionContent.length) return;
+
+      console.info("slide.texts changed... replace questions");
 
       setLoading(true);
 

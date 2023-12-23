@@ -20,7 +20,8 @@ const EditorHeader = ({
 
   graphClient.setupClient(token);
 
-  const [{ editorJson, editorTitle }, dispatch] = useDocumentsContext();
+  const [{ editorJson, editorPlaintext, editorTitle }, dispatch] =
+    useDocumentsContext();
   const debouncedTitle = useDebounce(editorTitle, 500);
   const debouncedJson = useDebounce(editorJson, 500);
   const [lastSaved, setLastSaved] = React.useState<string | null>(null);
@@ -52,7 +53,10 @@ const EditorHeader = ({
   React.useEffect(() => {
     if (debouncedJson) {
       // console.info("debouncedJson", debouncedJson);
-      updateDocument({ content: JSON.stringify(debouncedJson) });
+      updateDocument({
+        content: JSON.stringify(debouncedJson),
+        plaintext: editorPlaintext,
+      });
     }
   }, [debouncedJson]);
 

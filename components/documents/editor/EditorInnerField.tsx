@@ -104,12 +104,14 @@ const EditorInnerField = ({
   const [{ editorPlaintext, focusModeEnabled }, dispatch] =
     useDocumentsContext();
 
+  const [textLoaded, setTextLoaded] = React.useState(false);
+
   const totalWords = editorPlaintext
     ? editorPlaintext.match(/(\w+)/g)?.length
     : 0;
 
   const onFieldChange = (html: any, delta: any, x: any, instance: any) => {
-    console.info("field change", html, delta, instance.getSelection());
+    // console.info("field change", html, delta, instance.getSelection());
 
     const selectionData = instance.getSelection();
 
@@ -124,10 +126,10 @@ const EditorInnerField = ({
       dispatch({ type: "editorValue", payload: html });
       dispatch({ type: "editorJson", payload: instance.getContents() });
       dispatch({ type: "editorPlaintext", payload: plaintext });
-      dispatch({
-        type: "editorRecentText",
-        payload: recentText,
-      });
+      // dispatch({
+      //   type: "editorRecentText",
+      //   payload: recentText,
+      // });
 
       // refetch(); // need to refetch after doc update, not on field change
     }
@@ -155,7 +157,7 @@ const EditorInnerField = ({
 
             console.log("User cursor is on", range.index, recentText);
 
-            dispatch({ type: "editorRecentText", payload: recentText });
+            // dispatch({ type: "editorRecentText", payload: recentText });
           } else {
             // var text = quill.getText(range.index, range.length);
             // console.log('User has highlighted', text);
@@ -172,18 +174,39 @@ const EditorInnerField = ({
   }, [editorRef.current]);
 
   React.useEffect(() => {
-    console.info(
-      "documentData?.plaintext",
-      documentData?.content,
-      documentData?.plaintext
-    );
     if (typeof editorRef.current !== "undefined") {
-      if (documentData?.plaintext && !documentData?.content) {
-        // dispatch({ type: "editorPlaintext", payload: documentData?.plaintext });
-        const elem = editorRef.current as any;
-        const quill = elem.getEditor();
+      setTextLoaded(true);
+      if (!textLoaded) {
+        console.info(
+          "load documentData?.plaintext",
+          documentData?.content,
+          documentData?.plaintext
+        );
+        if (documentData?.plaintext && !documentData?.content) {
+          // dispatch({ type: "editorPlaintext", payload: documentData?.plaintext });
+          const elem = editorRef.current as any;
+          const quill = elem.getEditor();
 
-        quill.setText(documentData?.plaintext);
+          quill.setText(documentData?.plaintext);
+
+          dispatch({ type: "editorJson", payload: quill.getContents() });
+          dispatch({
+            type: "editorPlaintext",
+            payload: documentData?.plaintext,
+          });
+        }
+        if (documentData?.content) {
+          const elem = editorRef.current as any;
+          const quill = elem.getEditor();
+
+          quill.setContents(documentData?.content);
+
+          dispatch({ type: "editorJson", payload: quill.getContents() });
+          dispatch({
+            type: "editorPlaintext",
+            payload: documentData?.plaintext,
+          });
+        }
       }
     }
   }, [documentData?.plaintext]);
@@ -235,7 +258,6 @@ const EditorInnerField = ({
                 ],
               }}
               placeholder="Begin typing here..."
-              defaultValue={documentData?.content}
               formats={formats}
             />
           </QuillWrapper>

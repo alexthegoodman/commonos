@@ -5,6 +5,7 @@ import * as React from "react";
 
 import EditorInnerField from "./EditorInnerField";
 import { CircularProgress } from "@mui/material";
+import AutoSidebar from "./AutoSidebar";
 
 const EditorField = ({
   documentId = "",
@@ -31,13 +32,16 @@ const EditorField = ({
     <section>
       <div>
         {ReactQuill ? (
-          <EditorInnerField
-            documentId={documentId}
-            documentData={documentData}
-            refetch={refetch}
-            Quill={Quill}
-            ReactQuill={ReactQuill}
-          />
+          <>
+            <EditorInnerField
+              documentId={documentId}
+              documentData={documentData}
+              refetch={refetch}
+              Quill={Quill}
+              ReactQuill={ReactQuill}
+            />
+            <AutoSidebar documentId={documentId} documentData={documentData} />
+          </>
         ) : (
           <CircularProgress />
         )}

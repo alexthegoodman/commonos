@@ -144,7 +144,7 @@ const DocumentTree = ({ documentId = "" }) => {
     // mutate,
   } = useSWR("browseKey", () => getDocumentsData(token));
 
-  console.info("documents data", userData, documentsData);
+  // console.info("documents data", userData, documentsData);
 
   const addToChildren = (obj, newId, targetId) => {
     if (obj.children) {

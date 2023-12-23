@@ -27,7 +27,7 @@ export default function Editor(props) {
     }
   );
 
-  console.info("document data", data);
+  // console.info("document data", data);
 
   const refetch = async () => {
     const newData = await getDocumentData(token, documentId);
