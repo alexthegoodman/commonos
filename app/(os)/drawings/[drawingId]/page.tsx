@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import DrawingEditor from "@/components/drawings/editor/DrawingEditor";
 import InnerLayout from "@/components/drawings/editor/InnerLayout";
 import {
@@ -40,6 +41,6 @@ export default function Drawing(props) {
       )}
     </>
   ) : (
-    <CircularProgress />
+    <PrimaryLoader />
   );
 }

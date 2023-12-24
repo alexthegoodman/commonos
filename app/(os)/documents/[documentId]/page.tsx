@@ -12,6 +12,7 @@ import useSWR from "swr";
 import { getDocumentData } from "../../../../fetchers/document";
 import EditorField from "@/components/documents/editor/EditorField";
 import { Box, CircularProgress } from "@mui/material";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 export default function Editor(props) {
   const { params } = props;
@@ -39,7 +40,7 @@ export default function Editor(props) {
 
   let body = <></>;
 
-  if (isLoading) body = <CircularProgress />;
+  if (isLoading) body = <PrimaryLoader />;
   if (error) body = <span>Error...</span>;
   if (!isLoading && !error)
     body = (

@@ -6,6 +6,7 @@ import * as React from "react";
 import EditorInnerField from "./EditorInnerField";
 import { CircularProgress } from "@mui/material";
 import AutoSidebar from "./AutoSidebar";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 const EditorField = ({
   documentId = "",
@@ -43,7 +44,7 @@ const EditorField = ({
             <AutoSidebar documentId={documentId} documentData={documentData} />
           </>
         ) : (
-          <CircularProgress />
+          <PrimaryLoader />
         )}
       </div>
     </section>

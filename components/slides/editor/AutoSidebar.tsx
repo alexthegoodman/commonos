@@ -1,6 +1,7 @@
 "use client";
 
 import EmptyNotice from "@/components/core/layout/EmptyNotice";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import { useSlidesContext } from "@/context/SlidesContext";
 import { getGuideQuestionsData, getRevisedContentData } from "@/fetchers/flow";
 import { CheckCircle, Refresh } from "@mui/icons-material";
@@ -579,7 +580,7 @@ export default function AutoSidebar({ title }) {
             }
           })}
         {(!state?.messages || loading) && slide?.texts?.length > 0 && (
-          <CircularProgress />
+          <PrimaryLoader />
         )}
         {(!state?.messages || loading) &&
           (!slide?.texts || slide?.texts?.length === 0) && (

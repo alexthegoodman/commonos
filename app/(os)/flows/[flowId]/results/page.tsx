@@ -1,6 +1,7 @@
 "use client";
 
 import InnerResults from "@/components/core/flows/InnerResults";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import { getFlowData } from "@/fetchers/flow";
 import { Status } from "@/helpers/defs";
 import { AutoAwesome } from "@mui/icons-material";
@@ -47,6 +48,6 @@ export default function FlowResults(props) {
   return !isLoading && context ? (
     <InnerResults flowId={flowId} prompt={flowData.prompt} context={context} />
   ) : (
-    <CircularProgress />
+    <PrimaryLoader />
   );
 }

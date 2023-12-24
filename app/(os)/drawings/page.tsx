@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import { getDrawingsData, newDrawing } from "@/fetchers/drawing";
 import { getUserData, updateDrawingFiles } from "@/fetchers/user";
 import Directories from "@/helpers/Directories";
@@ -131,7 +132,7 @@ export default function Drawings() {
           );
         })
       ) : (
-        <CircularProgress />
+        <PrimaryLoader />
       )}
     </Grid>
   );

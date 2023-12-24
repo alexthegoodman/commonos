@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import { getFlowData, getFlowsData } from "@/fetchers/flow";
 import { Box, CircularProgress, Link, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
@@ -37,6 +38,6 @@ export default function Flows(props) {
       </Box>
     </>
   ) : (
-    <CircularProgress />
+    <PrimaryLoader />
   );
 }

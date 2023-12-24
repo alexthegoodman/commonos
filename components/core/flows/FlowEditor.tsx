@@ -33,6 +33,7 @@ import { v4 as uuidv4 } from "uuid";
 import FormSelect from "../fields/FormSelect";
 import FormInput from "../fields/FormInput";
 import { useRouter } from "next/navigation";
+import PrimaryLoader from "../layout/PrimaryLoader";
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -578,7 +579,7 @@ export default function FlowEditor({ id, prompt }) {
                 />
               ))
             ) : (
-              <CircularProgress />
+              <PrimaryLoader />
             )}
             <Button
               onClick={() => {
@@ -715,7 +716,7 @@ export default function FlowEditor({ id, prompt }) {
                   })}
                 </>
               ) : (
-                <CircularProgress />
+                <PrimaryLoader />
               )}
             </Grid>
             <Grid item xs={12} md={4} paddingLeft={2}>
@@ -819,7 +820,7 @@ export default function FlowEditor({ id, prompt }) {
                 />
               ))
             ) : (
-              <CircularProgress />
+              <PrimaryLoader />
             )}
             <Button
               onClick={() => {

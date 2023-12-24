@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import { getSlideData, getSlidesData, newSlide } from "@/fetchers/slide";
 import { getUserData, updatePresentationFiles } from "@/fetchers/user";
 import Directories from "@/helpers/Directories";
@@ -139,7 +140,7 @@ export default function Slides(props) {
           );
         })
       ) : (
-        <CircularProgress />
+        <PrimaryLoader />
       )}
     </Grid>
   );

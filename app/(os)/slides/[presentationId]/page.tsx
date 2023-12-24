@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import Autosaver from "@/components/slides/editor/Autosaver";
 import EditorWrapper from "@/components/slides/editor/EditorWrapper";
 import InnerLayout from "@/components/slides/editor/InnerLayout";
@@ -47,6 +48,6 @@ export default function Presentation(props) {
       )}
     </>
   ) : (
-    <CircularProgress />
+    <PrimaryLoader />
   );
 }

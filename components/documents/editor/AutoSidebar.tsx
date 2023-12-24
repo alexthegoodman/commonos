@@ -1,6 +1,7 @@
 "use client";
 
 import EmptyNotice from "@/components/core/layout/EmptyNotice";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import {
   MessageItem,
   SidebarQuestionItem,
@@ -284,7 +285,7 @@ export default function AutoSidebar({ documentId, documentData }) {
             }
           })}
         {(!state?.messages || loading) && state.editorPlaintext && (
-          <CircularProgress />
+          <PrimaryLoader />
         )}
         {(!state?.messages || loading) && !state.editorPlaintext && (
           <EmptyNotice message="Add some text to a document!" />

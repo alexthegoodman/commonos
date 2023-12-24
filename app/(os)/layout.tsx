@@ -11,6 +11,7 @@ import { useContext } from "react";
 
 const Background = styled("main")(({ theme }) => ({
   width: "100%",
+  minHeight: "100vh",
   // height: "100vh",
   // // backgroundColor: theme.palette.background.default,
   // overflowY: "scroll",

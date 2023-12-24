@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import InnerLayout from "@/components/sheets/editor/InnerLayout";
 import SheetEditor from "@/components/sheets/editor/SheetEditor";
 import {
@@ -40,6 +41,6 @@ export default function Sheet(props) {
       )}
     </>
   ) : (
-    <CircularProgress />
+    <PrimaryLoader />
   );
 }

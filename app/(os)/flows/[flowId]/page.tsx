@@ -1,6 +1,7 @@
 "use client";
 
 import InnerLayout from "@/components/core/flows/InnerLayout";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import { FlowQuestionsContextState } from "@/context/FlowQuestionsContext";
 import { getFlowData } from "@/fetchers/flow";
 import { CircularProgress } from "@mui/material";
@@ -39,6 +40,6 @@ export default function Flow(props) {
       )}
     </>
   ) : (
-    <CircularProgress />
+    <PrimaryLoader />
   );
 }

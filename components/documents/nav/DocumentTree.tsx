@@ -8,6 +8,7 @@ import graphClient from "../../../helpers/GQLClient";
 import { newDocumentMutation } from "../../../gql/document";
 import { Box, CircularProgress, Link, Typography, styled } from "@mui/material";
 import { Add, ChevronRight } from "@mui/icons-material";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 const TreeWrapper = styled("section")(
   ({ theme }) => `
@@ -253,7 +254,7 @@ const DocumentTree = ({ documentId = "" }) => {
     );
   };
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <PrimaryLoader />;
   if (error) return <>{error.message}</>;
 
   const newTopLevelPage = (
