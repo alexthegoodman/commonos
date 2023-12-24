@@ -1,5 +1,20 @@
 import { gql } from "graphql-request";
 
+const FlowDetails = gql`
+  fragment FlowDetails on Flow {
+    id
+    prompt
+    type {
+      name
+      code
+    }
+    questionsContext
+    resultsContext
+    updatedAt
+    createdAt
+  }
+`;
+
 export const newFlowMutation = gql`
   mutation NewFlowMutation($prompt: String!, $typeCode: String!) {
     createFlow(prompt: $prompt, typeCode: $typeCode) {
@@ -19,9 +34,10 @@ export const updateFlowMutation = gql`
       questionsContext: $questionsContext
       resultsContext: $resultsContext
     ) {
-      id
+      ...FlowDetails
     }
   }
+  ${FlowDetails}
 `;
 
 export const myFlowsQuery = gql`
@@ -39,21 +55,10 @@ export const myFlowsQuery = gql`
 export const flowQuery = gql`
   query Flow($flowId: String!) {
     flow(flowId: $flowId) {
-      id
-
-      prompt
-      type {
-        name
-        code
-      }
-
-      questionsContext
-      resultsContext
-
-      updatedAt
-      createdAt
+      ...FlowDetails
     }
   }
+  ${FlowDetails}
 `;
 
 export const getFileListQuery = gql`

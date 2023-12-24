@@ -161,7 +161,7 @@ function QuestionItem({ type, fileId = null, question, state, dispatch }) {
                     dispatch({
                       type: "files",
                       payload: state.files.map((file) => {
-                        if (file.id === question.id) {
+                        if (file.id === fileId) {
                           return {
                             ...file,
                             questions: file.questions.map((q) => {
