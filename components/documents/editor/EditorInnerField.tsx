@@ -264,7 +264,7 @@ const EditorInnerField = ({
             >
               <Typography variant="body1">{totalWords} Words</Typography>
               <Typography variant="body1">
-                {editorPlaintext.length} Characters
+                {editorPlaintext?.length} Characters
               </Typography>
             </Box>
           </Box>

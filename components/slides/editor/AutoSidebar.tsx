@@ -133,7 +133,7 @@ export function SidebarQuestionItem({
         <AnswerButton
           disabled={disabled}
           onClick={() => {
-            const questionInIds = state.openQuestionIds.find(
+            const questionInIds = state?.openQuestionIds?.find(
               (id) => id === question.id
             );
             if (questionInIds) {
@@ -164,9 +164,10 @@ export function SidebarQuestionItem({
                 }),
               });
             } else {
+              const questionIds = state.openQuestionIds || [];
               dispatch({
                 type: "openQuestionIds",
-                payload: [...state.openQuestionIds, question.id],
+                payload: [...questionIds, question.id],
               });
             }
           }}
@@ -174,7 +175,7 @@ export function SidebarQuestionItem({
           Add Your Own Answer
         </AnswerButton>
       </Box>
-      <Box sx={{ width: 600, padding: 1 }}>
+      <Box sx={{ width: 400, padding: 1 }}>
         <TextareaAutosize
           style={{
             width: "100%",
@@ -195,7 +196,7 @@ export function SidebarQuestionItem({
             dispatch({
               type: "messages",
               payload: state.messages.map((message) => {
-                if (message.id === question.id) {
+                if (message.id === messageData.id) {
                   return {
                     ...message,
                     questions: message.questions.map((q) => {
