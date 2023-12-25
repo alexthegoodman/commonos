@@ -8,6 +8,10 @@ import "react-quill/dist/quill.snow.css";
 import { useDocumentsContext } from "../../../context/DocumentsContext";
 import EditorHeader from "./EditorHeader";
 import { Box, Typography, styled } from "@mui/material";
+var showdown = require("showdown"),
+  converter = new showdown.Converter({
+    disableForced4SpacesIndentedSublists: true,
+  });
 
 // const CustomToolbar = () => (
 //   <div id="toolbar">
@@ -123,14 +127,17 @@ const EditorInnerField = ({
       // const plaintext = html.replace(/<(.|\n)*?>/g, "");
       const plaintext = instance.getText();
 
-      const recentText = instance.getText(
-        selectionData.index - recentTextLength,
-        recentTextLength
-      );
+      const markdown = converter.makeMarkdown(html);
 
-      dispatch({ type: "editorValue", payload: html });
+      const elem = editorRef.current as any;
+      const quill = elem.getEditor();
+
+      console.info("markdown", html, markdown, quill.root.innerHTML);
+
+      dispatch({ type: "editorHtml", payload: html });
       dispatch({ type: "editorJson", payload: instance.getContents() });
       dispatch({ type: "editorPlaintext", payload: plaintext });
+      dispatch({ type: "editorMarkdown", payload: markdown });
       // dispatch({
       //   type: "editorRecentText",
       //   payload: recentText,
@@ -194,6 +201,7 @@ const EditorInnerField = ({
 
           quill.setText(documentData?.plaintext);
 
+          dispatch({ type: "editorHtml", payload: quill.root.innerHTML });
           dispatch({ type: "editorJson", payload: quill.getContents() });
           dispatch({
             type: "editorPlaintext",
@@ -206,6 +214,7 @@ const EditorInnerField = ({
 
           quill.setContents(documentData?.content);
 
+          dispatch({ type: "editorHtml", payload: quill.root.innerHTML });
           dispatch({ type: "editorJson", payload: quill.getContents() });
           dispatch({
             type: "editorPlaintext",

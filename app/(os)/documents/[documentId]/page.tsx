@@ -13,6 +13,8 @@ import { getDocumentData } from "../../../../fetchers/document";
 import EditorField from "@/components/documents/editor/EditorField";
 import { Box, CircularProgress } from "@mui/material";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
+import AutoSidebar from "@/components/documents/editor/AutoSidebar";
+import LexicalRTE from "@/components/documents/lexical/LexicalRTE";
 
 export default function Editor(props) {
   const { params } = props;
@@ -44,11 +46,10 @@ export default function Editor(props) {
   if (error) body = <span>Error...</span>;
   if (!isLoading && !error)
     body = (
-      <EditorField
-        documentId={documentId}
-        documentData={data}
-        refetch={refetch}
-      />
+      <>
+        <LexicalRTE documentId={documentId} documentData={data} />
+        <AutoSidebar documentId={documentId} documentData={data} />
+      </>
     );
 
   return (
