@@ -29,6 +29,7 @@ const EditorHeader = ({
   const debouncedMarkdown = useDebounce(markdown, 2000);
   const debouncedMessages = useDebounce(messages, 500);
   const [lastSaved, setLastSaved] = React.useState<string | null>(null);
+  const [hasMounted, setHasMounted] = React.useState(false);
 
   const updateDocument = async (args: any) => {
     const { updateDocument } = await graphClient.client?.request(
@@ -49,6 +50,12 @@ const EditorHeader = ({
   };
 
   React.useEffect(() => {
+    if (!hasMounted) {
+      setHasMounted(true);
+    }
+  }, []);
+
+  React.useEffect(() => {
     if (debouncedTitle) {
       updateDocument({ title: debouncedTitle });
     }
@@ -65,7 +72,7 @@ const EditorHeader = ({
   // }, [debouncedJson]);
 
   React.useEffect(() => {
-    if (debouncedMarkdown) {
+    if (hasMounted && debouncedMarkdown) {
       console.info("debouncedMarkdown", debouncedMarkdown);
       updateDocument({
         markdown: debouncedMarkdown,
@@ -74,7 +81,7 @@ const EditorHeader = ({
   }, [debouncedMarkdown]);
 
   React.useEffect(() => {
-    if (debouncedMessages) {
+    if (hasMounted && debouncedMessages) {
       // console.info("messages", messages);
       updateDocument({ messages: JSON.stringify(debouncedMessages) });
     }

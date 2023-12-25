@@ -141,7 +141,7 @@ export default function AutoSidebar({ documentId, documentData }) {
       debouncedState?.messages,
       debouncedState.markdown
     );
-    if (!debouncedState?.messages && debouncedState.markdown) {
+    if (debouncedState.messages.length === 0 && debouncedState.markdown) {
       // first set of questions
       const sectionContent = [
         {
@@ -290,10 +290,10 @@ export default function AutoSidebar({ documentId, documentData }) {
               );
             }
           })}
-        {(!state?.messages || loading) && state.editorPlaintext && (
+        {(state.messages.length === 0 || loading) && state.markdown && (
           <PrimaryLoader />
         )}
-        {(!state?.messages || loading) && !state.editorPlaintext && (
+        {(state.messages.length === 0 || loading) && state.markdown === "" && (
           <EmptyNotice message="Add some text to a document!" />
         )}
       </Box>
