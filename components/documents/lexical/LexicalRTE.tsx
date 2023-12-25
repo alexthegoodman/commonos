@@ -29,62 +29,98 @@ import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import ListMaxIndentLevelPlugin from "./ListMaxIndentLevelPlugin";
 import CodeHighlightPlugin from "./CodeHighlightPlugin";
 import AutoLinkPlugin from "./AutoLinkPlugin";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useEffect, useRef } from "react";
+import { useDocumentsContext } from "@/context/DocumentsContext";
+import EditorHeader from "../editor/EditorHeader";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
 }
 
-const editorConfig = {
-  // The editor theme
-  theme: LexicalTheme,
-  // Handling of errors during update
-  onError(error) {
-    throw error;
-  },
-  // Any custom nodes go here
-  nodes: [
-    HeadingNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    CodeNode,
-    CodeHighlightNode,
-    TableNode,
-    TableCellNode,
-    TableRowNode,
-    AutoLinkNode,
-    LinkNode,
-  ],
-};
-
 // see: https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/Editor.tsx
 
-export default function LexicalRTE() {
+export default function LexicalRTE({ documentId, documentData, refetch }) {
   const editorRef = useRef(null);
 
-  // useEffect(() => {
-  //   if (editorRef.current) {
-  //     editorRef.current.update(() => {
-  //       const markdown = $convertToMarkdownString(TRANSFORMERS);
-  //       console.info("markdown", markdown);
-  //     });
-  //   }
-  // }, [editorRef.current]);
+  const [{ markdown, revisedMarkdown, plaintext, messages }, dispatch] =
+    useDocumentsContext();
+
+  // console.info("render LexicalRTE", markdown, plaintext);
+
+  useEffect(() => {
+    if (revisedMarkdown) {
+      console.info("revisedMarkdown", revisedMarkdown);
+      editorRef.current.update(() => {
+        $convertFromMarkdownString(revisedMarkdown, TRANSFORMERS);
+      });
+
+      dispatch({ type: "markdown", payload: revisedMarkdown });
+    }
+  }, [revisedMarkdown]);
 
   const onChange = (delta) => {
     console.info("delta", delta);
     if (editorRef.current) {
       editorRef.current.update(() => {
-        const markdown = $convertToMarkdownString(TRANSFORMERS);
-        console.info("markdown", markdown);
+        const newMarkdown = $convertToMarkdownString(TRANSFORMERS);
+        // console.info("newMarkdown", newMarkdown);
+        dispatch({ type: "markdown", payload: newMarkdown });
       });
     }
   };
 
+  const initialMarkdwn = plaintext && !markdown ? plaintext : markdown;
+
+  const editorConfig = {
+    // The editor theme
+    theme: LexicalTheme,
+    editorState: () => $convertFromMarkdownString(initialMarkdwn, TRANSFORMERS),
+    // Handling of errors during update
+    onError(error) {
+      throw error;
+    },
+    // Any custom nodes go here
+    nodes: [
+      HeadingNode,
+      ListNode,
+      ListItemNode,
+      QuoteNode,
+      CodeNode,
+      CodeHighlightNode,
+      TableNode,
+      TableCellNode,
+      TableRowNode,
+      AutoLinkNode,
+      LinkNode,
+    ],
+  };
+
+  const totalWords = markdown?.split(" ").length;
+
   return (
     <>
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <EditorHeader
+          documentId={documentId}
+          documentData={documentData}
+          refetchDocument={refetch}
+        />
+        <Box
+          display="flex"
+          flexDirection="row"
+          gap={2}
+          justifyContent="flex-end"
+        >
+          <Typography variant="body1">{totalWords} Words</Typography>
+          <Typography variant="body1">{markdown?.length} Characters</Typography>
+        </Box>
+      </Box>
       <LexicalComposer initialConfig={editorConfig}>
         <div className="editor-container">
           <ToolbarPlugin />

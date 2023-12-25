@@ -15,6 +15,7 @@ import { Box, CircularProgress } from "@mui/material";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import AutoSidebar from "@/components/documents/editor/AutoSidebar";
 import LexicalRTE from "@/components/documents/lexical/LexicalRTE";
+import InnerLayout from "@/components/documents/editor/InnerLayout";
 
 export default function Editor(props) {
   const { params } = props;
@@ -34,29 +35,31 @@ export default function Editor(props) {
 
   const refetch = async () => {
     const newData = await getDocumentData(token, documentId);
-    console.info("refetch document data", newData);
+    // console.info("refetch document data", newData);
     mutate(newData);
   };
 
-  // console.info("document data", documentId, data, error, isLoading);
+  const context = {
+    ...DocumentsContextState,
+    messages: data?.messages || [],
+    plaintext: data?.plaintext || "",
+    markdown: data?.markdown || "",
+  };
 
-  let body = <></>;
-
-  if (isLoading) body = <PrimaryLoader />;
-  if (error) body = <span>Error...</span>;
-  if (!isLoading && !error)
-    body = (
-      <>
-        <LexicalRTE documentId={documentId} documentData={data} />
-        <AutoSidebar documentId={documentId} documentData={data} />
-      </>
-    );
+  // console.info("context", context);
 
   return (
-    <DocumentsContext.Provider
-      value={useReducer(DocumentsContextReducer, DocumentsContextState)}
-    >
-      <Box>{body}</Box>
-    </DocumentsContext.Provider>
+    <>
+      {!isLoading && !error && context ? (
+        <InnerLayout
+          context={context}
+          documentId={documentId}
+          documentData={data}
+          refetch={refetch}
+        />
+      ) : (
+        <PrimaryLoader />
+      )}
+    </>
   );
 }

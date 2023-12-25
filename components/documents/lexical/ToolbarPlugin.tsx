@@ -43,7 +43,7 @@ import {
   getDefaultCodeLanguage,
   getCodeLanguages,
 } from "@lexical/code";
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 
 const LowPriority = 1;
 
@@ -257,168 +257,168 @@ function getSelectedNode(selection) {
   }
 }
 
-// function BlockOptionsDropdownList({
-//   editor,
-//   blockType,
-//   toolbarRef,
-//   setShowBlockOptionsDropDown,
-// }) {
-//   const dropDownRef = useRef(null);
+function BlockOptionsDropdownList({
+  editor,
+  blockType,
+  toolbarRef,
+  setShowBlockOptionsDropDown,
+}) {
+  const dropDownRef = useRef(null);
 
-//   useEffect(() => {
-//     const toolbar = toolbarRef.current;
-//     const dropDown = dropDownRef.current;
+  useEffect(() => {
+    const toolbar = toolbarRef.current;
+    const dropDown = dropDownRef.current;
 
-//     if (toolbar !== null && dropDown !== null) {
-//       const { top, left } = toolbar.getBoundingClientRect();
-//       dropDown.style.top = `${top + 40}px`;
-//       dropDown.style.left = `${left}px`;
-//     }
-//   }, [dropDownRef, toolbarRef]);
+    if (toolbar !== null && dropDown !== null) {
+      const { top, left } = toolbar.getBoundingClientRect();
+      dropDown.style.top = `${top + 40}px`;
+      dropDown.style.left = `${left}px`;
+    }
+  }, [dropDownRef, toolbarRef]);
 
-//   useEffect(() => {
-//     const dropDown = dropDownRef.current;
-//     const toolbar = toolbarRef.current;
+  useEffect(() => {
+    const dropDown = dropDownRef.current;
+    const toolbar = toolbarRef.current;
 
-//     if (dropDown !== null && toolbar !== null) {
-//       const handle = (event) => {
-//         const target = event.target;
+    if (dropDown !== null && toolbar !== null) {
+      const handle = (event) => {
+        const target = event.target;
 
-//         if (!dropDown.contains(target) && !toolbar.contains(target)) {
-//           setShowBlockOptionsDropDown(false);
-//         }
-//       };
-//       document.addEventListener("click", handle);
+        if (!dropDown.contains(target) && !toolbar.contains(target)) {
+          setShowBlockOptionsDropDown(false);
+        }
+      };
+      document.addEventListener("click", handle);
 
-//       return () => {
-//         document.removeEventListener("click", handle);
-//       };
-//     }
-//   }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
+      return () => {
+        document.removeEventListener("click", handle);
+      };
+    }
+  }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
 
-//   const formatParagraph = () => {
-//     if (blockType !== "paragraph") {
-//       editor.update(() => {
-//         const selection = $getSelection();
+  const formatParagraph = () => {
+    if (blockType !== "paragraph") {
+      editor.update(() => {
+        const selection = $getSelection();
 
-//         if ($isRangeSelection(selection)) {
-//           $wrapNodes(selection, () => $createParagraphNode());
-//         }
-//       });
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+        if ($isRangeSelection(selection)) {
+          $wrapNodes(selection, () => $createParagraphNode());
+        }
+      });
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   const formatLargeHeading = () => {
-//     if (blockType !== "h1") {
-//       editor.update(() => {
-//         const selection = $getSelection();
+  const formatLargeHeading = () => {
+    if (blockType !== "h1") {
+      editor.update(() => {
+        const selection = $getSelection();
 
-//         if ($isRangeSelection(selection)) {
-//           $wrapNodes(selection, () => $createHeadingNode("h1"));
-//         }
-//       });
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+        if ($isRangeSelection(selection)) {
+          $wrapNodes(selection, () => $createHeadingNode("h1"));
+        }
+      });
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   const formatSmallHeading = () => {
-//     if (blockType !== "h2") {
-//       editor.update(() => {
-//         const selection = $getSelection();
+  const formatSmallHeading = () => {
+    if (blockType !== "h2") {
+      editor.update(() => {
+        const selection = $getSelection();
 
-//         if ($isRangeSelection(selection)) {
-//           $wrapNodes(selection, () => $createHeadingNode("h2"));
-//         }
-//       });
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+        if ($isRangeSelection(selection)) {
+          $wrapNodes(selection, () => $createHeadingNode("h2"));
+        }
+      });
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   const formatBulletList = () => {
-//     if (blockType !== "ul") {
-//       editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND);
-//     } else {
-//       editor.dispatchCommand(REMOVE_LIST_COMMAND);
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+  const formatBulletList = () => {
+    if (blockType !== "ul") {
+      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND);
+    } else {
+      editor.dispatchCommand(REMOVE_LIST_COMMAND);
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   const formatNumberedList = () => {
-//     if (blockType !== "ol") {
-//       editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND);
-//     } else {
-//       editor.dispatchCommand(REMOVE_LIST_COMMAND);
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+  const formatNumberedList = () => {
+    if (blockType !== "ol") {
+      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND);
+    } else {
+      editor.dispatchCommand(REMOVE_LIST_COMMAND);
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   const formatQuote = () => {
-//     if (blockType !== "quote") {
-//       editor.update(() => {
-//         const selection = $getSelection();
+  const formatQuote = () => {
+    if (blockType !== "quote") {
+      editor.update(() => {
+        const selection = $getSelection();
 
-//         if ($isRangeSelection(selection)) {
-//           $wrapNodes(selection, () => $createQuoteNode());
-//         }
-//       });
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+        if ($isRangeSelection(selection)) {
+          $wrapNodes(selection, () => $createQuoteNode());
+        }
+      });
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   const formatCode = () => {
-//     if (blockType !== "code") {
-//       editor.update(() => {
-//         const selection = $getSelection();
+  const formatCode = () => {
+    if (blockType !== "code") {
+      editor.update(() => {
+        const selection = $getSelection();
 
-//         if ($isRangeSelection(selection)) {
-//           $wrapNodes(selection, () => $createCodeNode());
-//         }
-//       });
-//     }
-//     setShowBlockOptionsDropDown(false);
-//   };
+        if ($isRangeSelection(selection)) {
+          $wrapNodes(selection, () => $createCodeNode());
+        }
+      });
+    }
+    setShowBlockOptionsDropDown(false);
+  };
 
-//   return (
-//     <div className="dropdown" ref={dropDownRef}>
-//       <button className="item" onClick={formatParagraph}>
-//         <span className="icon paragraph" />
-//         <span className="text">Normal</span>
-//         {blockType === "paragraph" && <span className="active" />}
-//       </button>
-//       <button className="item" onClick={formatLargeHeading}>
-//         <span className="icon large-heading" />
-//         <span className="text">Large Heading</span>
-//         {blockType === "h1" && <span className="active" />}
-//       </button>
-//       <button className="item" onClick={formatSmallHeading}>
-//         <span className="icon small-heading" />
-//         <span className="text">Small Heading</span>
-//         {blockType === "h2" && <span className="active" />}
-//       </button>
-//       <button className="item" onClick={formatBulletList}>
-//         <span className="icon bullet-list" />
-//         <span className="text">Bullet List</span>
-//         {blockType === "ul" && <span className="active" />}
-//       </button>
-//       <button className="item" onClick={formatNumberedList}>
-//         <span className="icon numbered-list" />
-//         <span className="text">Numbered List</span>
-//         {blockType === "ol" && <span className="active" />}
-//       </button>
-//       <button className="item" onClick={formatQuote}>
-//         <span className="icon quote" />
-//         <span className="text">Quote</span>
-//         {blockType === "quote" && <span className="active" />}
-//       </button>
-//       <button className="item" onClick={formatCode}>
-//         <span className="icon code" />
-//         <span className="text">Code Block</span>
-//         {blockType === "code" && <span className="active" />}
-//       </button>
-//     </div>
-//   );
-// }
+  return (
+    <div className="dropdown" ref={dropDownRef}>
+      <button className="item" onClick={formatParagraph}>
+        <span className="icon paragraph" />
+        <span className="text">Normal</span>
+        {blockType === "paragraph" && <span className="active" />}
+      </button>
+      <button className="item" onClick={formatLargeHeading}>
+        <span className="icon large-heading" />
+        <span className="text">Large Heading</span>
+        {blockType === "h1" && <span className="active" />}
+      </button>
+      <button className="item" onClick={formatSmallHeading}>
+        <span className="icon small-heading" />
+        <span className="text">Small Heading</span>
+        {blockType === "h2" && <span className="active" />}
+      </button>
+      <button className="item" onClick={formatBulletList}>
+        <span className="icon bullet-list" />
+        <span className="text">Bullet List</span>
+        {blockType === "ul" && <span className="active" />}
+      </button>
+      <button className="item" onClick={formatNumberedList}>
+        <span className="icon numbered-list" />
+        <span className="text">Numbered List</span>
+        {blockType === "ol" && <span className="active" />}
+      </button>
+      <button className="item" onClick={formatQuote}>
+        <span className="icon quote" />
+        <span className="text">Quote</span>
+        {blockType === "quote" && <span className="active" />}
+      </button>
+      <button className="item" onClick={formatCode}>
+        <span className="icon code" />
+        <span className="text">Code Block</span>
+        {blockType === "code" && <span className="active" />}
+      </button>
+    </div>
+  );
+}
 
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -564,9 +564,9 @@ export default function ToolbarPlugin() {
         {/* <i className="format redo" /> */}
         <i className="ph ph-arrow-clockwise-thin" />
       </IconButton>
-      {/* {supportedBlockTypes.has(blockType) && (
+      {supportedBlockTypes.has(blockType) && (
         <>
-          <IconButton
+          <Button
             className="toolbar-item block-controls"
             onClick={() =>
               setShowBlockOptionsDropDown(!showBlockOptionsDropDown)
@@ -576,20 +576,17 @@ export default function ToolbarPlugin() {
             <span className={"icon block-type " + blockType} />
             <span className="text">{blockTypeToBlockName[blockType]}</span>
             <i className="ph ph-chevron-down-thin" />
-          </IconButton>
-          {showBlockOptionsDropDown &&
-            createPortal(
-              <BlockOptionsDropdownList
-                editor={editor}
-                blockType={blockType}
-                toolbarRef={toolbarRef}
-                setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
-              />,
-              document.body
-            )}
-          <Divider />
+          </Button>
+          {showBlockOptionsDropDown && (
+            <BlockOptionsDropdownList
+              editor={editor}
+              blockType={blockType}
+              toolbarRef={toolbarRef}
+              setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
+            />
+          )}
         </>
-      )} */}
+      )}
       {blockType === "code" ? (
         <>
           <Select

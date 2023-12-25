@@ -139,14 +139,14 @@ export default function AutoSidebar({ documentId, documentData }) {
       "mounted",
       hasMounted,
       debouncedState?.messages,
-      debouncedState.editorPlaintext
+      debouncedState.markdown
     );
-    if (!debouncedState?.messages && debouncedState.editorPlaintext) {
+    if (!debouncedState?.messages && debouncedState.markdown) {
       // first set of questions
       const sectionContent = [
         {
           id: "1",
-          text: debouncedState.editorPlaintext,
+          text: debouncedState.markdown,
         },
       ];
 
@@ -156,7 +156,7 @@ export default function AutoSidebar({ documentId, documentData }) {
         dispatchNewMessage
       );
     }
-  }, [debouncedState.editorPlaintext]);
+  }, [debouncedState.markdown]);
 
   return (
     <SidebarWrapper>
@@ -173,9 +173,13 @@ export default function AutoSidebar({ documentId, documentData }) {
       >
         {state?.messages &&
           state.messages.map((message, i) => {
-            const regardingData = documentsData.filter(
+            const regardingData = documentsData?.filter(
               (document) => document.id === message.regarding
             )[0];
+
+            if (!regardingData) {
+              return <></>;
+            }
 
             if (message.type === "questions") {
               const questionsAnswered = message.questions.filter(
@@ -207,7 +211,7 @@ export default function AutoSidebar({ documentId, documentData }) {
                         const sectionContent = [
                           {
                             id: "1",
-                            text: state.editorPlaintext,
+                            text: state.markdown,
                           },
                         ];
 
@@ -242,7 +246,7 @@ export default function AutoSidebar({ documentId, documentData }) {
                       const sectionContent = [
                         {
                           id: "1",
-                          text: state.editorPlaintext,
+                          text: state.markdown,
                         },
                       ];
 
@@ -255,17 +259,19 @@ export default function AutoSidebar({ documentId, documentData }) {
                         sectionContent,
                         message.questions
                       ).then((data) => {
-                        const newPlaintext = data.text;
+                        const newMarkdown = data.text;
 
                         dispatch({
-                          type: "revisedPlaintext",
-                          payload: newPlaintext,
+                          type: "revisedMarkdown",
+                          payload: newMarkdown,
                         });
+
+                        // TODO: update LexicalRTE with new markdown
 
                         const newSectionContent = [
                           {
                             id: "1",
-                            text: newPlaintext,
+                            text: newMarkdown,
                           },
                         ];
 

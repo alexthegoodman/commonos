@@ -20,10 +20,13 @@ const EditorHeader = ({
 
   graphClient.setupClient(token);
 
-  const [{ editorJson, editorPlaintext, editorTitle, messages }, dispatch] =
-    useDocumentsContext();
+  const [
+    { editorJson, editorPlaintext, editorTitle, markdown, messages },
+    dispatch,
+  ] = useDocumentsContext();
   const debouncedTitle = useDebounce(editorTitle, 500);
   const debouncedJson = useDebounce(editorJson, 500);
+  const debouncedMarkdown = useDebounce(markdown, 2000);
   const debouncedMessages = useDebounce(messages, 500);
   const [lastSaved, setLastSaved] = React.useState<string | null>(null);
 
@@ -51,15 +54,24 @@ const EditorHeader = ({
     }
   }, [debouncedTitle]);
 
+  // React.useEffect(() => {
+  //   if (debouncedJson) {
+  //     // console.info("debouncedJson", debouncedJson);
+  //     updateDocument({
+  //       content: JSON.stringify(debouncedJson),
+  //       plaintext: editorPlaintext,
+  //     });
+  //   }
+  // }, [debouncedJson]);
+
   React.useEffect(() => {
-    if (debouncedJson) {
-      // console.info("debouncedJson", debouncedJson);
+    if (debouncedMarkdown) {
+      console.info("debouncedMarkdown", debouncedMarkdown);
       updateDocument({
-        content: JSON.stringify(debouncedJson),
-        plaintext: editorPlaintext,
+        markdown: debouncedMarkdown,
       });
     }
-  }, [debouncedJson]);
+  }, [debouncedMarkdown]);
 
   React.useEffect(() => {
     if (debouncedMessages) {

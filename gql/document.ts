@@ -15,6 +15,7 @@ export const updateDocumentMutation = gql`
     $content: String
     $plaintext: String
     $html: String
+    $markdown: String
     $messages: String
   ) {
     updateDocument(
@@ -23,6 +24,7 @@ export const updateDocumentMutation = gql`
       content: $content
       plaintext: $plaintext
       html: $html
+      markdown: $markdown
       messages: $messages
     ) {
       id
@@ -55,6 +57,7 @@ export const documentQuery = gql`
       content
       plaintext
       html
+      markdown
       messages
 
       creator {
