@@ -132,6 +132,7 @@ export default function LexicalRTE({ documentId, documentData, refetch }) {
                     backgroundColor: "white",
                     minHeight: "80vh",
                     padding: "5px 15px",
+                    lineHeight: "1.35",
                   }}
                   className="editor-input"
                 />
@@ -157,6 +158,12 @@ export default function LexicalRTE({ documentId, documentData, refetch }) {
       <style jsx global>{`
         .editor-nested-listitem {
           list-style: none;
+        }
+        .editor-text-strikethrough {
+          text-decoration: line-through;
+        }
+        .editor-text-underline {
+          text-decoration: underline;
         }
       `}</style>
     </>
