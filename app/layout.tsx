@@ -71,7 +71,6 @@ export default function RootLayout({
             color: #000;
           }
         `}</style>
-        <script src="https://unpkg.com/phosphor-icons" async></script>
       </body>
     </html>
   );

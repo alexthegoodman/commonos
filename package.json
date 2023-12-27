@@ -19,6 +19,7 @@
     "@lexical/react": "^0.12.5",
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.19",
+    "@phosphor-icons/react": "^2.0.15",
     "@prisma/client": "^5.6.0",
     "@silevis/reactgrid": "^4.1.2",
     "@uidotdev/usehooks": "^2.4.1",

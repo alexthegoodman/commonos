@@ -43,7 +43,24 @@ import {
   getDefaultCodeLanguage,
   getCodeLanguages,
 } from "@lexical/code";
-import { Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
+import {
+  ArrowClockwise,
+  ArrowCounterClockwise,
+  CaretDown,
+  Code,
+  Link,
+  ListBullets,
+  ListNumbers,
+  Paragraph,
+  TextB,
+  TextHOne,
+  TextHTwo,
+  TextIndent,
+  TextItalic,
+  TextOutdent,
+  TextStrikethrough,
+} from "@phosphor-icons/react";
 
 const LowPriority = 1;
 
@@ -263,38 +280,38 @@ function BlockOptionsDropdownList({
   toolbarRef,
   setShowBlockOptionsDropDown,
 }) {
-  const dropDownRef = useRef(null);
+  // const dropDownRef = useRef(null);
 
-  useEffect(() => {
-    const toolbar = toolbarRef.current;
-    const dropDown = dropDownRef.current;
+  // useEffect(() => {
+  //   const toolbar = toolbarRef.current;
+  //   const dropDown = dropDownRef.current;
 
-    if (toolbar !== null && dropDown !== null) {
-      const { top, left } = toolbar.getBoundingClientRect();
-      dropDown.style.top = `${top + 40}px`;
-      dropDown.style.left = `${left}px`;
-    }
-  }, [dropDownRef, toolbarRef]);
+  //   if (toolbar !== null && dropDown !== null) {
+  //     const { top, left } = toolbar.getBoundingClientRect();
+  //     dropDown.style.top = `${top + 40}px`;
+  //     dropDown.style.left = `${left}px`;
+  //   }
+  // }, [dropDownRef, toolbarRef]);
 
-  useEffect(() => {
-    const dropDown = dropDownRef.current;
-    const toolbar = toolbarRef.current;
+  // useEffect(() => {
+  //   const dropDown = dropDownRef.current;
+  //   const toolbar = toolbarRef.current;
 
-    if (dropDown !== null && toolbar !== null) {
-      const handle = (event) => {
-        const target = event.target;
+  //   if (dropDown !== null && toolbar !== null) {
+  //     const handle = (event) => {
+  //       const target = event.target;
 
-        if (!dropDown.contains(target) && !toolbar.contains(target)) {
-          setShowBlockOptionsDropDown(false);
-        }
-      };
-      document.addEventListener("click", handle);
+  //       if (!dropDown.contains(target) && !toolbar.contains(target)) {
+  //         setShowBlockOptionsDropDown(false);
+  //       }
+  //     };
+  //     document.addEventListener("click", handle);
 
-      return () => {
-        document.removeEventListener("click", handle);
-      };
-    }
-  }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
+  //     return () => {
+  //       document.removeEventListener("click", handle);
+  //     };
+  //   }
+  // }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
 
   const formatParagraph = () => {
     if (blockType !== "paragraph") {
@@ -380,33 +397,24 @@ function BlockOptionsDropdownList({
   };
 
   return (
-    <div className="dropdown" ref={dropDownRef}>
-      <button className="item" onClick={formatParagraph}>
-        <span className="icon paragraph" />
-        <span className="text">Normal</span>
-        {blockType === "paragraph" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatLargeHeading}>
-        <span className="icon large-heading" />
-        <span className="text">Large Heading</span>
-        {blockType === "h1" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatSmallHeading}>
-        <span className="icon small-heading" />
-        <span className="text">Small Heading</span>
-        {blockType === "h2" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatBulletList}>
-        <span className="icon bullet-list" />
-        <span className="text">Bullet List</span>
-        {blockType === "ul" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatNumberedList}>
-        <span className="icon numbered-list" />
-        <span className="text">Numbered List</span>
-        {blockType === "ol" && <span className="active" />}
-      </button>
-      <button className="item" onClick={formatQuote}>
+    <>
+      <IconButton className="item" onClick={formatParagraph}>
+        <Paragraph weight="thin" />
+        {/* {blockType === "paragraph" && <span className="active" />} */}
+      </IconButton>
+      <IconButton className="item" onClick={formatLargeHeading}>
+        <TextHOne weight="thin" />
+      </IconButton>
+      <IconButton className="item" onClick={formatSmallHeading}>
+        <TextHTwo weight="thin" />
+      </IconButton>
+      <IconButton className="item" onClick={formatBulletList}>
+        <ListBullets weight="thin" />
+      </IconButton>
+      <IconButton className="item" onClick={formatNumberedList}>
+        <ListNumbers weight="thin" />
+      </IconButton>
+      {/* <button className="item" onClick={formatQuote}>
         <span className="icon quote" />
         <span className="text">Quote</span>
         {blockType === "quote" && <span className="active" />}
@@ -415,8 +423,8 @@ function BlockOptionsDropdownList({
         <span className="icon code" />
         <span className="text">Code Block</span>
         {blockType === "code" && <span className="active" />}
-      </button>
-    </div>
+      </button> */}
+    </>
   );
 }
 
@@ -551,7 +559,7 @@ export default function ToolbarPlugin() {
         aria-label="Undo"
       >
         {/*<i className="format undo" />*/}
-        <i className="ph ph-arrow-counter-clockwise-thin" />
+        <ArrowCounterClockwise weight="thin" />
       </IconButton>
       <IconButton
         disabled={!canRedo}
@@ -562,9 +570,10 @@ export default function ToolbarPlugin() {
         aria-label="Redo"
       >
         {/* <i className="format redo" /> */}
-        <i className="ph ph-arrow-clockwise-thin" />
+        {/* <i className="ph ph-arrow-clockwise-thin" /> */}
+        <ArrowClockwise weight="thin" />
       </IconButton>
-      {supportedBlockTypes.has(blockType) && (
+      {/* {supportedBlockTypes.has(blockType) && (
         <>
           <Button
             className="toolbar-item block-controls"
@@ -586,7 +595,13 @@ export default function ToolbarPlugin() {
             />
           )}
         </>
-      )}
+      )} */}
+      <BlockOptionsDropdownList
+        editor={editor}
+        blockType={blockType}
+        toolbarRef={toolbarRef}
+        setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
+      />
       {blockType === "code" ? (
         <>
           <Select
@@ -596,7 +611,8 @@ export default function ToolbarPlugin() {
             value={codeLanguage}
           />
           {/* <i className="chevron-down inside" /> */}
-          <i className="ph ph-chevron-down-thin" />
+          {/* <i className="ph ph-chevron-down-thin" /> */}
+          <CaretDown weight="thin" />
         </>
       ) : (
         <>
@@ -608,7 +624,8 @@ export default function ToolbarPlugin() {
             aria-label="Format Bold"
           >
             {/* <i className="format bold" /> */}
-            <i className="ph ph-text-bolder-thin" />
+            {/* <i className="ph ph-text-bolder-thin" /> */}
+            <TextB weight="thin" />
           </IconButton>
           <IconButton
             onClick={() => {
@@ -617,9 +634,10 @@ export default function ToolbarPlugin() {
             className={"toolbar-item spaced " + (isItalic ? "active" : "")}
             aria-label="Format Italics"
           >
-            <i className="ph ph-text-italic-thin"></i>
+            {/* <i className="ph ph-text-italic-thin"></i> */}
+            <TextItalic weight="thin" />
           </IconButton>
-          <IconButton
+          {/* <IconButton
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
             }}
@@ -627,7 +645,7 @@ export default function ToolbarPlugin() {
             aria-label="Format Underline"
           >
             <i className="ph ph-text-underline-thin"></i>
-          </IconButton>
+          </IconButton> */}
           <IconButton
             onClick={() => {
               editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
@@ -637,7 +655,8 @@ export default function ToolbarPlugin() {
             }
             aria-label="Format Strikethrough"
           >
-            <i className="ph ph-text-strikethrough-thin"></i>
+            {/* <i className="ph ph-text-strikethrough-thin"></i> */}
+            <TextStrikethrough weight="thin" />
           </IconButton>
           <IconButton
             onClick={() => {
@@ -646,14 +665,16 @@ export default function ToolbarPlugin() {
             className={"toolbar-item spaced " + (isCode ? "active" : "")}
             aria-label="Insert Code"
           >
-            <i className="ph ph-code-thin"></i>
+            {/* <i className="ph ph-code-thin"></i> */}
+            <Code weight="thin" />
           </IconButton>
           <IconButton
             onClick={insertLink}
             className={"toolbar-item spaced " + (isLink ? "active" : "")}
             aria-label="Insert Link"
           >
-            <i className="ph ph-link-thin"></i>
+            {/* <i className="ph ph-link-thin"></i> */}
+            <Link weight="thin" />
           </IconButton>
           {isLink &&
             createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
@@ -700,7 +721,8 @@ export default function ToolbarPlugin() {
             className="toolbar-item spaced"
             aria-label="Text Outdent"
           >
-            <i className="ph ph-text-outdent-thin" />
+            {/* <i className="ph ph-text-outdent-thin" /> */}
+            <TextOutdent weight="thin" />
           </IconButton>
           <IconButton
             onClick={() => {
@@ -709,7 +731,8 @@ export default function ToolbarPlugin() {
             className="toolbar-item"
             aria-label="Text Indent"
           >
-            <i className="ph ph-text-indent-thin" />
+            {/* <i className="ph ph-text-indent-thin" /> */}
+            <TextIndent weight="thin" />
           </IconButton>
         </>
       )}

@@ -165,6 +165,12 @@ export default function LexicalRTE({ documentId, documentData, refetch }) {
         .editor-text-underline {
           text-decoration: underline;
         }
+        .editor-heading-h1 {
+          font-size: 1.5rem;
+        }
+        .editor-heading-h2 {
+          font-size: 1.25rem;
+        }
       `}</style>
     </>
   );
