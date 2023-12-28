@@ -148,7 +148,7 @@ const DocumentTree = ({ documentId = "" }) => {
     // mutate,
   } = useSWR("browseKey", () => getDocumentsData(token));
 
-  // console.info("documents data", userData, documentsData);
+  console.info("documents data", userData, documentsData);
 
   const [dragActiveId, setDragActiveId] = React.useState(null);
 
@@ -178,39 +178,74 @@ const DocumentTree = ({ documentId = "" }) => {
     // update doocument tree optimistically with new position
     const newTree = treeData;
 
-    // remove item from tree then add to new position (right after zone)
-    newTree.forEach((item) => {
-      removeFromChildren(item, itemId);
-      addAfter(item, itemId, zoneId);
-    });
+    if (zoneId.includes("InnerTop")) {
+      // add item to top of zone
+      newTree.forEach((item) => {
+        const sourceItem = getSourceItem(item, itemId);
+        console.info("sourceItem1", item, sourceItem);
+
+        removeFromChildren(item, itemId);
+        addToFirstIndex(
+          item,
+          itemId,
+          zoneId.replace("InnerTop", ""),
+          sourceItem
+        );
+
+        if (item.id === zoneId.replace("InnerTop", "")) {
+          // add to top of children
+          item.children.splice(0, 0, sourceItem);
+        }
+      });
+    } else {
+      // remove item from tree then add to new position (right after zone)
+      newTree.forEach((item) => {
+        const sourceItem = getSourceItem(item, itemId);
+        console.info("sourceItem2", item, sourceItem);
+
+        removeFromChildren(item, itemId);
+        addAfter(item, itemId, zoneId, sourceItem);
+      });
+    }
 
     mutate("homeLayout", () => updateDocumentTree(token, newTree), {
       optimisticData: { ...userData, documentTree: newTree },
     });
   };
 
-  // const recursiveGetItem = (obj, targetId) => {
-  //   if (obj.children) {
-  //     obj.children.forEach((child) => {
-  //       if (child.id === targetId) {
-  //         return { obj, child };
-  //       }
-  //       return recursiveGetItem(child, targetId);
-  //     });
-  //   }
-  // };
+  const getSourceItem = (obj, targetId) => {
+    if (obj.children) {
+      for (const child of obj.children) {
+        if (child.id === targetId) {
+          return child;
+        }
+        const foundChild = getSourceItem(child, targetId);
+        if (foundChild) {
+          return foundChild;
+        }
+      }
+    }
+  };
 
-  const addAfter = (obj, newId, targetId) => {
+  // add to first index of children of zone
+  const addToFirstIndex = (obj, newId, targetId, sourceItem) => {
     if (obj.children) {
       obj.children.forEach((child, index) => {
         if (child.id === targetId) {
-          obj.children.splice(index + 1, 0, {
-            id: newId,
-            folded: true,
-            children: [],
-          });
+          child.children.splice(0, 0, sourceItem);
         }
-        addAfter(child, newId, targetId);
+        addToFirstIndex(child, newId, targetId, sourceItem);
+      });
+    }
+  };
+
+  const addAfter = (obj, newId, targetId, sourceItem) => {
+    if (obj.children) {
+      obj.children.forEach((child, index) => {
+        if (child.id === targetId) {
+          obj.children.splice(index + 1, 0, sourceItem);
+        }
+        addAfter(child, newId, targetId, sourceItem);
       });
     }
   };
@@ -219,6 +254,7 @@ const DocumentTree = ({ documentId = "" }) => {
     if (obj.children) {
       obj.children.forEach((child) => {
         if (child.id === targetId) {
+          console.info("removing", child);
           obj.children = obj.children.filter((item) => item.id !== targetId);
         }
         removeFromChildren(child, targetId);
@@ -298,7 +334,23 @@ const DocumentTree = ({ documentId = "" }) => {
   const displayChildren = (obj, addPage) => {
     return obj.children ? (
       <ul>
+        <li
+          className={
+            "topLevelSpacer" +
+            (dragActiveId === `${obj.id}InnerTop` ? " dragActive" : "")
+          }
+          style={{
+            height: "5px",
+            width: "100%",
+            backgroundColor: "transparent",
+          }}
+          id={`${obj.id}InnerTop`}
+          onDrop={dropHandler}
+          onDragOver={dragoverHandler}
+        ></li>
         {obj.children.map((child) => {
+          if (!child) return <></>;
+
           const childData = documentsData.filter(
             (document) => document.id === child.id
           )[0];
