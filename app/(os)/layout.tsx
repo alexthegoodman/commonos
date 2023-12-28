@@ -27,10 +27,17 @@ const Container = styled(Box)(({ theme, hasSidebar }) => ({
   width: "100%",
   margin: "0 auto",
   boxSizing: "border-box",
+  [theme.breakpoints.down("lg")]: {
+    maxWidth: "100vw",
+    paddingRight: "0px",
+  },
 }));
 
 const Spacer = styled("div")(({ theme }) => ({
   paddingTop: "100px",
+  // [theme.breakpoints.down("sm")]: {
+  //   paddingTop: "125px",
+  // },
 }));
 
 export default function Layout({ children }: { children: React.ReactNode }) {

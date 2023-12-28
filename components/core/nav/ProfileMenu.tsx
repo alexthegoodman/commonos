@@ -1,7 +1,17 @@
 import { getUserData } from "@/fetchers/user";
-import { Avatar, Box, Typography } from "@mui/material";
+import { Avatar, Box, Typography, styled } from "@mui/material";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
+
+const ProfileMenuWrapper = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  padding: "5px 0 0 0",
+  [theme.breakpoints.down("sm")]: {
+    display: "none",
+  },
+}));
 
 export default function ProfileMenu() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
@@ -12,12 +22,7 @@ export default function ProfileMenu() {
   });
 
   return (
-    <Box
-      display="flex"
-      flexDirection="row"
-      alignItems="center"
-      padding="5px 0 0 0"
-    >
+    <ProfileMenuWrapper>
       {userData?.profileUrl && (
         <Avatar sx={{ width: 45, height: 45 }} src={userData.profileUrl} />
       )}
@@ -25,6 +30,6 @@ export default function ProfileMenu() {
         Welcome back, <br />
         {userData?.email}
       </Typography>
-    </Box>
+    </ProfileMenuWrapper>
   );
 }

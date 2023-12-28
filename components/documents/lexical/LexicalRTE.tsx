@@ -35,7 +35,7 @@ import { useDocumentsContext } from "@/context/DocumentsContext";
 import EditorHeader from "../editor/EditorHeader";
 
 function Placeholder() {
-  return <div className="editor-placeholder">Enter some rich text...</div>;
+  return <div className="editor-placeholder">Enter some text...</div>;
 }
 
 // see: https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/Editor.tsx

@@ -19,7 +19,7 @@ import { useCookies } from "react-cookie";
 import { useDebounce } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 
-export const SidebarWrapper = styled("aside")(({ theme }) => ({
+export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
   minWidth: "400px",
   width: "25vw",
   maxWidth: "600px",
@@ -31,6 +31,16 @@ export const SidebarWrapper = styled("aside")(({ theme }) => ({
   backgroundColor: "rgba(255, 255, 255, 0.1)",
   padding: "20px 0",
   boxSizing: "border-box",
+  [theme.breakpoints.down("lg")]: {
+    padding: "10px 0",
+    width: "100vw",
+    maxWidth: "100vw",
+    height: "350px",
+    backgroundColor: theme.palette.background.default,
+    top: "auto",
+    bottom: mobileOpen ? "0" : "-300px",
+    transition: "all 0.2s ease-in-out",
+  },
 }));
 
 const AnswerButton = styled(Button)(({ theme }) => ({
@@ -237,7 +247,7 @@ export default function AutoSidebar({ title }) {
     (slide) => slide.id === state.currentSlideId
   )[0];
 
-  const fileTitle = title + " - " + slide.title;
+  const fileTitle = title + " - " + slide?.title;
 
   const scrollToMessage = (messageId) => {
     const replacedMessageTop = document.getElementById(

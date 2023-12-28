@@ -19,6 +19,10 @@ const Container = styled(Box)(({ theme, opaque, hasSidebar }) => ({
   width: "100%",
   margin: "0 auto",
   boxSizing: "border-box",
+  [theme.breakpoints.down("lg")]: {
+    maxWidth: "100vw",
+    paddingRight: "0px",
+  },
 }));
 
 const InnerContainer = styled(Box)(({ theme, opaque }) => ({

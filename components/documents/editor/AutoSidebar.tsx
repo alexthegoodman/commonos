@@ -16,15 +16,33 @@ import {
   Button,
   CircularProgress,
   Grid,
+  IconButton,
   TextareaAutosize,
   Typography,
   styled,
 } from "@mui/material";
+import { CaretDown, CaretUp } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
 import { useDebounce } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
+
+const ResponsiveSpacer = styled("div")(({ theme }) => ({
+  [theme.breakpoints.down("xl")]: {
+    height: "0px",
+  },
+  [theme.breakpoints.down("lg")]: {
+    height: "350px",
+  },
+}));
+
+const SidebarMobileToggle = styled(IconButton)(({ theme }) => ({
+  [theme.breakpoints.up("lg")]: {
+    display: "none",
+  },
+}));
+
 export default function AutoSidebar({ documentId, documentData }) {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
@@ -41,6 +59,7 @@ export default function AutoSidebar({ documentId, documentData }) {
   const [state, dispatch] = useDocumentsContext();
   const debouncedState = useDebounce(state, 500);
   const messagesContainerRef = useRef(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const fileTitle = documentData?.title;
 
@@ -159,54 +178,101 @@ export default function AutoSidebar({ documentId, documentData }) {
   }, [debouncedState.markdown]);
 
   return (
-    <SidebarWrapper>
-      <Typography variant="overline" px={3}>
-        Live Guide
-      </Typography>
-      <Box
-        ref={messagesContainerRef}
-        sx={{
-          height: "calc(100vh - 200px)",
-          overflowY: "scroll",
-          overflowX: "hidden",
-        }}
-      >
-        {state?.messages &&
-          state.messages.map((message, i) => {
-            const regardingData = documentsData?.filter(
-              (document) => document.id === message.regarding
-            )[0];
+    <>
+      <SidebarWrapper mobileOpen={mobileOpen}>
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="overline" px={3}>
+            Live Guide
+          </Typography>
+          <SidebarMobileToggle onClick={() => setMobileOpen(!mobileOpen)}>
+            {mobileOpen ? <CaretDown /> : <CaretUp />}
+          </SidebarMobileToggle>
+        </Box>
 
-            if (!regardingData) {
-              return <></>;
-            }
+        <Box
+          ref={messagesContainerRef}
+          sx={{
+            height: "calc(100vh - 200px)",
+            overflowY: "scroll",
+            overflowX: "hidden",
+          }}
+        >
+          {state?.messages &&
+            state.messages.map((message, i) => {
+              const regardingData = documentsData?.filter(
+                (document) => document.id === message.regarding
+              )[0];
 
-            if (message.type === "questions") {
-              const questionsAnswered = message.questions.filter(
-                (question) =>
-                  question.chosenAnswers.length > 0 || question.freeformAnswer
-              );
-              return (
-                <MessageItem
-                  key={message.id}
-                  id={`messageItem${message.regarding + i}`}
-                  container
-                  spacing={2}
-                >
-                  <Box
-                    display="flex"
-                    flexDirection="row"
-                    justifyContent="space-between"
-                    mb={2}
+              if (!regardingData) {
+                return <></>;
+              }
+
+              if (message.type === "questions") {
+                const questionsAnswered = message.questions.filter(
+                  (question) =>
+                    question.chosenAnswers.length > 0 || question.freeformAnswer
+                );
+                return (
+                  <MessageItem
+                    key={message.id}
+                    id={`messageItem${message.regarding + i}`}
+                    container
+                    spacing={2}
                   >
-                    <Typography variant="subtitle1">
-                      Regarding {regardingData.title}
-                    </Typography>
+                    <Box
+                      display="flex"
+                      flexDirection="row"
+                      justifyContent="space-between"
+                      mb={2}
+                    >
+                      <Typography variant="subtitle1">
+                        Regarding {regardingData.title}
+                      </Typography>
+                      <Button
+                        variant="contained"
+                        color="info"
+                        size="small"
+                        disabled={loading}
+                        onClick={() => {
+                          const sectionContent = [
+                            {
+                              id: "1",
+                              text: state.markdown,
+                            },
+                          ];
+
+                          setLoading(true);
+
+                          getGuideQuestionsData(
+                            token,
+                            "documents",
+                            fileTitle,
+                            sectionContent
+                          ).then((data) => replaceMessage(data, message.id));
+                        }}
+                      >
+                        <Refresh />
+                      </Button>
+                    </Box>
+                    {message.questions.map((question) => (
+                      <SidebarQuestionItem
+                        key={question.id}
+                        messageData={message}
+                        question={question}
+                        state={state}
+                        dispatch={dispatch}
+                        disabled={loading}
+                      />
+                    ))}
                     <Button
+                      color="success"
                       variant="contained"
-                      color="info"
-                      size="small"
-                      disabled={loading}
+                      disabled={loading || questionsAnswered.length === 0}
                       onClick={() => {
                         const sectionContent = [
                           {
@@ -217,86 +283,54 @@ export default function AutoSidebar({ documentId, documentData }) {
 
                         setLoading(true);
 
-                        getGuideQuestionsData(
+                        getRevisedContentData(
                           token,
                           "documents",
                           fileTitle,
-                          sectionContent
-                        ).then((data) => replaceMessage(data, message.id));
+                          sectionContent,
+                          message.questions
+                        ).then((data) => {
+                          const newMarkdown = data.text;
+
+                          dispatch({
+                            type: "revisedMarkdown",
+                            payload: newMarkdown,
+                          });
+
+                          // TODO: update LexicalRTE with new markdown
+
+                          const newSectionContent = [
+                            {
+                              id: "1",
+                              text: newMarkdown,
+                            },
+                          ];
+
+                          getGuideQuestionsData(
+                            token,
+                            "documents",
+                            fileTitle,
+                            newSectionContent
+                          ).then((data) => replaceMessage(data, message.id));
+                        });
                       }}
                     >
-                      <Refresh />
+                      Update Content
                     </Button>
-                  </Box>
-                  {message.questions.map((question) => (
-                    <SidebarQuestionItem
-                      key={question.id}
-                      messageData={message}
-                      question={question}
-                      state={state}
-                      dispatch={dispatch}
-                      disabled={loading}
-                    />
-                  ))}
-                  <Button
-                    color="success"
-                    variant="contained"
-                    disabled={loading || questionsAnswered.length === 0}
-                    onClick={() => {
-                      const sectionContent = [
-                        {
-                          id: "1",
-                          text: state.markdown,
-                        },
-                      ];
-
-                      setLoading(true);
-
-                      getRevisedContentData(
-                        token,
-                        "documents",
-                        fileTitle,
-                        sectionContent,
-                        message.questions
-                      ).then((data) => {
-                        const newMarkdown = data.text;
-
-                        dispatch({
-                          type: "revisedMarkdown",
-                          payload: newMarkdown,
-                        });
-
-                        // TODO: update LexicalRTE with new markdown
-
-                        const newSectionContent = [
-                          {
-                            id: "1",
-                            text: newMarkdown,
-                          },
-                        ];
-
-                        getGuideQuestionsData(
-                          token,
-                          "documents",
-                          fileTitle,
-                          newSectionContent
-                        ).then((data) => replaceMessage(data, message.id));
-                      });
-                    }}
-                  >
-                    Update Content
-                  </Button>
-                </MessageItem>
-              );
-            }
-          })}
-        {(state.messages.length === 0 || loading) && state.markdown && (
-          <PrimaryLoader />
-        )}
-        {(state.messages.length === 0 || loading) && state.markdown === "" && (
-          <EmptyNotice message="Add some text to a document!" />
-        )}
-      </Box>
-    </SidebarWrapper>
+                  </MessageItem>
+                );
+              }
+            })}
+          {(state.messages.length === 0 || loading) && state.markdown && (
+            <PrimaryLoader />
+          )}
+          {(state.messages.length === 0 || loading) &&
+            state.markdown === "" && (
+              <EmptyNotice message="Add some text to a document!" />
+            )}
+        </Box>
+      </SidebarWrapper>
+      <ResponsiveSpacer />
+    </>
   );
 }
