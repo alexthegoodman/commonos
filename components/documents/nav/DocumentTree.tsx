@@ -98,6 +98,9 @@ const TreeWrapper = styled("section")(
               display: none;
             }
           }
+          &.dragActive {
+            border-bottom: 2px solid white;
+          }
         }
       }
     }
@@ -146,6 +149,82 @@ const DocumentTree = ({ documentId = "" }) => {
   } = useSWR("browseKey", () => getDocumentsData(token));
 
   // console.info("documents data", userData, documentsData);
+
+  const [dragActiveId, setDragActiveId] = React.useState(null);
+
+  console.info("dragActiveId", dragActiveId);
+
+  const linkDragStart = (e) => {
+    console.info("dragging", e.target.id);
+    e.dataTransfer.dropEffect = "move";
+    e.dataTransfer.setData("text/plain", e.target.id);
+  };
+
+  const dragoverHandler = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragActiveId(e.target.id);
+  };
+
+  const dropHandler = (e) => {
+    e.preventDefault();
+    const itemId = e.dataTransfer.getData("text/plain");
+    const zoneId = e.target.id;
+    console.info("dropped", treeData, itemId, zoneId);
+    setDragActiveId(null);
+
+    if (!itemId || !zoneId) return;
+
+    // update doocument tree optimistically with new position
+    const newTree = treeData;
+
+    // remove item from tree then add to new position (right after zone)
+    newTree.forEach((item) => {
+      removeFromChildren(item, itemId);
+      addAfter(item, itemId, zoneId);
+    });
+
+    mutate("homeLayout", () => updateDocumentTree(token, newTree), {
+      optimisticData: { ...userData, documentTree: newTree },
+    });
+  };
+
+  // const recursiveGetItem = (obj, targetId) => {
+  //   if (obj.children) {
+  //     obj.children.forEach((child) => {
+  //       if (child.id === targetId) {
+  //         return { obj, child };
+  //       }
+  //       return recursiveGetItem(child, targetId);
+  //     });
+  //   }
+  // };
+
+  const addAfter = (obj, newId, targetId) => {
+    if (obj.children) {
+      obj.children.forEach((child, index) => {
+        if (child.id === targetId) {
+          obj.children.splice(index + 1, 0, {
+            id: newId,
+            folded: true,
+            children: [],
+          });
+        }
+        addAfter(child, newId, targetId);
+      });
+    }
+  };
+
+  const removeFromChildren = (obj, targetId) => {
+    if (obj.children) {
+      obj.children.forEach((child) => {
+        if (child.id === targetId) {
+          obj.children = obj.children.filter((item) => item.id !== targetId);
+        }
+        removeFromChildren(child, targetId);
+      });
+    }
+  };
 
   const addToChildren = (obj, newId, targetId) => {
     if (obj.children) {
@@ -230,14 +309,27 @@ const DocumentTree = ({ documentId = "" }) => {
 
           return (
             <>
-              <li className={child.folded ? "folded" : ""}>
+              <li
+                className={
+                  (child.folded ? "folded" : "") +
+                  (dragActiveId === `${child.id}` ? " dragActive" : "")
+                }
+                id={`${child.id}Target`}
+                onDrop={dropHandler}
+                onDragOver={dragoverHandler}
+              >
                 <Typography
                   variant="body2"
                   className={documentId === child.id ? "selected" : ""}
                 >
                   <ChevronRight onClick={() => toggleFold(child.id)} />
 
-                  <Link href={`/documents/${child.id}`} draggable="true">
+                  <Link
+                    id={`${child.id}`}
+                    href={`/documents/${child.id}`}
+                    draggable="true"
+                    onDragStart={linkDragStart}
+                  >
                     {childData?.title}
                   </Link>
                 </Typography>
@@ -282,14 +374,27 @@ const DocumentTree = ({ documentId = "" }) => {
                 <>
                   <ul>
                     <>
-                      <li className={item.folded ? "folded" : ""}>
+                      <li
+                        className={
+                          (item.folded ? "folded" : "") +
+                          (dragActiveId === `${item.id}` ? " dragActive" : "")
+                        }
+                        id={`${item.id}Target`}
+                        onDrop={dropHandler}
+                        onDragOver={dragoverHandler}
+                      >
                         <Typography
                           variant="body2"
                           className={documentId === item.id ? "selected" : ""}
                         >
                           <ChevronRight onClick={() => toggleFold(item.id)} />
 
-                          <Link href={`/documents/${item.id}`} draggable="true">
+                          <Link
+                            id={`${item.id}`}
+                            href={`/documents/${item.id}`}
+                            draggable="true"
+                            onDragStart={linkDragStart}
+                          >
                             {itemData?.title}
                           </Link>
                         </Typography>

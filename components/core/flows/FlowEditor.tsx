@@ -11,6 +11,7 @@ import {
   Image,
   List,
   PresentToAllOutlined,
+  Refresh,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -351,6 +352,7 @@ export default function FlowEditor({ id, prompt }) {
   const [currentFileId, setCurrentFileId] = useState(null);
   const [gotFiles, setGotFiles] = useState(false);
   const [view, setView] = useState("initial"); // initial, files, questions
+  const [loading, setLoading] = useState(false);
 
   const currentFileData = state.files.find((file) => file.id === currentFileId);
 
@@ -383,6 +385,52 @@ export default function FlowEditor({ id, prompt }) {
   const beginQuestions = (file) => {
     setCurrentFileId(file.id);
     setView("questions");
+  };
+
+  const getFileQuestions = () => {
+    setLoading(true);
+    getQuestionsData(
+      token,
+      id,
+      currentFileData.app,
+      `
+      File Title: "${currentFileData.name}"
+      Background Information: "${prompt}"
+    `,
+      "files"
+    )
+      .then((data) => {
+        console.info("got file questions", data);
+
+        dispatch({
+          type: "files",
+          payload: state.files.map((file) => {
+            if (file.id === currentFileId) {
+              return {
+                ...file,
+                questions: data.questions.map((question) => {
+                  return {
+                    id: uuidv4(),
+                    type: "multipleChoice",
+                    question: question.question,
+                    possibleAnswers: question.answers,
+                    chosenAnswers: [],
+                    freeformAnswer: "",
+                  };
+                }),
+              };
+            } else {
+              return file;
+            }
+          }),
+        });
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("caught error", err);
+        // TODO: display error
+      });
   };
 
   useEffect(() => {
@@ -512,46 +560,7 @@ export default function FlowEditor({ id, prompt }) {
         !currentFileData.questions ||
         currentFileData.questions.length === 0
       ) {
-        getQuestionsData(
-          token,
-          id,
-          currentFileData.app,
-          `
-          File Title: "${currentFileData.name}"
-          Background Information: "${prompt}"
-        `,
-          "files"
-        )
-          .then((data) => {
-            console.info("got file questions", data);
-
-            dispatch({
-              type: "files",
-              payload: state.files.map((file) => {
-                if (file.id === currentFileId) {
-                  return {
-                    ...file,
-                    questions: data.questions.map((question) => {
-                      return {
-                        id: uuidv4(),
-                        type: "multipleChoice",
-                        question: question.question,
-                        possibleAnswers: question.answers,
-                        chosenAnswers: [],
-                        freeformAnswer: "",
-                      };
-                    }),
-                  };
-                } else {
-                  return file;
-                }
-              }),
-            });
-          })
-          .catch((err) => {
-            console.error("caught error", err);
-            // TODO: display error
-          });
+        getFileQuestions();
       }
     }
   }, [view]);
@@ -802,13 +811,28 @@ export default function FlowEditor({ id, prompt }) {
       {view === "questions" && (
         <>
           <Grid container gap={3}>
-            <Box>
-              <Typography variant="overline">File Title</Typography>
-              <Typography variant="h5">{currentFileData.name}</Typography>
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <Box>
+                <Typography variant="overline">File Title</Typography>
+                <Typography variant="h5">{currentFileData.name}</Typography>
+              </Box>
+              <Button
+                color="info"
+                variant="contained"
+                onClick={getFileQuestions}
+              >
+                <Refresh />
+              </Button>
             </Box>
 
-            {currentFileData.questions &&
-            currentFileData.questions.length > 0 ? (
+            {!loading &&
+              currentFileData.questions &&
+              currentFileData.questions.length > 0 &&
               currentFileData.questions.map((question, i) => (
                 <QuestionItem
                   key={question.id}
@@ -818,10 +842,8 @@ export default function FlowEditor({ id, prompt }) {
                   state={state}
                   dispatch={dispatch}
                 />
-              ))
-            ) : (
-              <PrimaryLoader />
-            )}
+              ))}
+            {loading && <PrimaryLoader />}
             <Button
               onClick={() => {
                 setCurrentFileId(null);
