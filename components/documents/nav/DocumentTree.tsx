@@ -1,13 +1,22 @@
 import * as React from "react";
 import useSWR, { mutate } from "swr";
 
-import { getDocumentsData } from "../../../fetchers/document";
+import { deleteDocument, getDocumentsData } from "../../../fetchers/document";
 import { useCookies } from "react-cookie";
 import { getUserData, updateDocumentTree } from "../../../fetchers/user";
 import graphClient from "../../../helpers/GQLClient";
 import { newDocumentMutation } from "../../../gql/document";
-import { Box, CircularProgress, Link, Typography, styled } from "@mui/material";
-import { Add, ChevronRight } from "@mui/icons-material";
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Link,
+  Menu,
+  MenuItem,
+  Typography,
+  styled,
+} from "@mui/material";
+import { Add, ChevronRight, MoreVert } from "@mui/icons-material";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 const TreeWrapper = styled("section")(
@@ -50,6 +59,26 @@ const TreeWrapper = styled("section")(
         }
   
         li {
+          position: relative;
+
+          .documentOptions {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            display: none;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            justify-content: center;
+            align-items: center;
+          }
+
+          &:hover {
+            > p > .documentOptions {
+              display: flex;
+            }
+          }           
+
           span, p {
             display: flex;
             flex-direction: row;
@@ -59,7 +88,7 @@ const TreeWrapper = styled("section")(
               background-color: grey;
             }
   
-            svg {
+            .chevron {
               display: flex;
               justify-content: center;
               align-items: center;
@@ -90,7 +119,7 @@ const TreeWrapper = styled("section")(
           }
   
           &.folded {
-            svg {
+            .chevron {
               transform: rotate(0deg);
             }
   
@@ -106,6 +135,101 @@ const TreeWrapper = styled("section")(
     }
 `
 );
+
+const getItemFromTree = (tree, targetId) => {
+  console.info("getItemFromTree", tree, targetId);
+
+  const sourceItemTop = tree.filter((it) => it?.id === targetId)[0];
+  if (sourceItemTop) {
+    return sourceItemTop;
+  }
+
+  for (const obj of tree) {
+    const foundChild = getSourceItem(obj, targetId);
+    if (foundChild) {
+      return foundChild;
+    }
+  }
+};
+
+const getSourceItem = (obj, targetId) => {
+  if (obj?.children) {
+    for (const child of obj.children) {
+      if (child?.id === targetId) {
+        return child;
+      }
+      const foundChild = getSourceItem(child, targetId);
+      if (foundChild) {
+        return foundChild;
+      }
+    }
+  }
+};
+
+// add to first index of children of zone
+const addToFirstIndex = (obj, newId, targetId, sourceItem) => {
+  if (obj?.children) {
+    obj.children.forEach((child, index) => {
+      if (child?.id === targetId) {
+        child.children.splice(0, 0, sourceItem);
+      }
+      addToFirstIndex(child, newId, targetId, sourceItem);
+    });
+  }
+};
+
+const addAfter = (obj, newId, targetId, sourceItem) => {
+  if (obj?.children) {
+    obj.children.forEach((child, index) => {
+      if (child?.id === targetId) {
+        obj.children.splice(index + 1, 0, sourceItem);
+      }
+      addAfter(child, newId, targetId, sourceItem);
+    });
+  }
+};
+
+const removeFromTree = (tree, targetId) => {
+  console.info("removeFromTree", tree, targetId);
+  tree.forEach((item) => {
+    removeFromChildren(item, targetId);
+  });
+  return tree.filter((it) => it?.id !== targetId);
+};
+
+const removeFromChildren = (obj, targetId) => {
+  if (obj?.children) {
+    obj.children.forEach((child) => {
+      if (child?.id === targetId) {
+        console.info("removing", child);
+        obj.children = obj.children.filter((item) => item?.id !== targetId);
+      }
+      removeFromChildren(child, targetId);
+    });
+  }
+};
+
+const addToChildren = (obj, newId, targetId) => {
+  if (obj?.children) {
+    obj.children.forEach((child) => {
+      if (child?.id === targetId) {
+        child.children.push({ id: newId, folded: true, children: [] });
+      }
+      addToChildren(child, newId, targetId);
+    });
+  }
+};
+
+const foldChildren = (obj, targetId) => {
+  if (obj?.children) {
+    obj.children.forEach((child) => {
+      if (child?.id === targetId) {
+        child.folded = !child.folded;
+      }
+      foldChildren(child, targetId);
+    });
+  }
+};
 
 const AddDocumentMenu = ({ id = null, addPageHandler }) => {
   // const [showMenu, setShowMenu] = React.useState(false);
@@ -126,6 +250,55 @@ const AddDocumentMenu = ({ id = null, addPageHandler }) => {
         <></>
       )} */}
     </li>
+  );
+};
+
+const DocumentOptionsMenu = ({ treeData, userData, id = null }) => {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDelete = async () => {
+    let newTree = treeData;
+
+    if (!id) return;
+
+    newTree = newTree.filter((item) => item?.id !== id);
+
+    newTree.forEach((item) => {
+      removeFromChildren(item, id);
+    });
+
+    mutate("homeLayout", () => updateDocumentTree(token, newTree), {
+      optimisticData: { ...userData, documentTree: newTree },
+    });
+
+    try {
+      await deleteDocument(token, id);
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+
+  return (
+    <>
+      <IconButton className="documentOptions" onClick={handleClick}>
+        <MoreVert />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+      </Menu>
+    </>
   );
 };
 
@@ -168,120 +341,58 @@ const DocumentTree = ({ documentId = "" }) => {
 
   const dropHandler = (e) => {
     e.preventDefault();
-    const itemId = e.dataTransfer.getData("text/plain");
+    const sourceId = e.dataTransfer.getData("text/plain");
     const zoneId = e.target.id;
-    console.info("dropped", treeData, itemId, zoneId);
+    console.info("dropped", treeData, sourceId, zoneId);
     setDragActiveId(null);
 
-    if (!itemId || !zoneId) return;
+    if (!sourceId || !zoneId) return;
+
+    if (sourceId === zoneId) return;
 
     // update doocument tree optimistically with new position
-    const newTree = treeData;
+    let newTree = treeData;
 
     if (zoneId.includes("InnerTop")) {
       // add item to top of zone
-      newTree.forEach((item) => {
-        const sourceItem = getSourceItem(item, itemId);
-        console.info("sourceItem1", item, sourceItem);
+      const sourceItem = getItemFromTree(newTree, sourceId);
+      console.info("sourceItem1", sourceItem);
 
-        removeFromChildren(item, itemId);
+      newTree = removeFromTree(newTree, sourceId);
+
+      newTree.forEach((item) => {
         addToFirstIndex(
           item,
-          itemId,
+          sourceId,
           zoneId.replace("InnerTop", ""),
           sourceItem
         );
 
-        if (item.id === zoneId.replace("InnerTop", "")) {
+        if (item?.id === zoneId.replace("InnerTop", "")) {
           // add to top of children
           item.children.splice(0, 0, sourceItem);
         }
       });
     } else {
       // remove item from tree then add to new position (right after zone)
-      newTree.forEach((item) => {
-        const sourceItem = getSourceItem(item, itemId);
-        console.info("sourceItem2", item, sourceItem);
+      const sourceItem = getItemFromTree(newTree, sourceId);
+      console.info("sourceItem2", sourceItem);
 
-        removeFromChildren(item, itemId);
-        addAfter(item, itemId, zoneId, sourceItem);
+      newTree = removeFromTree(newTree, sourceId);
+
+      newTree.forEach((item) => {
+        addAfter(item, sourceId, zoneId, sourceItem);
+
+        if (item?.id === zoneId) {
+          // add after at top level
+          newTree.splice(newTree.indexOf(item) + 1, 0, sourceItem);
+        }
       });
     }
 
     mutate("homeLayout", () => updateDocumentTree(token, newTree), {
       optimisticData: { ...userData, documentTree: newTree },
     });
-  };
-
-  const getSourceItem = (obj, targetId) => {
-    if (obj.children) {
-      for (const child of obj.children) {
-        if (child.id === targetId) {
-          return child;
-        }
-        const foundChild = getSourceItem(child, targetId);
-        if (foundChild) {
-          return foundChild;
-        }
-      }
-    }
-  };
-
-  // add to first index of children of zone
-  const addToFirstIndex = (obj, newId, targetId, sourceItem) => {
-    if (obj.children) {
-      obj.children.forEach((child, index) => {
-        if (child.id === targetId) {
-          child.children.splice(0, 0, sourceItem);
-        }
-        addToFirstIndex(child, newId, targetId, sourceItem);
-      });
-    }
-  };
-
-  const addAfter = (obj, newId, targetId, sourceItem) => {
-    if (obj.children) {
-      obj.children.forEach((child, index) => {
-        if (child.id === targetId) {
-          obj.children.splice(index + 1, 0, sourceItem);
-        }
-        addAfter(child, newId, targetId, sourceItem);
-      });
-    }
-  };
-
-  const removeFromChildren = (obj, targetId) => {
-    if (obj.children) {
-      obj.children.forEach((child) => {
-        if (child.id === targetId) {
-          console.info("removing", child);
-          obj.children = obj.children.filter((item) => item.id !== targetId);
-        }
-        removeFromChildren(child, targetId);
-      });
-    }
-  };
-
-  const addToChildren = (obj, newId, targetId) => {
-    if (obj.children) {
-      obj.children.forEach((child) => {
-        if (child.id === targetId) {
-          child.children.push({ id: newId, folded: true, children: [] });
-        }
-        addToChildren(child, newId, targetId);
-      });
-    }
-  };
-
-  const foldChildren = (obj, targetId) => {
-    if (obj.children) {
-      obj.children.forEach((child) => {
-        if (child.id === targetId) {
-          child.folded = !child.folded;
-        }
-        foldChildren(child, targetId);
-      });
-    }
   };
 
   const addPageHandler = async (parentId = null) => {
@@ -293,7 +404,7 @@ const DocumentTree = ({ documentId = "" }) => {
     let newTree = treeData;
     if (parentId) {
       newTree.forEach((item) => {
-        if (item.id === parentId) {
+        if (item?.id === parentId) {
           item.children.push({
             id: newDocument.id,
             folded: true,
@@ -319,7 +430,7 @@ const DocumentTree = ({ documentId = "" }) => {
     let newTree = treeData;
 
     newTree.forEach((item) => {
-      if (item.id === targetId) {
+      if (item?.id === targetId) {
         item.folded = !item.folded;
       }
       foldChildren(item, targetId);
@@ -374,7 +485,10 @@ const DocumentTree = ({ documentId = "" }) => {
                   variant="body2"
                   className={documentId === child.id ? "selected" : ""}
                 >
-                  <ChevronRight onClick={() => toggleFold(child.id)} />
+                  <ChevronRight
+                    className="chevron"
+                    onClick={() => toggleFold(child.id)}
+                  />
 
                   <Link
                     id={`${child.id}`}
@@ -384,6 +498,12 @@ const DocumentTree = ({ documentId = "" }) => {
                   >
                     {childData?.title}
                   </Link>
+
+                  <DocumentOptionsMenu
+                    treeData={treeData}
+                    userData={userData}
+                    id={child.id}
+                  />
                 </Typography>
 
                 {child.id ? displayChildren(child, newAddPage) : <></>}
@@ -414,6 +534,8 @@ const DocumentTree = ({ documentId = "" }) => {
         <Box className="treeWrapper">
           {treeData && typeof treeData === "object" && documentsData ? (
             treeData.map((item) => {
+              if (!item) return <></>;
+
               const itemData = documentsData.filter(
                 (document) => document.id === item.id
               )[0];
@@ -439,7 +561,10 @@ const DocumentTree = ({ documentId = "" }) => {
                           variant="body2"
                           className={documentId === item.id ? "selected" : ""}
                         >
-                          <ChevronRight onClick={() => toggleFold(item.id)} />
+                          <ChevronRight
+                            className="chevron"
+                            onClick={() => toggleFold(item.id)}
+                          />
 
                           <Link
                             id={`${item.id}`}
@@ -449,6 +574,12 @@ const DocumentTree = ({ documentId = "" }) => {
                           >
                             {itemData?.title}
                           </Link>
+
+                          <DocumentOptionsMenu
+                            treeData={treeData}
+                            userData={userData}
+                            id={item.id}
+                          />
                         </Typography>
 
                         {item.id ? displayChildren(item, newAddPage) : <></>}

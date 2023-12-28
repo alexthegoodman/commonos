@@ -1,4 +1,8 @@
-import { documentQuery, myDocumentsQuery } from "../gql/document";
+import {
+  deleteDocumentMutation,
+  documentQuery,
+  myDocumentsQuery,
+} from "../gql/document";
 import graphClient from "../helpers/GQLClient";
 
 export const getDocumentData = async (token: string, documentId: string) => {
@@ -19,4 +23,17 @@ export const getDocumentsData = async (token: string) => {
   )) as any;
 
   return myDocuments;
+};
+
+export const deleteDocument = async (token: string, documentId: string) => {
+  graphClient.setupClient(token);
+
+  const { deleteDocument } = (await graphClient.client?.request(
+    deleteDocumentMutation,
+    {
+      documentId,
+    }
+  )) as any;
+
+  return deleteDocument;
 };

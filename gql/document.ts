@@ -70,3 +70,9 @@ export const documentQuery = gql`
     }
   }
 `;
+
+export const deleteDocumentMutation = gql`
+  mutation DeleteDocument($documentId: String!) {
+    deleteDocument(documentId: $documentId)
+  }
+`;
