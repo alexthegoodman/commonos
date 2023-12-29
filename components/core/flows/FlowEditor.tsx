@@ -47,6 +47,10 @@ const AnswerButton = styled(Button)(({ theme }) => ({
     transform: "scale(1.05)",
     transition: "all 0.2s ease-in-out",
   },
+  [theme.breakpoints.down("md")]: {
+    width: "150px",
+    height: "150px",
+  },
 }));
 
 const PromptWrapper = styled(Box)(({ theme }) => ({
@@ -116,6 +120,7 @@ function QuestionItem({ type, fileId = null, question, state, dispatch }) {
         flexDirection="row"
         justifyContent="flex-start"
         width="fit-content"
+        flexWrap="wrap"
       >
         {question.possibleAnswers.map((answer, j) => {
           const chosen = question.chosenAnswers.find((a) => a === answer)
@@ -279,7 +284,7 @@ function QuestionItem({ type, fileId = null, question, state, dispatch }) {
           Add Your Own Answer
         </AnswerButton>
       </Box>
-      <Box sx={{ width: 600, padding: 1 }}>
+      <Box sx={{ padding: 1, width: "100%", maxWidth: "600px" }}>
         <TextareaAutosize
           style={{
             width: "100%",
@@ -605,7 +610,7 @@ export default function FlowEditor({ id, prompt }) {
               <Refresh />
             </Button>
           </Box>
-          <Grid container gap={3}>
+          <Grid container spacing={3}>
             {!loading &&
               state.initialQuestions &&
               state.initialQuestions.length > 0 &&
@@ -619,16 +624,16 @@ export default function FlowEditor({ id, prompt }) {
                 />
               ))}
             {loading && <PrimaryLoader />}
-            <Button
-              color="success"
-              variant="contained"
-              onClick={() => {
-                setView("files");
-              }}
-            >
-              Next
-            </Button>
           </Grid>
+          <Button
+            color="success"
+            variant="contained"
+            onClick={() => {
+              setView("files");
+            }}
+          >
+            Next
+          </Button>
         </>
       )}
       {view === "files" && (
@@ -664,6 +669,7 @@ export default function FlowEditor({ id, prompt }) {
                           flexDirection="row"
                           justifyContent="space-between"
                           alignItems="center"
+                          flexWrap="wrap"
                         >
                           <Typography
                             variant="body2"

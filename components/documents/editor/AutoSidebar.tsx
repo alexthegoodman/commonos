@@ -197,7 +197,7 @@ export default function AutoSidebar({ documentId, documentData }) {
         <Box
           ref={messagesContainerRef}
           sx={{
-            height: "calc(100vh - 200px)",
+            height: "100%",
             overflowY: "scroll",
             overflowX: "hidden",
           }}

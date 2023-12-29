@@ -16,6 +16,9 @@ const CSSGrid = styled(Box)(({ theme }) => ({
   gridTemplateColumns: "1fr 1fr",
   gap: theme.spacing(2),
   marginTop: theme.spacing(2),
+  [theme.breakpoints.down("md")]: {
+    gridTemplateColumns: "1fr",
+  },
 }));
 
 export default function ResultsViewer() {
