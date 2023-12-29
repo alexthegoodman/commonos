@@ -433,126 +433,140 @@ export default function FlowEditor({ id, prompt }) {
       });
   };
 
+  const getInitialQuestions = () => {
+    setLoading(true);
+    getQuestionsData(token, id, "", prompt, "initial")
+      .then((data) => {
+        console.info("got initial questions", data);
+
+        dispatch({
+          type: "initialQuestions",
+          payload: data.questions.map((question) => {
+            return {
+              id: uuidv4(),
+              type: "multipleChoice",
+              question: question.question,
+              possibleAnswers: question.answers,
+              chosenAnswers: [],
+              freeformAnswer: "",
+            };
+          }),
+        });
+
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("caught error", err);
+        // TODO: display error
+      });
+  };
+
+  const getFiles = () => {
+    // fetch file list from api and add to context
+    console.info("fetch file list");
+
+    setLoading(true);
+
+    getFileListData(token, id, "documents")
+      .then((data1) => {
+        console.info("got file list 1", data1);
+
+        let files = data1.documents.map((file) => {
+          return {
+            id: uuidv4(),
+            name: file,
+            app: "documents",
+            questions: [],
+            skipQuestions: true,
+          };
+        });
+
+        if (data1?.documents?.length) {
+          getFileListData(token, id, "additionalFiles")
+            .then((data2) => {
+              console.info("got file list 2", data2);
+
+              if (data2?.presentations?.length) {
+                files = [
+                  ...files,
+                  ...data2.presentations.map((file) => {
+                    return {
+                      id: uuidv4(),
+                      name: file,
+                      app: "slides",
+                      questions: [],
+                      skipQuestions: true,
+                    };
+                  }),
+                ];
+              }
+
+              if (data2?.spreadsheets?.length) {
+                files = [
+                  ...files,
+                  ...data2.spreadsheets.map((file) => {
+                    return {
+                      id: uuidv4(),
+                      name: file,
+                      app: "sheets",
+                      questions: [],
+                      skipQuestions: true,
+                    };
+                  }),
+                ];
+              }
+
+              if (data2?.images?.length) {
+                files = [
+                  ...files,
+                  ...data2.images.map((file) => {
+                    return {
+                      id: uuidv4(),
+                      name: file,
+                      app: "images",
+                      questions: [],
+                      skipQuestions: true,
+                    };
+                  }),
+                ];
+              }
+
+              if (
+                data1.documents.length ||
+                data2?.spreadsheets?.length ||
+                data2?.presentations?.length ||
+                data2?.images?.length
+              ) {
+                console.info("dispatch files", files);
+                dispatch({
+                  type: "files",
+                  payload: files,
+                });
+                setGotFiles(true);
+                setLoading(false);
+              }
+            })
+            .catch((err) => {
+              console.error("caught error", err);
+              // TODO: display error
+            });
+        }
+      })
+      .catch((err) => {
+        console.error("caught error", err);
+        // TODO: display error
+      });
+  };
+
   useEffect(() => {
     if (view === "initial") {
       if (!state.initialQuestions || state.initialQuestions.length === 0) {
-        getQuestionsData(token, id, "", prompt, "initial")
-          .then((data) => {
-            console.info("got initial questions", data);
-
-            dispatch({
-              type: "initialQuestions",
-              payload: data.questions.map((question) => {
-                return {
-                  id: uuidv4(),
-                  type: "multipleChoice",
-                  question: question.question,
-                  possibleAnswers: question.answers,
-                  chosenAnswers: [],
-                  freeformAnswer: "",
-                };
-              }),
-            });
-          })
-          .catch((err) => {
-            console.error("caught error", err);
-            // TODO: display error
-          });
+        getInitialQuestions();
       }
     }
     if (view === "files") {
       if (state.files.length === 0 && !gotFiles) {
-        // fetch file list from api and add to context
-        console.info("fetch file list");
-
-        getFileListData(token, id, "documents")
-          .then((data1) => {
-            console.info("got file list 1", data1);
-
-            let files = data1.documents.map((file) => {
-              return {
-                id: uuidv4(),
-                name: file,
-                app: "documents",
-                questions: [],
-                skipQuestions: true,
-              };
-            });
-
-            if (data1?.documents?.length) {
-              getFileListData(token, id, "additionalFiles")
-                .then((data2) => {
-                  console.info("got file list 2", data2);
-
-                  if (data2?.presentations?.length) {
-                    files = [
-                      ...files,
-                      ...data2.presentations.map((file) => {
-                        return {
-                          id: uuidv4(),
-                          name: file,
-                          app: "slides",
-                          questions: [],
-                          skipQuestions: true,
-                        };
-                      }),
-                    ];
-                  }
-
-                  if (data2?.spreadsheets?.length) {
-                    files = [
-                      ...files,
-                      ...data2.spreadsheets.map((file) => {
-                        return {
-                          id: uuidv4(),
-                          name: file,
-                          app: "sheets",
-                          questions: [],
-                          skipQuestions: true,
-                        };
-                      }),
-                    ];
-                  }
-
-                  if (data2?.images?.length) {
-                    files = [
-                      ...files,
-                      ...data2.images.map((file) => {
-                        return {
-                          id: uuidv4(),
-                          name: file,
-                          app: "images",
-                          questions: [],
-                          skipQuestions: true,
-                        };
-                      }),
-                    ];
-                  }
-
-                  if (
-                    data1.documents.length ||
-                    data2?.spreadsheets?.length ||
-                    data2?.presentations?.length ||
-                    data2?.images?.length
-                  ) {
-                    console.info("dispatch files", files);
-                    dispatch({
-                      type: "files",
-                      payload: files,
-                    });
-                    setGotFiles(true);
-                  }
-                })
-                .catch((err) => {
-                  console.error("caught error", err);
-                  // TODO: display error
-                });
-            }
-          })
-          .catch((err) => {
-            console.error("caught error", err);
-            // TODO: display error
-          });
+        getFiles();
       }
     }
     if (view === "questions") {
@@ -576,8 +590,25 @@ export default function FlowEditor({ id, prompt }) {
 
       {view === "initial" && (
         <>
+          <Box
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-between"
+            width="100%"
+          >
+            <Box></Box>
+            <Button
+              color="info"
+              variant="contained"
+              onClick={getInitialQuestions}
+            >
+              <Refresh />
+            </Button>
+          </Box>
           <Grid container gap={3}>
-            {state.initialQuestions && state.initialQuestions.length > 0 ? (
+            {!loading &&
+              state.initialQuestions &&
+              state.initialQuestions.length > 0 &&
               state.initialQuestions.map((question, i) => (
                 <QuestionItem
                   key={question.id}
@@ -586,11 +617,11 @@ export default function FlowEditor({ id, prompt }) {
                   state={state}
                   dispatch={dispatch}
                 />
-              ))
-            ) : (
-              <PrimaryLoader />
-            )}
+              ))}
+            {loading && <PrimaryLoader />}
             <Button
+              color="success"
+              variant="contained"
               onClick={() => {
                 setView("files");
               }}
@@ -604,9 +635,20 @@ export default function FlowEditor({ id, prompt }) {
         <>
           <Grid container gap={0}>
             <Grid item xs={12} md={8}>
-              {state.files.length > 0 ? (
+              {!loading && state.files.length > 0 ? (
                 <>
-                  <Typography variant="overline">Your File Plan</Typography>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Typography variant="overline">Your File Plan</Typography>
+                    <Button color="info" variant="contained" onClick={getFiles}>
+                      <Refresh />
+                    </Button>
+                  </Box>
+
                   {state.files.map((file, i) => {
                     const hasAnsweredQuestion = file.questions.find(
                       (question) =>
