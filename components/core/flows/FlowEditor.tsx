@@ -642,6 +642,7 @@ export default function FlowEditor({ id, prompt }) {
                     flexDirection="row"
                     justifyContent="space-between"
                     width="100%"
+                    mb={2}
                   >
                     <Typography variant="overline">Your File Plan</Typography>
                     <Button color="info" variant="contained" onClick={getFiles}>
