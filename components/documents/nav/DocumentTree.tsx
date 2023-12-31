@@ -1,7 +1,11 @@
 import * as React from "react";
 import useSWR, { mutate } from "swr";
 
-import { deleteDocument, getDocumentsData } from "../../../fetchers/document";
+import {
+  deleteDocument,
+  generateTitles,
+  getDocumentsData,
+} from "../../../fetchers/document";
 import { useCookies } from "react-cookie";
 import { getUserData, updateDocumentTree } from "../../../fetchers/user";
 import graphClient from "../../../helpers/GQLClient";
@@ -16,14 +20,22 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import { Add, ChevronRight, MoreVert } from "@mui/icons-material";
+import {
+  Add,
+  AutoAwesome,
+  ChevronRight,
+  MoreVert,
+  Star,
+} from "@mui/icons-material";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 const TreeWrapper = styled("section")(
-  ({ theme }) => `
+  ({ theme, treeDisabled }) => `
     height: calc(100vh - 100px);
     background-color: rgba(255, 255, 255, 0.05);
     padding: 15px 25px;
+
+    opacity: ${treeDisabled ? 0.5 : 1};
   
     .documentTreeInner {
       .treeWrapper {
@@ -231,24 +243,26 @@ const foldChildren = (obj, targetId) => {
   }
 };
 
-const AddDocumentMenu = ({ id = null, addPageHandler }) => {
+const AddDocumentMenu = ({
+  id = null,
+  addPageHandler,
+  generateTitlesHandler,
+}) => {
   // const [showMenu, setShowMenu] = React.useState(false);
 
   return (
-    <li className="addDocument" onClick={() => addPageHandler(id)}>
-      <Typography variant="body2">
+    <li
+      className="addDocument"
+      style={{ display: "flex", flexDirection: "row", gap: "10px" }}
+    >
+      <Typography variant="body2" onClick={() => addPageHandler(id)}>
         <Add /> <span>Add Document</span>
       </Typography>
-      {/* {showMenu ? (
-        <ul className="addDocumentMenu">
-          <li onClick={() => addPageHandler(id, "book")}>Add Book</li>
-          <li onClick={() => addPageHandler(id, "cover")}>Add Cover</li>
-          <li onClick={() => addPageHandler(id, "part")}>Add Part</li>
-          <li onClick={() => addPageHandler(id, "chapter")}>Add Chapter</li>
-        </ul>
-      ) : (
-        <></>
-      )} */}
+      {id !== null && (
+        <Typography variant="body2" onClick={() => generateTitlesHandler(id)}>
+          <AutoAwesome /> <span>Generate Titles</span>
+        </Typography>
+      )}
     </li>
   );
 };
@@ -324,6 +338,7 @@ const DocumentTree = ({ documentId = "" }) => {
   console.info("documents data", userData, documentsData);
 
   const [dragActiveId, setDragActiveId] = React.useState(null);
+  const [treeDisabled, setTreeDisabled] = React.useState(false);
 
   console.info("dragActiveId", dragActiveId);
 
@@ -396,6 +411,8 @@ const DocumentTree = ({ documentId = "" }) => {
   };
 
   const addPageHandler = async (parentId = null) => {
+    if (treeDisabled) return;
+
     // create new document
     const { newDocument } =
       await graphClient.client?.request(newDocumentMutation);
@@ -426,7 +443,66 @@ const DocumentTree = ({ documentId = "" }) => {
     });
   };
 
+  const generateTitlesHandler = async (parentId = null) => {
+    if (treeDisabled) return;
+
+    setTreeDisabled(true);
+
+    // get parent and children
+    // create tabbed markdown list of parent and children
+    const parentItem = getItemFromTree(treeData, parentId);
+    const parentData = documentsData.filter(
+      (document) => document.id === parentId
+    )[0];
+    const children = parentItem.children;
+    const lastChild = children[children.length - 1];
+
+    let markdown = `- ${parentData.title}\n`;
+
+    children.forEach((child) => {
+      const childData = documentsData.filter(
+        (document) => document.id === child.id
+      )[0];
+      markdown += `    - ${childData.title}\n`;
+    });
+
+    console.info("generateTitlesHandler markdown", markdown);
+
+    // send markdown to api to generate new titles and create documents
+    // return { title, id } for each new document
+    // add new documents to tree
+    const newDocuments = await generateTitles(token, markdown);
+    console.info("generateTitlesHandler newDocuments", newDocuments);
+
+    let newTree = treeData;
+
+    newDocuments.forEach((newDocument) => {
+      if (parentId) {
+        newTree.forEach((item) => {
+          if (item?.id === parentId) {
+            item.children.push({
+              id: newDocument.id,
+              folded: true,
+              children: [],
+            });
+          }
+          addToChildren(item, newDocument.id, parentId);
+        });
+      }
+    });
+
+    // save new tree
+    mutate("browseKey", () => getDocumentsData(token));
+    mutate("homeLayout", () => updateDocumentTree(token, newTree), {
+      optimisticData: { ...userData, documentTree: newTree },
+    });
+
+    setTreeDisabled(false);
+  };
+
   const toggleFold = (targetId) => {
+    if (treeDisabled) return;
+
     let newTree = treeData;
 
     newTree.forEach((item) => {
@@ -467,7 +543,11 @@ const DocumentTree = ({ documentId = "" }) => {
           )[0];
 
           const newAddPage = (
-            <AddDocumentMenu id={child.id} addPageHandler={addPageHandler} />
+            <AddDocumentMenu
+              id={child.id}
+              addPageHandler={addPageHandler}
+              generateTitlesHandler={generateTitlesHandler}
+            />
           );
 
           return (
@@ -528,7 +608,7 @@ const DocumentTree = ({ documentId = "" }) => {
   );
 
   return (
-    <TreeWrapper>
+    <TreeWrapper treeDisabled={treeDisabled}>
       <div className="documentTreeInner">
         <Typography variant="overline">Your Documents</Typography>
         <Box className="treeWrapper">
@@ -541,7 +621,11 @@ const DocumentTree = ({ documentId = "" }) => {
               )[0];
 
               const newAddPage = (
-                <AddDocumentMenu id={item.id} addPageHandler={addPageHandler} />
+                <AddDocumentMenu
+                  id={item.id}
+                  addPageHandler={addPageHandler}
+                  generateTitlesHandler={generateTitlesHandler}
+                />
               );
 
               return (

@@ -76,3 +76,20 @@ export const deleteDocumentMutation = gql`
     deleteDocument(documentId: $documentId)
   }
 `;
+
+export const generateTitlesMutation = gql`
+  mutation GenerateTitles($treeMd: String!) {
+    generateTitles(treeMd: $treeMd) {
+      id
+      title
+
+      creator {
+        email
+        role
+      }
+
+      updatedAt
+      createdAt
+    }
+  }
+`;

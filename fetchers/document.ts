@@ -1,6 +1,7 @@
 import {
   deleteDocumentMutation,
   documentQuery,
+  generateTitlesMutation,
   myDocumentsQuery,
 } from "../gql/document";
 import graphClient from "../helpers/GQLClient";
@@ -36,4 +37,17 @@ export const deleteDocument = async (token: string, documentId: string) => {
   )) as any;
 
   return deleteDocument;
+};
+
+export const generateTitles = async (token: string, markdown: string) => {
+  graphClient.setupClient(token);
+
+  const { generateTitles } = (await graphClient.client?.request(
+    generateTitlesMutation,
+    {
+      treeMd: markdown,
+    }
+  )) as any;
+
+  return generateTitles;
 };
