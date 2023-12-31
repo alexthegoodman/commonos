@@ -1,55 +1,54 @@
-"use client";
-
-import { ColorModeContext } from "@/context/ColorModeContext";
-import {
-  LauncherContext,
-  LauncherContextReducer,
-  LauncherContextState,
-} from "@/context/LauncherContext";
-import { themeOptions, getThemeOptions } from "@/theme";
-import { ThemeProvider, createTheme } from "@mui/material";
+import InnerLayout from "@/components/core/nav/InnerLayout";
 import { Inter } from "next/font/google";
-import {
-  createContext,
-  use,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
-import { useDarkMode, useLocalStorage } from "usehooks-ts";
+
+export const metadata = {
+  title: "CommonOS",
+  description: "Control a suite of apps with a single prompt.",
+  generator: "Next.js",
+  applicationName: "CommonOS",
+  referrer: "origin-when-cross-origin",
+  keywords: ["AI", "OS", "Semi-Automatic"],
+  authors: [{ name: "Common", url: "https://madebycommon.com" }],
+  creator: "Common",
+  publisher: "Common",
+  // formatDetection: {
+  //   email: false,
+  //   address: false,
+  //   telephone: false,
+  // },
+  openGraph: {
+    title: "CommonOS",
+    description: "Control a suite of apps with a single prompt.",
+    url: "https://commonos.app",
+    siteName: "CommonOS",
+    // images: [
+    //   {
+    //     url: 'https://nextjs.org/og.png', // Must be an absolute URL
+    //     width: 800,
+    //     height: 600,
+    //   },
+    // ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CommonOS",
+    description: "Control a suite of apps with a single prompt.",
+    // siteId: '1467726470533754880',
+    creator: "@alexthegoodman",
+    // creatorId: '1467726470533754880',
+    // images: ['https://nextjs.org/og.png'], // Must be an absolute URL
+  },
+};
 
 const inter = Inter({ subsets: ["latin"] });
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isDarkMode, toggle, enable, disable } = useDarkMode();
-
-  console.log("isDarkMode", isDarkMode);
-
-  const [mode, setMode] = useState<"light" | "dark">(
-    // isDarkMode ? "dark" : "light"
-    "dark"
-  );
-  const colorMode = useMemo(
-    () => ({
-      toggleColorMode: () => {
-        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-        toggle();
-      },
-    }),
-    []
-  );
-
-  const theme = useMemo(() => createTheme(getThemeOptions(mode)), [mode]);
-
-  const [state, dispatch] = useReducer(
-    LauncherContextReducer,
-    LauncherContextState
-  );
-
   return (
     <html lang="en">
       <body
@@ -58,19 +57,7 @@ export default function RootLayout({
           margin: 0,
         }}
       >
-        <ColorModeContext.Provider value={colorMode}>
-          <ThemeProvider theme={theme}>
-            <LauncherContext.Provider value={{ state, dispatch }}>
-              {children}
-            </LauncherContext.Provider>
-          </ThemeProvider>
-        </ColorModeContext.Provider>
-        <style jsx global>{`
-          *::selection {
-            background: #38ef7d;
-            color: #000;
-          }
-        `}</style>
+        <InnerLayout>{children}</InnerLayout>
       </body>
     </html>
   );
