@@ -20,9 +20,10 @@ import { useDebounce } from "usehooks-ts";
 import { v4 as uuidv4 } from "uuid";
 
 export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
-  minWidth: "400px",
-  width: "25vw",
-  maxWidth: "600px",
+  // minWidth: "400px",
+  // width: "25vw",
+  // maxWidth: "600px",
+  width: "34vw",
   height: "100vh",
   position: "fixed",
   zIndex: "20",
@@ -31,6 +32,11 @@ export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
   backgroundColor: "rgba(255, 255, 255, 0.1)",
   padding: "20px 0",
   boxSizing: "border-box",
+
+  background: "linear-gradient(355deg, #373b44, #4286f4)",
+  backgroundSize: "400% 400%",
+  animation: "AnimationName 15s ease infinite",
+
   [theme.breakpoints.down("lg")]: {
     padding: "10px 0",
     width: "100vw",
@@ -46,7 +52,8 @@ export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
   width: "28%",
-  height: "90px",
+  minHeight: "90px",
+  aspectRatio: "3/2",
   fontSize: "0.7rem",
   backgroundColor: "rgba(255,255,255,0.1)",
   transition: "all 0.2s ease-in-out",
@@ -454,7 +461,7 @@ export default function AutoSidebar({ title }) {
   return (
     <SidebarWrapper>
       <Typography variant="overline" px={3}>
-        Live Guide
+        Flow
       </Typography>
       <Box
         ref={messagesContainerRef}

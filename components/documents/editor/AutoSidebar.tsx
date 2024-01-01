@@ -187,7 +187,7 @@ export default function AutoSidebar({ documentId, documentData }) {
           alignItems="center"
         >
           <Typography variant="overline" px={3}>
-            Live Guide
+            Flow
           </Typography>
           <SidebarMobileToggle onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <CaretDown /> : <CaretUp />}
