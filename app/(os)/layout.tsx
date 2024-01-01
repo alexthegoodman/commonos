@@ -25,8 +25,8 @@ const Container = styled(Box)(({ theme, hasSidebar }) => ({
   // maxWidth: hasSidebar ? "1600px" : "1400px",
   // paddingRight: hasSidebar ? "400px" : "0px",
   maxWidth: hasSidebar ? "100vw" : "100vw",
-  paddingRight: hasSidebar ? "35vw" : "0px",
-  paddingLeft: "1vw",
+  paddingRight: hasSidebar ? "32vw" : "0px",
+  // paddingLeft: "1vw",
   width: "100%",
   margin: "0 auto",
   boxSizing: "border-box",
@@ -34,6 +34,10 @@ const Container = styled(Box)(({ theme, hasSidebar }) => ({
     maxWidth: "100vw",
     paddingRight: "0px",
   },
+}));
+
+const InnerContainer = styled(Box)(({ theme, opaque }) => ({
+  padding: "0 1vw",
 }));
 
 const Spacer = styled("div")(({ theme }) => ({
@@ -58,8 +62,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Background>
       <HeaderWrapper hasSidebar={hasSidebar} />
       <Container hasSidebar={hasSidebar}>
-        <Spacer />
-        <Box>{children}</Box>
+        <InnerContainer>
+          <Spacer />
+          <Box>{children}</Box>
+        </InnerContainer>
       </Container>
 
       <div

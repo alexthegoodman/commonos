@@ -23,7 +23,7 @@ export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
   // minWidth: "400px",
   // width: "25vw",
   // maxWidth: "600px",
-  width: "34vw",
+  width: "32vw",
   height: "100vh",
   position: "fixed",
   zIndex: "20",

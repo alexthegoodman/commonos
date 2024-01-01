@@ -11,14 +11,15 @@ const FixedHeader = styled("div")(({ theme, opaque }) => ({
   left: 0,
   width: "100%",
   zIndex: 10,
+  boxSizing: "border-box",
 }));
 
 const Container = styled(Box)(({ theme, opaque, hasSidebar }) => ({
   // maxWidth: hasSidebar ? "1600px" : "1400px",
   // paddingRight: hasSidebar ? "400px" : "0px",
   maxWidth: hasSidebar ? "100vw" : "100vw",
-  paddingRight: hasSidebar ? "35vw" : "0px",
-  paddingLeft: "1vw",
+  paddingRight: hasSidebar ? "32vw" : "0px",
+  // paddingLeft: "1vw",
   width: "100%",
   margin: "0 auto",
   boxSizing: "border-box",
@@ -31,6 +32,7 @@ const Container = styled(Box)(({ theme, opaque, hasSidebar }) => ({
 const InnerContainer = styled(Box)(({ theme, opaque }) => ({
   transition: "background-color 0.2s ease",
   backgroundColor: opaque ? "#1565C0 !important" : "transparent !important",
+  padding: "0 1vw",
 }));
 
 export default function HeaderWrapper({ hasSidebar }) {
