@@ -66,7 +66,12 @@ const ExamplePromptsButton = ({ setPromptValue }) => {
 
   return (
     <>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
+      <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        onClick={handleClickOpen}
+      >
         See Example Prompts
       </Button>
       <Dialog open={open} keepMounted onClose={handleClose}>
@@ -81,6 +86,7 @@ const ExamplePromptsButton = ({ setPromptValue }) => {
                 <Button
                   variant="outlined"
                   color="primary"
+                  size="small"
                   onClick={() => {
                     setPromptValue("prompt", prompt);
                     handleClose();
