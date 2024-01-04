@@ -2,12 +2,19 @@ import { getCurrentUserQuery, updateUserMutation } from "../gql/user";
 import graphClient from "../helpers/GQLClient";
 
 export const getUserData = async (token: string) => {
-  graphClient.setupClient(token);
+  try {
+    graphClient.setupClient(token);
 
-  const { getCurrentUser } =
-    await graphClient.client?.request(getCurrentUserQuery);
+    const { getCurrentUser } =
+      await graphClient.client?.request(getCurrentUserQuery);
 
-  return getCurrentUser;
+    return getCurrentUser;
+  } catch (error) {
+    console.error("getUserData error", error);
+    if (error.message.includes("JWT EXPIRED")) {
+      window.location.href = "/login";
+    }
+  }
 };
 
 export const updateDocumentTree = async (token: string, documentTree) => {
