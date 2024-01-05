@@ -12,6 +12,7 @@ import {
   styled,
 } from "@mui/material";
 import Link from "next/link";
+import YouTube, { YouTubeProps } from "react-youtube";
 
 const Hero = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -70,6 +71,15 @@ export default function Home() {
     "In 2022, ChatGPT took the world by storm",
     "Now, a new, semi-automated OS is possible",
   ];
+
+  const opts = {
+    height: "100%",
+    width: "100%",
+    // playerVars: {
+    //   // https://developers.google.com/youtube/player_parameters
+    //   autoplay: 1,
+    // },
+  };
 
   return (
     <>
@@ -153,6 +163,7 @@ export default function Home() {
               <Box
                 sx={{
                   aspectRatio: "16/9",
+                  // maxHeight: "535px",
                   // width: {
                   //   xs: "100%",
                   //   md: "55%",
@@ -176,14 +187,35 @@ export default function Home() {
                     xl: "-275px",
                   },
                   boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+                  "& > div": {
+                    height: "100%",
+                  },
                 }}
               >
-                <video style={{ width: "100%", height: "100%" }}>
+                {/* <video style={{ width: "100%", height: "100%" }}>
                   <source
                     src="https://commonos.s3.us-east-2.amazonaws.com/landing/landing.mp4"
                     type="video/mp4"
                   />
-                </video>
+                </video> */}
+                <YouTube
+                  videoId={"OMVw3QPSYSg"} // defaults -> ''
+                  // id={string}                       // defaults -> ''
+                  // className={string}                // defaults -> ''
+                  // iframeClassName={string}          // defaults -> ''
+                  // style={object}                    // defaults -> {}
+                  // title={string}                    // defaults -> ''
+                  // loading={string}                  // defaults -> undefined
+                  opts={opts} // defaults -> {}
+                  // onReady={func}                    // defaults -> noop
+                  // onPlay={func}                     // defaults -> noop
+                  // onPause={func}                    // defaults -> noop
+                  // onEnd={func}                      // defaults -> noop
+                  // onError={func}                    // defaults -> noop
+                  // onStateChange={func}              // defaults -> noop
+                  // onPlaybackRateChange={func}       // defaults -> noop
+                  // onPlaybackQualityChange={func}    // defaults -> noop
+                />
               </Box>
             </Grid>
           </Grid>
