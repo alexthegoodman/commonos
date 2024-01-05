@@ -152,7 +152,7 @@ const Tracks = ({ positions = null, originalDuration = null }) => {
           </span>
           {new Array(numTicks).fill(0).map((x, i) => {
             return (
-              <div className={"tick"}>
+              <div className={"tick"} key={`tick${i}`}>
                 <span>{Math.round(tickSpace * (i + 1))}</span>
               </div>
             );

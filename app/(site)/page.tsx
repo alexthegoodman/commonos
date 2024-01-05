@@ -267,8 +267,8 @@ export default function Home() {
                 }}
               >
                 1. To build an OS that offered to do work for you, it had to
-                have a suite of uniform, integrated apps. It couldn't simply
-                integrate with existing tools.
+                have a suite of uniform, integrated apps. It couldn&apos;t
+                simply integrate with existing tools.
               </Typography>
               <Typography
                 variant="h3"
@@ -281,8 +281,8 @@ export default function Home() {
                 }}
               >
                 2. CommonOS is centered around freeform prompts and answering
-                questions, which is a new way of working. This means that it's
-                not always immediately obvious how to use it.
+                questions, which is a new way of working. This means that
+                it&apos;s not always immediately obvious how to use it.
               </Typography>
               <Typography
                 variant="overline"

@@ -9,7 +9,7 @@ import {
   DrawingsContextReducer,
   DrawingsContextState,
 } from "@/context/DrawingsContext";
-import DrawingEditor from "./DrawingEditor";
+import { DynamicEditor } from "./DynamicEditor";
 
 export default function InnerLayout({ drawingId, drawingData }) {
   const [title, setTitle] = useState(drawingData.title);
@@ -21,7 +21,7 @@ export default function InnerLayout({ drawingId, drawingData }) {
       <Autosaver id={drawingId} title={title} />
       <EditorHeader title={title} setTitle={setTitle} />
       <Box>
-        <DrawingEditor />
+        <DynamicEditor />
       </Box>
     </DrawingsContext.Provider>
   );

@@ -2,9 +2,7 @@
 
 import SiteFooter from "@/components/site/nav/SiteFooter";
 import SiteHeader from "@/components/site/nav/SiteHeader";
-import { LauncherContext } from "@/context/LauncherContext";
 import { Box, styled } from "@mui/material";
-import { useContext } from "react";
 
 const Background = styled("main")(({ theme }) => ({
   backgroundColor: theme.palette.background.default,

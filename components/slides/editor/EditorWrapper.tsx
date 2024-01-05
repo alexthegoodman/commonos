@@ -2,9 +2,9 @@
 import "client-only";
 
 import { useSlidesContext } from "@/context/SlidesContext";
-import SlideEditor from "./SlideEditor";
 import EmptyNotice from "@/components/core/layout/EmptyNotice";
 import { useEffect } from "react";
+import { DynamicEditor } from "./DynamicEditor";
 
 export default function EditorWrapper({
   exporting,
@@ -43,7 +43,7 @@ export default function EditorWrapper({
   }, [slidesExported]);
 
   return currentSlideData ? (
-    <SlideEditor
+    <DynamicEditor
       key={currentSlideData.id}
       slide={currentSlideData}
       state={state}
