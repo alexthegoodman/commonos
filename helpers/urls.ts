@@ -2,15 +2,18 @@ export const env = process.env.NEXT_PUBLIC_APP_ENV;
 
 export const protocol = env === "production" ? "https://" : "http://";
 
-export const cookieDomain = env === "production" ? "commonos.app" : "localhost";
+export const cookieDomain =
+  env === "production" ? "commonos.cloud" : "localhost";
 
 export const fullDomain =
-  env === "production" ? "commonos.app" : process.env.NEXT_PUBLIC_HOST;
+  env === "production" ? "commonos.cloud" : process.env.NEXT_PUBLIC_HOST;
 
 export const fullDomainPort =
   env === "production"
-    ? "commonos.app"
+    ? "commonos.cloud"
     : process.env.NEXT_PUBLIC_HOST + ":3000";
 
 export const graphqlUrl =
-  env === "production" ? "" : `http://localhost:4000/graphql`;
+  env === "production"
+    ? "https://commonos-server-bf2a40953d4d.herokuapp.com/graphql"
+    : `http://localhost:4000/graphql`;
