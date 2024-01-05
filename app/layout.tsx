@@ -1,5 +1,6 @@
 import InnerLayout from "@/components/core/nav/InnerLayout";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "CommonOS",
@@ -58,6 +59,7 @@ export default function RootLayout({
         }}
       >
         <InnerLayout>{children}</InnerLayout>
+        <Analytics />
       </body>
     </html>
   );
