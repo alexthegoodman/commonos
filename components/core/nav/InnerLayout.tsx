@@ -17,6 +17,7 @@ import {
   useState,
 } from "react";
 import { useDarkMode, useLocalStorage } from "usehooks-ts";
+import Hotjar from "@hotjar/browser";
 
 export default function InnerLayout({
   children,
@@ -42,6 +43,13 @@ export default function InnerLayout({
   );
 
   const theme = useMemo(() => createTheme(getThemeOptions(mode)), [mode]);
+
+  useEffect(() => {
+    const siteId = 3815201;
+    const hotjarVersion = 6;
+
+    Hotjar.init(siteId, hotjarVersion);
+  }, []);
 
   const [state, dispatch] = useReducer(
     LauncherContextReducer,
