@@ -22,13 +22,13 @@ export const metadata = {
     description: "Control a suite of apps with a single prompt.",
     url: "https://commonos.app",
     siteName: "CommonOS",
-    // images: [
-    //   {
-    //     url: 'https://nextjs.org/og.png', // Must be an absolute URL
-    //     width: 800,
-    //     height: 600,
-    //   },
-    // ],
+    images: [
+      {
+        url: "https://commonos.cloud/img/facebook.jpg", // Must be an absolute URL
+        width: 1200,
+        height: 630,
+      },
+    ],
     locale: "en_US",
     type: "website",
   },
@@ -39,7 +39,7 @@ export const metadata = {
     // siteId: '1467726470533754880',
     creator: "@alexthegoodman",
     // creatorId: '1467726470533754880',
-    // images: ['https://nextjs.org/og.png'], // Must be an absolute URL
+    images: ["https://commonos.cloud/img/twitter.jpg"], // Must be an absolute URL
   },
 };
 
