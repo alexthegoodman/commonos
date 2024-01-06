@@ -33,9 +33,9 @@ const PlanBox = styled(Box)(({ theme }) => ({
 
 const features = ["Access all apps"];
 
-const previewFeatures = ["50k tokens", ...features];
+const previewFeatures = ["50k tokens per month", ...features];
 
-const standardFeatures = ["2m tokens", ...features];
+const standardFeatures = ["2m tokens per month", ...features];
 
 export default function Page() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);

@@ -128,7 +128,7 @@ export default function Home() {
                   },
                 }}
               >
-                Do more. Save loads of time.
+                Semi-Automatic, Lightweight
               </Typography>
 
               <Box
