@@ -20,7 +20,12 @@ export default function UpgradeButton() {
 
   return (
     <>
-      <Button color="warning" variant="contained" endIcon={<Star />}>
+      <Button
+        color="warning"
+        variant="contained"
+        endIcon={<Star />}
+        href="/pricing"
+      >
         Upgrade
       </Button>
     </>

@@ -3,6 +3,10 @@ import graphClient from "../helpers/GQLClient";
 
 export const getUserData = async (token: string) => {
   try {
+    if (!token) {
+      throw new Error("No token provided");
+    }
+
     graphClient.setupClient(token);
 
     const { getCurrentUser } =
