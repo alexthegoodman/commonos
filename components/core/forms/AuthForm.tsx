@@ -18,8 +18,7 @@ import { fullDomain, graphqlUrl } from "../../../helpers/urls";
 import Helpers from "../../../helpers/Helpers";
 import { CookieSettings } from "../../../helpers/CookieSettings";
 
-import Link from "next/link";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Link, Typography } from "@mui/material";
 
 // import { useTranslation } from "next-i18next";
 // import MixpanelBrowser from "../../../helpers/MixpanelBrowser";
@@ -138,9 +137,19 @@ const AuthForm = ({
   if (submitLoading) submitButtonText = "Loading...";
 
   return (
-    <Box>
-      <Typography variant="h1">{headline}</Typography>
-      <form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Box pt={4}>
+      <Typography variant="h3" mb={2}>
+        {headline}
+      </Typography>
+      <form
+        onSubmit={handleSubmit(onSubmit, onError)}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+          marginBottom: "10px",
+        }}
+      >
         <FormMessage type="error" message={formErrorMessage} />
 
         <FormInput
@@ -152,6 +161,7 @@ const AuthForm = ({
           validation={{
             required: "Email Required",
           }}
+          sx={{ minWidth: { md: "350px" } }}
         />
 
         <FormInput
@@ -163,9 +173,15 @@ const AuthForm = ({
           validation={{
             required: "Password Required",
           }}
+          sx={{ minWidth: { md: "350px" } }}
         />
 
-        <Button type="submit" disabled={submitLoading}>
+        <Button
+          type="submit"
+          color="success"
+          variant="contained"
+          disabled={submitLoading}
+        >
           {submitButtonText}
         </Button>
       </form>
