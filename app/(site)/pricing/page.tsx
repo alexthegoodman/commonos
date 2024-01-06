@@ -14,6 +14,15 @@ const Container = styled(Box)(({ theme }) => ({
   padding: "50px 0",
 }));
 
+const BoxWrapper = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  [theme.breakpoints.down("sm")]: {
+    flexDirection: "column",
+  },
+}));
+
 const PlanBox = styled(Box)(({ theme }) => ({
   width: "100%",
   border: `2px solid ${theme.palette.divider}`,
@@ -43,7 +52,7 @@ export default function Page() {
       <Typography variant="h1" mb={4}>
         Pricing
       </Typography>
-      <Box display="flex" flexDirection="row" alignItems="center">
+      <BoxWrapper>
         <PlanBox height="350px">
           <Box>
             <Typography variant="overline">Preview Plan</Typography>
@@ -110,7 +119,7 @@ export default function Page() {
             )}
           </Box>
         </PlanBox>
-      </Box>
+      </BoxWrapper>
     </Container>
   );
 }
