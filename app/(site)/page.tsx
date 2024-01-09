@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowRightSharp } from "@mui/icons-material";
+import { IconBox } from "@/components/core/flows/FlowEditor";
+import {
+  ArrowRightSharp,
+  DocumentScanner,
+  Image,
+  List,
+  PresentToAllOutlined,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -62,6 +69,27 @@ const BenefitItem = styled(Grid)(({ theme }) => ({
   padding: "35px",
   "&:nth-of-type(2), &:nth-of-type(3)": {
     backgroundColor: "rgba(255, 255, 255, 0.1)",
+  },
+}));
+
+const AppsWrapper = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: theme.spacing(3),
+}));
+
+const AppBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+}));
+
+const LIconBox = styled(IconBox)(({ theme }) => ({
+  width: "60px",
+  height: "60px",
+  "& svg": {
+    width: "50%",
+    height: "50%",
   },
 }));
 
@@ -221,7 +249,7 @@ export default function Home() {
           </Grid>
         </InnerWrapper>
       </Hero>
-      <Box pt={5}>
+      <Box pt={5} pb={10}>
         <InnerWrapper>
           <Grid container>
             <Grid
@@ -253,7 +281,7 @@ export default function Home() {
                 variant="overline"
                 sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
               >
-                The Challenges
+                The Challenge
               </Typography>
               <Typography
                 variant="h3"
@@ -266,23 +294,9 @@ export default function Home() {
                   mb: 1,
                 }}
               >
-                1. To build an OS that offered to do work for you, it had to
-                have a suite of uniform, integrated apps. It couldn&apos;t
-                simply integrate with existing tools.
-              </Typography>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: {
-                    xs: "1.2rem",
-                    md: "1.4rem",
-                  },
-                  lineHeight: "1.7",
-                }}
-              >
-                2. CommonOS is centered around freeform prompts and answering
-                questions, which is a new way of working. This means that
-                it&apos;s not always immediately obvious how to use it.
+                To build an OS that offered to do work for you, it had to have a
+                suite of uniform, integrated apps. It couldn&apos;t simply
+                integrate with existing tools.
               </Typography>
               <Typography
                 variant="overline"
@@ -403,10 +417,67 @@ export default function Home() {
           </Grid>
         </InnerWrapper>
       </Box>
+      <Box>
+        <InnerWrapper>
+          <Grid container>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h3" mb={4}>
+                Use Cases
+              </Typography>
+              <Typography variant="body1" mb={2}>
+                1. Initialize project plans, requirements, and documentation in
+                15 mins
+              </Typography>
+              <Typography variant="body1" mb={2}>
+                2. Initialize proposals, literature, and presentations in one
+                powerful motion
+              </Typography>{" "}
+              <Typography variant="body1" mb={2}>
+                3. Refine your work with the intelligence of mankind
+              </Typography>{" "}
+              <Typography variant="body1" mb={2}>
+                4. Abstract away some manual work, opening time for more
+                important tasks
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h3" mb={4}>
+                Integrated Apps
+              </Typography>
+              <AppsWrapper>
+                <AppBox>
+                  <LIconBox app={"documents"}>
+                    <DocumentScanner />
+                  </LIconBox>
+                  <Typography>Documents</Typography>
+                </AppBox>
+                <AppBox>
+                  <LIconBox app={"slides"}>
+                    <PresentToAllOutlined />
+                  </LIconBox>
+                  <Typography>Slides</Typography>
+                </AppBox>
+                <AppBox>
+                  <LIconBox app={"sheets"}>
+                    <List />
+                  </LIconBox>
+                  <Typography>Sheets</Typography>
+                </AppBox>
+                <AppBox>
+                  <LIconBox app={"images"}>
+                    <Image />
+                  </LIconBox>
+                  <Typography>Drawings</Typography>
+                </AppBox>
+              </AppsWrapper>
+            </Grid>
+          </Grid>
+        </InnerWrapper>
+      </Box>
       <Box padding="100px 0" display="flex" justifyContent="center">
         <Box display="flex" flexDirection="column" alignItems="center">
           <Typography variant="h3" mb={2}>
-            Leap into the future
+            Get Started
           </Typography>
           <Typography variant="body1" mb={2}>
             Try CommonOS with our free Preview plan
