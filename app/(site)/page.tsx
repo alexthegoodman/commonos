@@ -480,7 +480,7 @@ export default function Home() {
             Get Started
           </Typography>
           <Typography variant="body1" mb={2}>
-            Try CommonOS with our free Preview plan
+            Try CommonOS with the free Preview plan
           </Typography>
           <Box>
             <Button size="large" href="/sign-up">
