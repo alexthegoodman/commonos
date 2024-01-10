@@ -300,6 +300,7 @@ export default function Home() {
                 Helps With
               </Typography>
               <Box>
+                <HelpChip label="Collateral" />
                 <HelpChip label="Proposals" />
                 <HelpChip label="Literature" />
                 <HelpChip label="Journies" />
@@ -307,6 +308,7 @@ export default function Home() {
                 <HelpChip label="Stories" />
                 <HelpChip label="Plans" />
                 <HelpChip label="Processes" />
+                <HelpChip label="Templates" />
                 <HelpChip label="Maps" />
                 <HelpChip label="Presentations" />
                 <HelpChip label="Concepts" />
