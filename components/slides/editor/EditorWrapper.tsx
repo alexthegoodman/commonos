@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { DynamicEditor } from "./DynamicEditor";
 
 export default function EditorWrapper({
+  presentationId,
   exporting,
   setExporting,
   exportDoc,
@@ -45,6 +46,7 @@ export default function EditorWrapper({
   return currentSlideData ? (
     <DynamicEditor
       key={currentSlideData.id}
+      presentationId={presentationId}
       slide={currentSlideData}
       state={state}
       dispatch={dispatch}

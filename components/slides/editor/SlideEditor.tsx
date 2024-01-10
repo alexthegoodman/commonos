@@ -34,12 +34,21 @@ import { v4 as uuidv4 } from "uuid";
 import { Check, Delete } from "@mui/icons-material";
 import { MuiColorInput } from "mui-color-input";
 import { jsPDF } from "jspdf";
+import { useCookies } from "react-cookie";
+import useSWR, { mutate } from "swr";
+import { getUserData } from "@/fetchers/user";
+import {
+  getSlideTemplatesData,
+  newSlideTemplate,
+  updateSlideTemplate,
+} from "@/fetchers/slide";
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
 export default function SlideEditor({
+  presentationId,
   slide,
   state,
   dispatch,
@@ -51,6 +60,25 @@ export default function SlideEditor({
   setSlidesExported,
   title,
 }) {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
+
+  const { data: presentationTemplates } = useSWR(
+    "presentationTemplates",
+    () => getSlideTemplatesData(token),
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  const presentationTemplateMatch = presentationTemplates?.filter(
+    (template) => template.sourceId === presentationId
+  )[0];
+
   const stageRef = useRef(null);
   const textToolbarRef = useRef(null);
   const shapeToolbarRef = useRef(null);
@@ -188,6 +216,49 @@ export default function SlideEditor({
           />
         </Box>
         <Box>
+          {userData?.role === "ADMIN" && (
+            <>
+              {presentationTemplateMatch ? (
+                <Button
+                  color="success"
+                  variant="contained"
+                  onClick={async () => {
+                    await updateSlideTemplate(
+                      token,
+                      presentationTemplateMatch.id,
+                      JSON.stringify(state)
+                    );
+                    mutate("presentationTemplates", () =>
+                      getSlideTemplatesData(token)
+                    );
+                    console.info("updated template");
+                  }}
+                >
+                  Update Template
+                </Button>
+              ) : (
+                <Button
+                  color="success"
+                  variant="contained"
+                  onClick={async () => {
+                    await newSlideTemplate(
+                      token,
+                      presentationId,
+                      slide?.title,
+                      JSON.stringify(state)
+                    );
+                    mutate("presentationTemplates", () =>
+                      getSlideTemplatesData(token)
+                    );
+
+                    console.info("created template");
+                  }}
+                >
+                  Save as Template
+                </Button>
+              )}
+            </>
+          )}
           <Button
             color="success"
             variant="contained"

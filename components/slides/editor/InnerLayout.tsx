@@ -31,6 +31,7 @@ export default function InnerLayout({ presentationId, slideData }) {
         </Grid>
         <Grid item xs={12} md={10}>
           <EditorWrapper
+            presentationId={presentationId}
             title={title}
             exporting={exporting}
             setExporting={setExporting}

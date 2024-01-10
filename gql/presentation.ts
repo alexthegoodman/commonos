@@ -58,3 +58,47 @@ export const presentationQuery = gql`
     }
   }
 `;
+
+export const presentationTemplatesQuery = gql`
+  query PresentationTemplates {
+    presentationTemplates {
+      id
+      sourceId
+      title
+      key
+
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const newPresentationTemplateMutation = gql`
+  mutation NewPresentationTemplate(
+    $sourceId: String!
+    $title: String!
+    $context: String!
+  ) {
+    newPresentationTemplate(
+      sourceId: $sourceId
+      title: $title
+      context: $context
+    ) {
+      id
+    }
+  }
+`;
+
+export const updatePresentationTemplateMutation = gql`
+  mutation UpdatePresentationTemplate(
+    $presentationTemplateId: String!
+    $context: String!
+  ) {
+    updatePresentationTemplate(
+      presentationTemplateId: $presentationTemplateId
+      context: $context
+    ) {
+      id
+    }
+  }
+`;

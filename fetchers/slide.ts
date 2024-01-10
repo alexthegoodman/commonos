@@ -3,6 +3,9 @@ import {
   myPresentationsQuery,
   newPresentationMutation,
   updatePresentationMutation,
+  newPresentationTemplateMutation,
+  updatePresentationTemplateMutation,
+  presentationTemplatesQuery,
 } from "../gql/presentation";
 import graphClient from "../helpers/GQLClient";
 
@@ -57,4 +60,52 @@ export const updateSlide = async (
   )) as any;
 
   return updatePresentation;
+};
+
+export const getSlideTemplatesData = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { presentationTemplates } = (await graphClient.client?.request(
+    presentationTemplatesQuery
+  )) as any;
+
+  return presentationTemplates;
+};
+
+export const newSlideTemplate = async (
+  token: string,
+  sourceId: string,
+  title: string,
+  context: any
+) => {
+  graphClient.setupClient(token);
+
+  const { newPresentationTemplate } = (await graphClient.client?.request(
+    newPresentationTemplateMutation,
+    {
+      sourceId,
+      title,
+      context: JSON.stringify(context),
+    }
+  )) as any;
+
+  return newPresentationTemplate;
+};
+
+export const updateSlideTemplate = async (
+  token: string,
+  presentationTemplateId: string,
+  context: string
+) => {
+  graphClient.setupClient(token);
+
+  const { updatePresentationTemplate } = (await graphClient.client?.request(
+    updatePresentationTemplateMutation,
+    {
+      presentationTemplateId,
+      context: JSON.stringify(context),
+    }
+  )) as any;
+
+  return updatePresentationTemplate;
 };
