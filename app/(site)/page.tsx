@@ -9,8 +9,10 @@ import {
   PresentToAllOutlined,
 } from "@mui/icons-material";
 import {
+  Badge,
   Box,
   Button,
+  Chip,
   Grid,
   Step,
   StepLabel,
@@ -97,6 +99,14 @@ const BlockImage = styled("img")(({ theme }) => ({
   width: "100%",
   height: "100%",
   display: "block",
+}));
+
+const HelpChip = styled(Chip)(({ theme }) => ({
+  marginRight: "5px",
+  marginBottom: "10px",
+  backgroundColor: "#38ef7d",
+  color: "#000",
+  fontWeight: "bold",
 }));
 
 export default function Home() {
@@ -279,31 +289,29 @@ export default function Home() {
                   lineHeight: "1.7",
                 }}
               >
-                CommonOS serves you. By asking you intelligent questions, it
-                learns what you want and how you want it. Then, it does the work
-                for you, so you can focus on what matters.
+                Sales should be about the customer, not the paperwork. CommonOS
+                is a lightweight, semi-automated OS that helps you generate
+                documents, slides, sheets, and drawings.
               </Typography>
               <Typography
                 variant="overline"
                 sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
               >
-                The Challenge
+                Helps With
               </Typography>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: {
-                    xs: "1.2rem",
-                    md: "1.4rem",
-                  },
-                  lineHeight: "1.7",
-                  mb: 1,
-                }}
-              >
-                To build an OS that offered to do work for you, it had to have a
-                suite of uniform, integrated apps. It couldn&apos;t simply
-                integrate with existing tools.
-              </Typography>
+              <Box>
+                <HelpChip label="Proposals" />
+                <HelpChip label="Literature" />
+                <HelpChip label="Journies" />
+                <HelpChip label="Lists" />
+                <HelpChip label="Stories" />
+                <HelpChip label="Plans" />
+                <HelpChip label="Processes" />
+                <HelpChip label="Maps" />
+                <HelpChip label="Presentations" />
+                <HelpChip label="Concepts" />
+              </Box>
+
               <Typography
                 variant="overline"
                 sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
