@@ -1,6 +1,7 @@
 "use client";
 
 import DocumentTree from "@/components/documents/nav/DocumentTree";
+import ProjectPicker from "@/components/core/nav/ProjectPicker";
 import { Box, Button, Typography, styled } from "@mui/material";
 import { useState } from "react";
 
@@ -70,6 +71,7 @@ export default function Layout({ children }) {
         Browse Documents
       </MobileSideButton>
       <CmSidebar mobileOpen={mobileOpen}>
+        <ProjectPicker />
         <DocumentTree />
       </CmSidebar>
       <CmContent>{children}</CmContent>
