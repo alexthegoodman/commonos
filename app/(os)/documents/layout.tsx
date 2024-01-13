@@ -71,7 +71,6 @@ export default function Layout({ children }) {
         Browse Documents
       </MobileSideButton>
       <CmSidebar mobileOpen={mobileOpen}>
-        <ProjectPicker />
         <DocumentTree />
       </CmSidebar>
       <CmContent>{children}</CmContent>

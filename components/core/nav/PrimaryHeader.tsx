@@ -9,12 +9,14 @@ import ColorModeSwitch from "./ColorModeSwitch";
 import UsageIndicator from "./UsageIndicator";
 import { Star, Upgrade } from "@mui/icons-material";
 import UpgradeButton from "./UpgradeButton";
+import ProjectPicker from "./ProjectPicker";
 
 export default function PrimaryHeader() {
   return (
     <Box display="flex" flexDirection="row" justifyContent="space-between">
-      <Box>
+      <Box display="flex" flexDirection="row" gap={2}>
         <ProfileMenu />
+        <ProjectPicker />
         <NotificationList />
       </Box>
       <Box display="flex" flexDirection="row">

@@ -63,16 +63,16 @@ export default function PrimaryTabs() {
   return (
     <TabsWrapper>
       <Box display="flex" flexDirection="row" width="fit-content" mb={2}>
-        {state.openTabs.map((tab) => {
-          const tabData = allTabs.find((t) => t.id === tab.id);
+        {allTabs.map((tabData) => {
+          // const tabData = allTabs.find((t) => t.id === tab.id);
 
-          if (!tabData) {
-            return null;
-          }
+          // if (!tabData) {
+          //   return null;
+          // }
 
           return (
             <Tab
-              key={tab.id}
+              key={tabData.id}
               disabled={tabData.href === ""}
               onClick={() => router.push(tabData.href)}
               style={

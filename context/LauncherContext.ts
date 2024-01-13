@@ -57,23 +57,27 @@ export const allTabs = [
   // },
 ];
 
-// all tabs for now
-const testDefaultTabs = allTabs.map((tab) => ({
-  id: tab.id,
-  pinned: false,
-}));
+// // all tabs for now
+// const testDefaultTabs = allTabs.map((tab) => ({
+//   id: tab.id,
+//   pinned: false,
+// }));
 
-export interface OpenTab {
-  id: string;
-  pinned: boolean;
-}
+// export interface OpenTab {
+//   id: string;
+//   pinned: boolean;
+// }
 
 export interface LauncherContextState {
-  openTabs: OpenTab[];
+  // openTabs: OpenTab[];
+  currentOrganizationId: string | null;
+  currentProjectId: string | null;
 }
 
 export const LauncherContextState = {
-  openTabs: testDefaultTabs,
+  // openTabs: testDefaultTabs,
+  currentOrganizationId: null,
+  currentProjectId: null,
 };
 
 export const LauncherContextReducer = (
