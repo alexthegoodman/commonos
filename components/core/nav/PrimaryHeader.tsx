@@ -16,7 +16,7 @@ export default function PrimaryHeader() {
     <Box display="flex" flexDirection="row" justifyContent="space-between">
       <Box display="flex" flexDirection="row" gap={2}>
         <ProfileMenu />
-        <ProjectPicker />
+        {/* <ProjectPicker /> */}
         <NotificationList />
       </Box>
       <Box display="flex" flexDirection="row">
