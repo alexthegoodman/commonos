@@ -1,6 +1,7 @@
 "use client";
 
 import { IconBox } from "@/components/core/flows/FlowEditor";
+import { InnerWrapper } from "@/components/core/landing/InnerWrapper";
 import {
   ArrowRightSharp,
   DocumentScanner,
@@ -28,12 +29,6 @@ const Hero = styled(Box)(({ theme }) => ({
   alignItems: "center",
   // justifyContent: "center",
   borderBottom: "1px solid #ccc",
-}));
-
-const InnerWrapper = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "1400px",
-  margin: "0 auto",
 }));
 
 const HistoryStepper = styled(Stepper)(({ theme }) => ({

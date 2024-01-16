@@ -1,17 +1,15 @@
 "use client";
 
+import { InnerWrapper } from "@/components/core/landing/InnerWrapper";
 import { Box, Typography, styled } from "@mui/material";
 
-const InnerWrapper = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "1400px",
-  margin: "0 auto",
+const Wrapper = styled(InnerWrapper)(({ theme }) => ({
   padding: "25px 0",
 }));
 
 export default function PrivacyPolicy() {
   return (
-    <InnerWrapper>
+    <Wrapper>
       <Typography whiteSpace="pre-line">{`Privacy Policy for CommonOS
 
   Introduction
@@ -54,6 +52,6 @@ export default function PrivacyPolicy() {
   
   By using CommonOS, you agree to the terms outlined in this privacy policy. We are committed to respecting and safeguarding the privacy of our users and continuously improving our data protection practices. If you have any concerns or questions about our privacy policy, please contact our customer support team for assistance.
   `}</Typography>
-    </InnerWrapper>
+    </Wrapper>
   );
 }

@@ -1,17 +1,15 @@
 "use client";
 
+import { InnerWrapper } from "@/components/core/landing/InnerWrapper";
 import { Box, Typography, styled } from "@mui/material";
 
-const InnerWrapper = styled(Box)(({ theme }) => ({
-  width: "100%",
-  maxWidth: "1400px",
-  margin: "0 auto",
+const Wrapper = styled(InnerWrapper)(({ theme }) => ({
   padding: "25px 0",
 }));
 
 export default function Terms() {
   return (
-    <InnerWrapper>
+    <Wrapper>
       <Typography whiteSpace="pre-line">{`Terms of Service for CommonOS
 
   Introduction
@@ -51,6 +49,6 @@ export default function Terms() {
   
   By using CommonOS, you acknowledge that you have read, understood, and agree to these Terms of Service. If you have any questions or concerns about these Terms of Service, please contact us at [contact information]. Thank you for using CommonOS and for your cooperation in complying with these Terms of Service.
   `}</Typography>
-    </InnerWrapper>
+    </Wrapper>
   );
 }
