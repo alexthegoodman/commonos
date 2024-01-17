@@ -32,6 +32,15 @@ const FileItem = styled(Box)(({ theme }) => ({
   border: `2px solid ${theme.palette.divider}`,
   padding: "25px",
   backgroundColor: "rgba(255,255,255,0.05)",
+  [theme.breakpoints.down("md")]: {
+    padding: "10px",
+    "& > div": {
+      display: "none",
+    },
+    "& .MuiTypography-root": {
+      fontSize: "18px",
+    },
+  },
 }));
 
 export default function Founders() {
@@ -58,14 +67,20 @@ export default function Founders() {
             Sales Enablement for Founders
           </Typography>
           <SubTitle mb={1}>
+            Founders have unique needs when it comes to sales. Determining
+            strategy, setting up processes, and forming initial relationships
+            are just a few examples. CommonOS simplifies that entire process.
+          </SubTitle>
+          <SubTitle>
             By creating your sales collateral, proposals, and presentations with
             CommonOS, you can produce files that are more engaging, more
             personalized, and more effective, in just minutes.
           </SubTitle>
-          <SubTitle>
+          {/* <SubTitle>
             CommonOS is different because it doesn&apos;t just help you generate
             files, it helps you determine exactly what your files say.
-          </SubTitle>
+          </SubTitle> */}
+
           <Box maxWidth="350px">
             <AuthForm
               type="sign-up"
@@ -99,8 +114,11 @@ export default function Founders() {
         </Grid>
       </Grid>
       <Box my={4} mb={8}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={3}>
+        <Typography variant="h5" mb={2}>
+          CommonOS Helps With
+        </Typography>
+        <Grid container spacing={{ md: 4, xs: 2 }}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -108,7 +126,7 @@ export default function Founders() {
               <Typography variant="h5">Collateral</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -116,7 +134,7 @@ export default function Founders() {
               <Typography variant="h5">Proposals</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"sheets"}>
                 <List />
@@ -124,7 +142,7 @@ export default function Founders() {
               <Typography variant="h5">Lists</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -133,7 +151,7 @@ export default function Founders() {
             </FileItem>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -141,7 +159,7 @@ export default function Founders() {
               <Typography variant="h5">Journies</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"slides"}>
                 <PresentToAllOutlined />
@@ -149,7 +167,7 @@ export default function Founders() {
               <Typography variant="h5">Presentations</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -158,7 +176,7 @@ export default function Founders() {
             </FileItem>
           </Grid>
 
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -166,7 +184,7 @@ export default function Founders() {
               <Typography variant="h5">Plans</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"drawings"}>
                 <Image />
@@ -174,7 +192,7 @@ export default function Founders() {
               <Typography variant="h5">Concepts</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -182,7 +200,7 @@ export default function Founders() {
               <Typography variant="h5">Processes</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
@@ -190,7 +208,7 @@ export default function Founders() {
               <Typography variant="h5">Templates</Typography>
             </FileItem>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={6} md={3}>
             <FileItem>
               <IconBox app={"documents"}>
                 <DocumentScanner />
