@@ -165,7 +165,7 @@ const AuthForm = ({
           validation={{
             required: "Email Required",
           }}
-          sx={{ minWidth: { md: "350px" } }}
+          sx={{ minWidth: { md: "350px" }, width: "100%" }}
         />
 
         <FormInput
@@ -177,7 +177,7 @@ const AuthForm = ({
           validation={{
             required: "Password Required",
           }}
-          sx={{ minWidth: { md: "350px" } }}
+          sx={{ minWidth: { md: "350px" }, width: "100%" }}
         />
 
         <Button
