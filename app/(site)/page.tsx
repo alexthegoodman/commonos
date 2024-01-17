@@ -1,6 +1,7 @@
 "use client";
 
 import { IconBox } from "@/components/core/flows/FlowEditor";
+import HowToUse from "@/components/core/landing/HowToUse";
 import { InnerWrapper } from "@/components/core/landing/InnerWrapper";
 import {
   ArrowRightSharp,
@@ -88,12 +89,6 @@ const LIconBox = styled(IconBox)(({ theme }) => ({
     width: "50%",
     height: "50%",
   },
-}));
-
-const BlockImage = styled("img")(({ theme }) => ({
-  width: "100%",
-  height: "100%",
-  display: "block",
 }));
 
 const HelpChip = styled(Chip)(({ theme }) => ({
@@ -487,77 +482,7 @@ export default function Home() {
       </Box>
       <Box>
         <InnerWrapper>
-          <Typography variant="h3" mb={4}>
-            How To Use CommonOS
-          </Typography>
-          <Grid container mb={2}>
-            <Grid item xs={12} md={6}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                height="100%"
-              >
-                <Typography variant="h4" mb={4}>
-                  Start with a prompt
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <BlockImage src="/img/process/prompt.png" />
-            </Grid>
-          </Grid>
-          <Grid container mb={2}>
-            <Grid item xs={12} md={6}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                height="100%"
-              >
-                <Typography variant="h4" mb={4}>
-                  Answer intelligent questions
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <BlockImage src="/img/process/questions.png" />
-            </Grid>
-          </Grid>
-          <Grid container mb={2}>
-            <Grid item xs={12} md={6}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                height="100%"
-              >
-                <Typography variant="h4" mb={4}>
-                  Review your file plan
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <BlockImage src="/img/process/review.png" />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs={12} md={6}>
-              <Box
-                display="flex"
-                flexDirection="column"
-                justifyContent="center"
-                height="100%"
-              >
-                <Typography variant="h4" mb={4}>
-                  Refine your new files
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <BlockImage src="/img/process/refine2.png" />
-            </Grid>
-          </Grid>
+          <HowToUse />
         </InnerWrapper>
       </Box>
       <Box padding="100px 0" display="flex" justifyContent="center">

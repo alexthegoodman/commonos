@@ -28,15 +28,13 @@ export default function LandingHeader() {
             <Typography
               variant="h6"
               component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+              sx={{ flexGrow: 1, display: "block" }}
             >
               CommonOS
             </Typography>
-            <Box
-              sx={{ display: { xs: "none", sm: "flex" }, flexDirection: "row" }}
-            >
+            <Box sx={{ display: "flex", flexDirection: "row" }}>
               <Button color="success" variant="contained" href="/sign-up">
-                Sign Up
+                Sign Up for Free
               </Button>
             </Box>
           </InnerWrappper>

@@ -26,6 +26,8 @@ import { Box, Button, Link, Typography } from "@mui/material";
 const AuthForm = ({
   onClick = (e) => console.info("Click AuthForm"),
   type = "login",
+  buttonText = null,
+  showLinks = true,
 }) => {
   // const { t } = useTranslation();
   const helpers = new Helpers();
@@ -134,11 +136,13 @@ const AuthForm = ({
   const headline = type === "login" ? "Login" : "Sign Up";
   let submitButtonText = type === "login" ? "Login" : "Sign Up";
 
+  if (buttonText) submitButtonText = buttonText;
+
   if (submitLoading) submitButtonText = "Loading...";
 
   return (
     <Box pt={4}>
-      <Typography variant="h3" mb={2}>
+      <Typography variant="h4" mb={2}>
         {headline}
       </Typography>
       <form
@@ -185,17 +189,19 @@ const AuthForm = ({
           {submitButtonText}
         </Button>
       </form>
-      <div>
-        {type === "login" ? (
-          <Typography variant="body1">
-            Or you may <Link href="/sign-up">Sign Up</Link> instead
-          </Typography>
-        ) : (
-          <Typography variant="body1">
-            Or you may <Link href="/login">Login</Link> instead
-          </Typography>
-        )}
-      </div>
+      {showLinks && (
+        <div>
+          {type === "login" ? (
+            <Typography variant="body1">
+              Or you may <Link href="/sign-up">Sign Up</Link> instead
+            </Typography>
+          ) : (
+            <Typography variant="body1">
+              Or you may <Link href="/login">Login</Link> instead
+            </Typography>
+          )}
+        </div>
+      )}
     </Box>
   );
 };
