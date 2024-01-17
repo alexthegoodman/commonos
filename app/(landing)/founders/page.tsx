@@ -10,16 +10,18 @@ import {
   List,
   PresentToAllOutlined,
 } from "@mui/icons-material";
-import { Box, Grid, Typography, styled } from "@mui/material";
+import { Box, Button, Grid, Typography, styled } from "@mui/material";
 import YouTube from "react-youtube";
 
-const Wrapper = styled(InnerWrapper)(({ theme }) => ({
-  padding: "0",
-}));
+const Wrapper = styled(InnerWrapper)(({ theme }) => ({}));
 
 const SubTitle = styled(Typography)(({ theme }) => ({
   fontSize: "20px",
   lineHeight: "34px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "18px",
+    lineHeight: "32px",
+  },
 }));
 
 const FileItem = styled(Box)(({ theme }) => ({
@@ -46,7 +48,11 @@ export default function Founders() {
     <Wrapper>
       <Grid py={5} container spacing={8}>
         <Grid item xs={12} md={6}>
-          <Typography variant="h1" mb={2}>
+          <Typography
+            variant="h1"
+            mb={2}
+            sx={{ fontSize: { md: "68px", xs: "48px" } }}
+          >
             {/* Drive Sales Success: CommonOS - A Founder&apos;s Secret to Growth! */}
             {/* Personalized, generative sales enablement for founders */}
             Sales Enablement for Founders
@@ -196,6 +202,11 @@ export default function Founders() {
       </Box>
       <Box my={4}>
         <HowToUse />
+      </Box>
+      <Box my={4} display="flex" justifyContent="center" padding="30px 0">
+        <Button color="success" variant="contained" href="/sign-up">
+          Sign Up for Free
+        </Button>
       </Box>
     </Wrapper>
   );
