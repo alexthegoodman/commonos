@@ -25,7 +25,7 @@ const Container = styled(Box)(({ theme, hasSidebar }) => ({
   // maxWidth: hasSidebar ? "1600px" : "1400px",
   // paddingRight: hasSidebar ? "400px" : "0px",
   maxWidth: hasSidebar ? "100vw" : "100vw",
-  paddingRight: hasSidebar ? "32vw" : "0px",
+  paddingRight: hasSidebar ? "26vw" : "0px",
   // paddingLeft: "1vw",
   width: "100%",
   margin: "0 auto",
