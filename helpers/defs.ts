@@ -4,3 +4,5 @@ export enum Status {
   ERROR = "ERROR",
   IN_PROGRESS = "IN_PROGRESS",
 }
+
+export const pageCharacterCount = 1500; // Set your desired page size

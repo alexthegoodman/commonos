@@ -335,12 +335,12 @@ const DocumentTree = ({ documentId = "" }) => {
     // mutate,
   } = useSWR("browseKey", () => getDocumentsData(token));
 
-  console.info("documents data", userData, documentsData);
+  console.info("tree data", userData, documentsData);
 
   const [dragActiveId, setDragActiveId] = React.useState(null);
   const [treeDisabled, setTreeDisabled] = React.useState(false);
 
-  console.info("dragActiveId", dragActiveId);
+  // console.info("dragActiveId", dragActiveId);
 
   const linkDragStart = (e) => {
     console.info("dragging", e.target.id);

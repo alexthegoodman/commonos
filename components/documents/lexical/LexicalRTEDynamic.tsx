@@ -34,6 +34,7 @@ import { useEffect, useRef } from "react";
 import { useDocumentsContext } from "@/context/DocumentsContext";
 import EditorHeader from "../editor/EditorHeader";
 import styled from "@emotion/styled";
+import { pageCharacterCount } from "@/helpers/defs";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text...</div>;
@@ -47,11 +48,13 @@ const OuterPaper = styled(Box)(({ theme }) => ({
 
 // see: https://github.com/facebook/lexical/blob/main/packages/lexical-playground/src/Editor.tsx
 
-export default function LexicalRTEDynamic({ pageId, content }) {
+export default function LexicalRTEDynamic({
+  pageId,
+  completeMarkdown,
+  markdown,
+  dispatch,
+}) {
   const editorRef = useRef(null);
-
-  // const [{ markdown, revisedMarkdown, plaintext, messages }, dispatch] =
-  //   useDocumentsContext();
 
   // // console.info("render LexicalRTE", markdown, plaintext);
 
@@ -66,15 +69,39 @@ export default function LexicalRTEDynamic({ pageId, content }) {
   //   }
   // }, [revisedMarkdown]);
 
+  useEffect(() => {
+    if (markdown) {
+      // update each editor when any completeMarkdown changes
+      console.info("updated completeMarkdown", markdown);
+      editorRef.current.update(() => {
+        $convertFromMarkdownString(markdown, TRANSFORMERS);
+      });
+    }
+  }, [completeMarkdown]);
+
   const onChange = (delta) => {
     console.info("delta", delta);
-    // if (editorRef.current) {
-    //   editorRef.current.update(() => {
-    //     const newMarkdown = $convertToMarkdownString(TRANSFORMERS);
-    //     // console.info("newMarkdown", newMarkdown);
-    //     dispatch({ type: "markdown", payload: newMarkdown });
-    //   });
-    // }
+    if (editorRef.current) {
+      editorRef.current.update(() => {
+        const startingPoint = pageCharacterCount * (pageId - 1);
+
+        const newSectionMarkdown = $convertToMarkdownString(TRANSFORMERS);
+
+        // if (newSectionMarkdown.length > pageCharacterCount) {
+        //   console.info("beyond edge of page");
+        //   return;
+        // }
+
+        const newContent =
+          completeMarkdown.slice(0, startingPoint) +
+          newSectionMarkdown +
+          completeMarkdown.slice(startingPoint + newSectionMarkdown.length);
+
+        console.info("newContent", startingPoint, newContent);
+
+        dispatch({ type: "markdown", payload: newContent });
+      });
+    }
   };
 
   // const initialMarkdwn = plaintext && !markdown ? plaintext : markdown;
@@ -82,7 +109,7 @@ export default function LexicalRTEDynamic({ pageId, content }) {
   const editorConfig = {
     // The editor theme
     theme: LexicalTheme,
-    editorState: () => $convertFromMarkdownString(content, TRANSFORMERS),
+    editorState: () => $convertFromMarkdownString(markdown, TRANSFORMERS),
     // Handling of errors during update
     onError(error) {
       throw error;

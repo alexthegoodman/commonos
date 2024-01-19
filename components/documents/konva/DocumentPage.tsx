@@ -1,15 +1,18 @@
 "use client";
 
 import React from "react";
-import LexicalRTEDynamic from "./LexicalRTEDynamic";
 import { pageCharacterCount } from "@/helpers/defs";
+import KonvaRTE from "./KonvaRTE";
+import { Box } from "@mui/material";
 
-const DynamicLexical = ({
+const DocumentPage = ({
   pageId = 1,
   dispatch,
   remainingMarkdown,
   completeMarkdown,
 }) => {
+  //   const pageSize = 1500; // Set your desired page size
+
   const calculateTextForPage = (text, pageSize) => {
     // Implement your logic to calculate the text that fits on a page
     return text.slice(0, pageSize);
@@ -23,14 +26,16 @@ const DynamicLexical = ({
 
   return (
     <div>
-      <LexicalRTEDynamic
-        pageId={pageId}
-        completeMarkdown={completeMarkdown}
-        markdown={textForPage}
-        dispatch={dispatch}
-      />
+      <Box mb={5}>
+        <KonvaRTE
+          pageId={pageId}
+          completeMarkdown={completeMarkdown}
+          markdown={textForPage}
+          dispatch={dispatch}
+        />
+      </Box>
       {remainingText.length > 0 && (
-        <DynamicLexical
+        <DocumentPage
           pageId={pageId + 1}
           completeMarkdown={completeMarkdown}
           remainingMarkdown={remainingText}
@@ -41,4 +46,4 @@ const DynamicLexical = ({
   );
 };
 
-export default DynamicLexical;
+export default DocumentPage;

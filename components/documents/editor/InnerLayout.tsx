@@ -4,10 +4,9 @@ import {
   DocumentsContextState,
 } from "@/context/DocumentsContext";
 import { Box } from "@mui/material";
-import LexicalRTE from "../lexical/LexicalRTE";
 import AutoSidebar from "./AutoSidebar";
 import { useReducer } from "react";
-import DynamicLexical from "../lexical/DynamicLexical";
+import DynamicInner from "../konva/DynamicInner";
 
 export default function InnerLayout({
   context,
@@ -28,7 +27,7 @@ export default function InnerLayout({
           documentData={documentData}
           refetch={refetch}
         /> */}
-        <DynamicLexical content={initialMarkdwn} />
+        <DynamicInner />
         <AutoSidebar documentId={documentId} documentData={documentData} />
       </Box>
     </DocumentsContext.Provider>
