@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useDocumentsContext } from "@/context/DocumentsContext";
 import DocumentPage from "./DocumentPage";
 
@@ -8,15 +8,31 @@ const DynamicInner = () => {
   const [{ markdown, revisedMarkdown, plaintext }, dispatch] =
     useDocumentsContext();
 
-  let testMarkdown = `CommonOS Commitment to West Michigan
-
-  At CommonOS, we are committed to the development and growth of the West Michigan economy. We understand the importance of investing in our local community and are dedicated to keeping our headquarters right here in West Michigan. Our mission is to not only support the economy but also create a positive impact on the lives of the people in this region.`;
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [dragEnd, setDragEnd] = useState({ x: 0, y: 0 });
+  const [startPageId, setStartPageId] = useState(0);
+  const [startIndex, setStartIndex] = useState(0);
+  const [endPageId, setEndPageId] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
 
   return (
     <DocumentPage
       remainingMarkdown={markdown}
       completeMarkdown={markdown}
       dispatch={dispatch}
+      setIsDragging={setIsDragging}
+      setDragStart={setDragStart}
+      setDragEnd={setDragEnd}
+      setStartPageId={setStartPageId}
+      setStartIndex={setStartIndex}
+      setEndPageId={setEndPageId}
+      setEndIndex={setEndIndex}
+      isDragging={isDragging}
+      startPageId={startPageId}
+      startIndex={startIndex}
+      endPageId={endPageId}
+      endIndex={endIndex}
     />
   );
 };

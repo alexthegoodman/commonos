@@ -11,6 +11,18 @@ export default function KonvaRTE({
   completeMarkdown,
   markdown,
   dispatch,
+  setIsDragging,
+  setDragStart,
+  setDragEnd,
+  setStartPageId,
+  setStartIndex,
+  setEndPageId,
+  setEndIndex,
+  isDragging,
+  startPageId,
+  startIndex,
+  endPageId,
+  endIndex,
 }) {
   const hiddenContainer = useRef(null);
   const stageRef = useRef(null);
@@ -20,7 +32,7 @@ export default function KonvaRTE({
   function traverseAndWrap(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       const textContent = node.textContent;
-      console.info("text content", `"${textContent}"`);
+      // console.info("text content", `"${textContent}"`);
 
       if (textContent === "\n") {
         return;
@@ -67,20 +79,10 @@ export default function KonvaRTE({
       const currentY = textNode.offsetTop - hiddenContainer.current.offsetTop;
       const currentX = textNode.offsetLeft - hiddenContainer.current.offsetLeft;
 
-      // if (currentY > lastY + 5) {
-      //   currentX = 0;
-      //   lineY += 20;
-      // }
-
-      // lastY = currentY;
-
-      // if (x === 0 && i === 0) {
-      //   currentX = textNode.offsetLeft - hiddenContainer.current.offsetLeft;
-      // }
-
-      console.info("char", char, textNode.offsetTop, currentY, currentX);
+      // console.info("char", char, textNode.offsetTop, currentY, currentX);
 
       konvaTexts.push({
+        id: "char-" + Math.random() + "-" + pageId + "-" + nodesDone,
         text: char,
         x: currentX,
         // y: lineY,
@@ -102,7 +104,7 @@ export default function KonvaRTE({
     const html = converter.makeHtml(markdown);
     const jsonString = await HTMLToJSON(`<div>${html}</div>`, true);
     const json = JSON.parse(jsonString);
-    console.info("markdown json", markdown, html, json);
+    // console.info("markdown json", markdown, html, json);
 
     /**
      * Example json:
@@ -136,7 +138,7 @@ export default function KonvaRTE({
       }
     });
 
-    console.info("konva texts", konvaTexts);
+    // console.info("konva texts", konvaTexts);
 
     setCharTexts([...konvaTexts]);
   };
@@ -147,6 +149,85 @@ export default function KonvaRTE({
       markdownToContentEditable(markdown);
     }
   }, [markdown]);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+
+    const position = stageRef.current.getPointerPosition();
+
+    setDragStart(position);
+
+    // Identify the Konva.Text node
+    const textNode = stageRef.current.getIntersection(position);
+    const nodeType = textNode.getClassName();
+
+    if (nodeType === "Text") {
+      // get text node id
+      const textNodeId = textNode.getId();
+      const idParts = textNodeId.split("-");
+      const nodePageId = idParts[2];
+      const nodeIndex = idParts[3];
+
+      // console.info("start textNode", textNode, textNodeId);
+
+      setStartPageId(nodePageId);
+      setStartIndex(nodeIndex);
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    // if (!isDragging) {
+    //   return;
+    // }
+
+    const position = stageRef.current.getPointerPosition();
+
+    setDragEnd(position);
+
+    // Identify the Konva.Text node
+    const textNode = stageRef.current.getIntersection(position);
+
+    // determine node type
+    const nodeType = textNode.getClassName();
+
+    if (nodeType === "Text") {
+      // get text node id
+      const textNodeId = textNode.getId();
+      const idParts = textNodeId.split("-");
+      const nodePageId = idParts[2];
+      const nodeIndex = idParts[3];
+
+      // console.info("move textNode", textNode, textNodeId);
+
+      setEndPageId(nodePageId);
+      setEndIndex(nodeIndex);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    setIsDragging(false);
+
+    const position = stageRef.current.getPointerPosition();
+
+    setDragEnd(position);
+
+    // Identify the Konva.Text node
+    const textNode = stageRef.current.getIntersection(position);
+    const nodeType = textNode.getClassName();
+
+    if (nodeType === "Text") {
+      // get text node id
+      const textNodeId = textNode.getId();
+      const idParts = textNodeId.split("-");
+      const nodePageId = idParts[2];
+      const nodeIndex = idParts[3];
+
+      // console.info("end textNode", textNode, textNodeId);
+
+      setEndPageId(nodePageId);
+      setEndIndex(nodeIndex);
+    }
+  };
 
   const pxPerIn = 96;
   const documentSize = {
@@ -160,6 +241,9 @@ export default function KonvaRTE({
         ref={stageRef}
         width={documentSize.width}
         height={documentSize.height}
+        onMouseDown={handleMouseDown}
+        onMousemove={handleMouseMove}
+        onMouseup={handleMouseUp}
       >
         <Layer>
           <Rect
@@ -171,17 +255,36 @@ export default function KonvaRTE({
           />
         </Layer>
         <Layer>
-          {charTexts.map((charText, i) => (
-            <Text
-              key={`${pageId}-${charText}-${i}`}
-              x={charText.x}
-              y={charText.y}
-              text={charText.text}
-              fontSize={charText.fontSize}
-              fontFamily={charText.fontFamily}
-              fill="black"
-            />
-          ))}
+          {charTexts.map((charText, i) => {
+            const selectedText =
+              (i >= startIndex && i <= endIndex) ||
+              (i >= endIndex && i <= startIndex);
+
+            return (
+              <>
+                {isDragging && selectedText && (
+                  <Rect
+                    key={`${pageId}-${charText}-${i}-rect`}
+                    x={charText.x}
+                    y={charText.y}
+                    width={charText.width}
+                    height={charText.height}
+                    fill="green"
+                  />
+                )}
+                <Text
+                  key={`${pageId}-${charText}-${i}`}
+                  id={charText.id}
+                  x={charText.x}
+                  y={charText.y}
+                  text={charText.text}
+                  fontSize={charText.fontSize}
+                  fontFamily={charText.fontFamily}
+                  fill="black"
+                />
+              </>
+            );
+          })}
         </Layer>
       </Stage>
       <div

@@ -10,6 +10,18 @@ const DocumentPage = ({
   dispatch,
   remainingMarkdown,
   completeMarkdown,
+  setIsDragging,
+  setDragStart,
+  setDragEnd,
+  setStartPageId,
+  setStartIndex,
+  setEndPageId,
+  setEndIndex,
+  isDragging,
+  startPageId,
+  startIndex,
+  endPageId,
+  endIndex,
 }) => {
   //   const pageSize = 1500; // Set your desired page size
 
@@ -32,6 +44,18 @@ const DocumentPage = ({
           completeMarkdown={completeMarkdown}
           markdown={textForPage}
           dispatch={dispatch}
+          setIsDragging={setIsDragging}
+          setDragStart={setDragStart}
+          setDragEnd={setDragEnd}
+          setStartPageId={setStartPageId}
+          setStartIndex={setStartIndex}
+          setEndPageId={setEndPageId}
+          setEndIndex={setEndIndex}
+          isDragging={isDragging}
+          startPageId={startPageId}
+          startIndex={startIndex}
+          endPageId={endPageId}
+          endIndex={endIndex}
         />
       </Box>
       {remainingText.length > 0 && (
@@ -40,6 +64,18 @@ const DocumentPage = ({
           completeMarkdown={completeMarkdown}
           remainingMarkdown={remainingText}
           dispatch={dispatch}
+          setIsDragging={setIsDragging}
+          setDragStart={setDragStart}
+          setDragEnd={setDragEnd}
+          setStartPageId={setStartPageId}
+          setStartIndex={setStartIndex}
+          setEndPageId={setEndPageId}
+          setEndIndex={setEndIndex}
+          isDragging={isDragging}
+          startPageId={startPageId}
+          startIndex={startIndex}
+          endPageId={endPageId}
+          endIndex={endIndex}
         />
       )}
     </div>
