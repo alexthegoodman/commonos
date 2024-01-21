@@ -56,6 +56,7 @@
     "react-draggable": "^4.4.6",
     "react-hook-form": "^7.48.2",
     "react-konva": "^18.2.10",
+    "react-konva-utils": "^1.0.5",
     "react-quill": "^2.0.0",
     "react-wrap-balancer": "^1.1.0",
     "react-youtube": "^10.1.0",

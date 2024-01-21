@@ -154,12 +154,12 @@ export default function AutoSidebar({ documentId, documentData }) {
 
   useEffect(() => {
     setHasMounted(true);
-    console.info(
-      "mounted",
-      hasMounted,
-      debouncedState?.messages,
-      debouncedState.markdown
-    );
+    // console.info(
+    //   "mounted",
+    //   hasMounted,
+    //   debouncedState?.messages,
+    //   debouncedState.markdown
+    // );
     if (debouncedState.messages.length === 0 && debouncedState.markdown) {
       // first set of questions
       const sectionContent = [

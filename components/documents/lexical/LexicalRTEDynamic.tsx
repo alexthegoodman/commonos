@@ -53,6 +53,7 @@ export default function LexicalRTEDynamic({
   completeMarkdown,
   markdown,
   dispatch,
+  mainTextSize,
 }) {
   const editorRef = useRef(null);
 
@@ -132,15 +133,6 @@ export default function LexicalRTEDynamic({
 
   // const totalWords = markdown?.split(" ").length;
 
-  const paperSize = {
-    width: "8.3in",
-    height: "11.7in",
-  };
-
-  const marginSize = {
-    padding: "0.5in 1in",
-  };
-
   return (
     <>
       <LexicalComposer initialConfig={editorConfig}>
@@ -149,23 +141,25 @@ export default function LexicalRTEDynamic({
           <div className="editor-inner">
             <RichTextPlugin
               contentEditable={
-                <OuterPaper sx={{ ...paperSize, ...marginSize }}>
+                <>
                   <ContentEditable
                     style={{
+                      width: mainTextSize.width,
+                      height: mainTextSize.height,
                       boxSizing: "border-box",
-                      backgroundColor: "white",
+                      // backgroundColor: "white",
                       lineHeight: "1.35",
                     }}
                     className="editor-input"
                   />
-                </OuterPaper>
+                </>
               }
               placeholder={<Placeholder />}
               ErrorBoundary={LexicalErrorBoundary}
             />
             <HistoryPlugin />
             {/* <TreeViewPlugin /> */}
-            <AutoFocusPlugin />
+            {/* <AutoFocusPlugin /> */}
             <CodeHighlightPlugin />
             <ListPlugin />
             <LinkPlugin />

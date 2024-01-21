@@ -22,6 +22,12 @@ const DocumentPage = ({
   startIndex,
   endPageId,
   endIndex,
+  setTextIsSelected,
+  textIsSelected,
+  insertSpot,
+  setInsertSpot,
+  insertPageId,
+  setInsertPageId,
 }) => {
   //   const pageSize = 1500; // Set your desired page size
 
@@ -56,6 +62,12 @@ const DocumentPage = ({
           startIndex={startIndex}
           endPageId={endPageId}
           endIndex={endIndex}
+          setTextIsSelected={setTextIsSelected}
+          textIsSelected={textIsSelected}
+          insertSpot={insertSpot}
+          setInsertSpot={setInsertSpot}
+          insertPageId={insertPageId}
+          setInsertPageId={setInsertPageId}
         />
       </Box>
       {remainingText.length > 0 && (
@@ -76,6 +88,12 @@ const DocumentPage = ({
           startIndex={startIndex}
           endPageId={endPageId}
           endIndex={endIndex}
+          setTextIsSelected={setTextIsSelected}
+          textIsSelected={textIsSelected}
+          insertSpot={insertSpot}
+          setInsertSpot={setInsertSpot}
+          insertPageId={insertPageId}
+          setInsertPageId={setInsertPageId}
         />
       )}
     </div>

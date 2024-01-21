@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Layer, Rect, Stage, Text } from "react-konva";
 import ContentEditable from "react-contenteditable";
 import { HTMLToJSON } from "html-to-json-parser";
+import { getPreText } from "@/helpers/rte";
 var showdown = require("showdown");
 
 const converter = new showdown.Converter();
@@ -23,42 +24,82 @@ export default function KonvaRTE({
   startIndex,
   endPageId,
   endIndex,
+  setTextIsSelected,
+  textIsSelected,
+  insertSpot,
+  setInsertSpot,
+  insertPageId,
+  setInsertPageId,
 }) {
   const hiddenContainer = useRef(null);
   const stageRef = useRef(null);
 
   const [charTexts, setCharTexts] = useState([]);
 
-  function traverseAndWrap(node) {
+  const replaceNode = (node: HTMLElement) => {
+    const textContent = node.textContent;
+    console.info(
+      "text content",
+      node,
+      node.nodeName,
+      node.nodeType,
+      `"${textContent}"`
+    );
+
+    if (textContent === "\n") {
+      return;
+    }
+
+    const spannedText = textContent
+      .split("")
+      .map(
+        (char) => `<span class="char" style="
+        font-family: Arial;
+        font-size: 18px;
+        font-weight: ${node.nodeName === "STRONG" ? "bold" : "normal"}; 
+      ">${char}</span>`
+      )
+      .join("");
+    const spanFragment = document
+      .createRange()
+      .createContextualFragment(spannedText);
+    node.replaceWith(spanFragment);
+  };
+
+  function traverseAndWrap(node: Text) {
+    console.info("node.attr", node.nodeType, node.constructor.name);
     if (node.nodeType === Node.TEXT_NODE) {
-      const textContent = node.textContent;
-      // console.info("text content", `"${textContent}"`);
-
-      if (textContent === "\n") {
-        return;
-      }
-
-      const spannedText = textContent
-        .split("")
-        .map((char) => `<span class="char">${char}</span>`)
-        .join("");
-      const spanFragment = document
-        .createRange()
-        .createContextualFragment(spannedText);
-      node.replaceWith(spanFragment);
+      replaceNode(node);
+    } else if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      node.nodeName === "STRONG"
+    ) {
+      console.info("strong-node", node);
+      replaceNode(node);
     } else {
-      node.childNodes.forEach((childNode) => traverseAndWrap(childNode));
+      [...node.childNodes].forEach((childNode) => {
+        console.info("child-node", childNode);
+        traverseAndWrap(childNode);
+      });
+
+      if (node.textContent) {
+        console.info("special content", node.textContent, node.childNodes);
+      }
     }
   }
 
   const markdownToContentEditable = async (markdown) => {
     const html = converter.makeHtml(markdown);
 
+    console.info("the html", html);
+
     const parser = new DOMParser();
     const parsedHtml = parser.parseFromString(
       `<div>${html}</div>`,
       "text/html"
     );
+
+    console.info("parsedHtml.body", parsedHtml.body);
 
     // Traverse the parsed HTML and wrap each character in a span
     traverseAndWrap(parsedHtml.body);
@@ -71,30 +112,46 @@ export default function KonvaRTE({
   };
 
   const addToKonvaTexts = (item, textNodes, konvaTexts, nodesDone) => {
-    let text = item.content.join("");
+    // console.info("textNodes", textNodes);
 
-    text.split("").forEach((char, i) => {
-      const textNode = textNodes[nodesDone];
-      const rect = textNode.getBoundingClientRect();
-      const currentY = textNode.offsetTop - hiddenContainer.current.offsetTop;
-      const currentX = textNode.offsetLeft - hiddenContainer.current.offsetLeft;
+    item.content.forEach((subItem) => {
+      if (typeof subItem === "string") {
+        subItem.split("").forEach((char, i) => {
+          const textNode = textNodes[nodesDone];
+          const rect = textNode.getBoundingClientRect();
+          const currentY =
+            textNode.offsetTop - hiddenContainer.current.offsetTop - 9999;
+          const currentX =
+            textNode.offsetLeft - hiddenContainer.current.offsetLeft - 9999;
 
-      // console.info("char", char, textNode.offsetTop, currentY, currentX);
+          // console.info("char", char, textNode.offsetTop, currentY, currentX);
 
-      konvaTexts.push({
-        id: "char-" + Math.random() + "-" + pageId + "-" + nodesDone,
-        text: char,
-        x: currentX,
-        // y: lineY,
-        y: currentY,
-        width: rect.width,
-        height: rect.height,
-        fontFamily: "Arial",
-        fontSize: 18,
-      });
+          // console.info(
+          //   "style",
+          //   textNode.style.fontFamily,
+          //   textNode.style.fontSize,
+          //   textNode.style.fontStyle
+          // );
 
-      // currentX += rect.width;
-      nodesDone++;
+          konvaTexts.push({
+            id: "char-" + Math.random() + "-" + pageId + "-" + nodesDone,
+            text: char,
+            x: currentX,
+            // y: lineY,
+            y: currentY,
+            width: rect.width,
+            height: rect.height,
+            fontFamily: textNode.style.fontFamily,
+            fontSize: parseInt(textNode.style.fontSize.split("px")[0]),
+            fontStyle: textNode.style.fontWeight,
+          });
+
+          // currentX += rect.width;
+          nodesDone++;
+        });
+      } else if (subItem.type === "strong") {
+        nodesDone = addToKonvaTexts(subItem, textNodes, konvaTexts, nodesDone);
+      }
     });
 
     return nodesDone;
@@ -104,7 +161,7 @@ export default function KonvaRTE({
     const html = converter.makeHtml(markdown);
     const jsonString = await HTMLToJSON(`<div>${html}</div>`, true);
     const json = JSON.parse(jsonString);
-    // console.info("markdown json", markdown, html, json);
+    console.info("markdown json", json);
 
     /**
      * Example json:
@@ -151,6 +208,13 @@ export default function KonvaRTE({
   }, [markdown]);
 
   const handleMouseDown = (e) => {
+    // console.info("mouse down", textIsSelected);
+
+    if (textIsSelected) {
+      setTextIsSelected(false);
+      return;
+    }
+
     setIsDragging(true);
 
     const position = stageRef.current.getPointerPosition();
@@ -165,8 +229,8 @@ export default function KonvaRTE({
       // get text node id
       const textNodeId = textNode.getId();
       const idParts = textNodeId.split("-");
-      const nodePageId = idParts[2];
-      const nodeIndex = idParts[3];
+      const nodePageId = parseInt(idParts[2]);
+      const nodeIndex = parseInt(idParts[3]);
 
       // console.info("start textNode", textNode, textNodeId);
 
@@ -176,9 +240,11 @@ export default function KonvaRTE({
   };
 
   const handleMouseMove = (e) => {
-    // if (!isDragging) {
-    //   return;
-    // }
+    // console.info("mouse move", textIsSelected);
+
+    if (textIsSelected) {
+      return;
+    }
 
     const position = stageRef.current.getPointerPosition();
 
@@ -194,8 +260,8 @@ export default function KonvaRTE({
       // get text node id
       const textNodeId = textNode.getId();
       const idParts = textNodeId.split("-");
-      const nodePageId = idParts[2];
-      const nodeIndex = idParts[3];
+      const nodePageId = parseInt(idParts[2]);
+      const nodeIndex = parseInt(idParts[3]);
 
       // console.info("move textNode", textNode, textNodeId);
 
@@ -205,34 +271,177 @@ export default function KonvaRTE({
   };
 
   const handleMouseUp = (e) => {
+    // console.info("mouse up", textIsSelected);
+
+    // if (!textIsSelected) {
+    //   return;
+    // }
+
+    if (startPageId === endPageId && startIndex === endIndex) {
+      // console.info("set insert spot, no selection", startIndex + 1);
+      setInsertSpot(startIndex);
+      setInsertPageId(startPageId);
+    } else {
+      if (isDragging) {
+        setTextIsSelected(true);
+      }
+    }
+
     setIsDragging(false);
 
-    const position = stageRef.current.getPointerPosition();
+    // const position = stageRef.current.getPointerPosition();
 
-    setDragEnd(position);
+    // // setDragEnd(position);
 
-    // Identify the Konva.Text node
-    const textNode = stageRef.current.getIntersection(position);
-    const nodeType = textNode.getClassName();
+    // // Identify the Konva.Text node
+    // const textNode = stageRef.current.getIntersection(position);
+    // const nodeType = textNode.getClassName();
 
-    if (nodeType === "Text") {
-      // get text node id
-      const textNodeId = textNode.getId();
-      const idParts = textNodeId.split("-");
-      const nodePageId = idParts[2];
-      const nodeIndex = idParts[3];
+    // if (nodeType === "Text") {
+    //   // get text node id
+    //   const textNodeId = textNode.getId();
+    //   const idParts = textNodeId.split("-");
+    //   const nodePageId = idParts[2];
+    //   const nodeIndex = idParts[3];
 
-      // console.info("end textNode", textNode, textNodeId);
+    //   // console.info("end textNode", textNode, textNodeId);
 
-      setEndPageId(nodePageId);
-      setEndIndex(nodeIndex);
+    //   // setEndPageId(nodePageId);
+    //   // setEndIndex(nodeIndex);
+    // }
+  };
+
+  const handleKeyDown = (e) => {
+    // console.info("keydown", e.key, e.keyCode);
+
+    if (e.keyCode === 8) {
+      // backspace
+      e.preventDefault();
+
+      if (textIsSelected) {
+        // console.info("delete selected text", startIndex, endIndex);
+
+        const newText =
+          completeMarkdown.slice(0, startIndex) +
+          completeMarkdown.slice(endIndex);
+        dispatch({ type: "markdown", payload: newText });
+        // markdownToContentEditable(newText);
+      } else {
+        // console.info("delete single character", insertSpot);
+
+        const preText1 = completeMarkdown.slice(0, insertSpot - 1);
+        const numPreNewlines = preText1.split("\n").length - 2;
+        const numPreDashes = preText1.split("-").length - 1;
+        const preText = completeMarkdown.slice(
+          0,
+          numPreNewlines * 2 + numPreDashes * 2 + (insertSpot - 1)
+        );
+
+        const newText = preText + completeMarkdown.slice(preText.length);
+        dispatch({ type: "markdown", payload: newText });
+        // markdownToContentEditable(newText);
+        setInsertSpot(insertSpot - 1);
+      }
+    } else if (e.keyCode === 13) {
+      // enter
+      e.preventDefault();
+
+      // console.info("enter", insertSpot);
+
+      const newText =
+        completeMarkdown.slice(0, insertSpot) +
+        "\n" +
+        completeMarkdown.slice(insertSpot);
+      dispatch({ type: "markdown", payload: newText });
+      // markdownToContentEditable(newText);
+      setInsertSpot(insertSpot + 1);
+    } else if (e.keyCode === 37) {
+      // left arrow
+      e.preventDefault();
+
+      // console.info("left arrow", insertSpot);
+
+      setInsertSpot(insertSpot - 1);
+    } else if (e.keyCode === 39) {
+      // right arrow
+      e.preventDefault();
+
+      // console.info("right arrow", insertSpot);
+
+      setInsertSpot(insertSpot + 1);
+    } else if (e.keyCode === 16) {
+      // shift
+      // console.info("shift", insertSpot);
+      e.preventDefault();
+    } else if (e.keyCode === 17) {
+      // ctrl
+      // console.info("ctrl", insertSpot);
+      e.preventDefault();
+    } else if (e.keyCode === 18) {
+      // alt
+      // console.info("alt", insertSpot);
+      e.preventDefault();
+    } else if (e.keyCode === 91 || e.keyCode === 92) {
+      // meta
+      // console.info("meta", insertSpot);
+      e.preventDefault();
+    } else {
+      // other keys
+      // console.info("key", e.key);
+      e.preventDefault();
+
+      if (textIsSelected) {
+        // console.info("delete selected text", startIndex, endIndex);
+
+        const newText =
+          completeMarkdown.slice(0, startIndex) +
+          completeMarkdown.slice(endIndex);
+        dispatch({ type: "markdown", payload: newText });
+        // markdownToContentEditable(newText);
+      } else {
+        const preText = getPreText(completeMarkdown, insertSpot);
+        const afterText = completeMarkdown.slice(preText.length);
+
+        // console.info(
+        //   "insert single character",
+        //   preText1.match(/\n- /g),
+        //   preText1.match(/\n/g),
+        //   // completeMarkdown,
+        //   insertSpot,
+        //   preText1,
+        //   numPreNewlines,
+        //   numPreDashes,
+        //   preText
+        // );
+
+        const newText = preText + e.key + afterText;
+        dispatch({ type: "markdown", payload: newText });
+        setInsertSpot(insertSpot + 1);
+      }
     }
   };
 
+  useEffect(() => {
+    // set onkeydown
+    document.onkeydown = handleKeyDown;
+
+    return () => {
+      document.onkeydown = null;
+    };
+  }, [insertSpot]);
+
   const pxPerIn = 96;
+  const marginSize = {
+    x: 1 * 2,
+    y: 0.5 * 2,
+  };
   const documentSize = {
     width: 8.3 * pxPerIn,
     height: 11.7 * pxPerIn,
+  };
+  const mainTextSize = {
+    width: (8.3 - marginSize.x) * pxPerIn,
+    height: (11.7 - marginSize.y) * pxPerIn,
   };
 
   return (
@@ -260,9 +469,11 @@ export default function KonvaRTE({
               (i >= startIndex && i <= endIndex) ||
               (i >= endIndex && i <= startIndex);
 
+            const insertText = i == insertSpot && pageId == insertPageId;
+
             return (
               <>
-                {isDragging && selectedText && (
+                {(textIsSelected || isDragging) && selectedText && (
                   <Rect
                     key={`${pageId}-${charText}-${i}-rect`}
                     x={charText.x}
@@ -280,8 +491,19 @@ export default function KonvaRTE({
                   text={charText.text}
                   fontSize={charText.fontSize}
                   fontFamily={charText.fontFamily}
+                  fontStyle={charText.fontStyle}
                   fill="black"
                 />
+                {insertText && (
+                  <Rect
+                    key={`${pageId}-${charText}-${i}-insert`}
+                    x={charText.x}
+                    y={charText.y}
+                    width={2}
+                    height={20}
+                    fill="black"
+                  />
+                )}
               </>
             );
           })}
@@ -289,10 +511,15 @@ export default function KonvaRTE({
       </Stage>
       <div
         ref={hiddenContainer}
-        // style={{ display: "none", position: "absolute" }}
         style={{
+          position: "absolute",
+          top: "-9999px",
+          left: "-9999px",
+          width: mainTextSize.width,
+          height: mainTextSize.height,
           fontFamily: "Arial",
           fontSize: 18,
+          padding: "0.5in 1in",
         }}
       />
     </>
