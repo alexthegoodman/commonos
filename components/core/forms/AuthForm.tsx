@@ -7,7 +7,6 @@ import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 const { DateTime } = require("luxon");
 // import LogRocket from "logrocket";
-import ReactPixel from "react-facebook-pixel";
 
 import { authenticateQuery } from "../../../gql/user";
 import { registerMutation } from "../../../gql/user";
@@ -89,7 +88,11 @@ const AuthForm = ({
 
         // const ReactPixel = require("react-facebook-pixel");
         // ReactPixel.default.trackCustom("SignUp", {});
-        ReactPixel.trackCustom("SignUp", {});
+        import("react-facebook-pixel")
+          .then((x) => x.default)
+          .then((ReactPixel) => {
+            ReactPixel.trackCustom("SignUp", {});
+          });
       }
 
       const expireCookie = DateTime.now()
