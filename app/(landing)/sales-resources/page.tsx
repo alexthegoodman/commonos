@@ -19,7 +19,7 @@ const SubTitle = styled(Typography)(({ theme }) => ({
   },
 }));
 
-export default function Founders() {
+export default function SalesResources() {
   const opts = {
     height: "100%",
     width: "100%",
@@ -38,19 +38,14 @@ export default function Founders() {
             mb={2}
             sx={{ fontSize: { md: "68px", xs: "48px" } }}
           >
-            {/* Drive Sales Success: CommonOS - A Founder&apos;s Secret to Growth! */}
-            {/* Personalized, generative sales enablement for founders */}
-            Sales Enablement for Founders
+            Custom Sales Resources in Minutes
           </Typography>
           <SubTitle mb={1}>
-            Founders have unique needs when it comes to sales. Determining
-            strategy, setting up processes, and forming initial relationships
-            are just a few examples. CommonOS simplifies that entire process.
+            Create your sales resources, including literature, proposals, and
+            presentations, in just minutes.
           </SubTitle>
           <SubTitle>
-            By creating your sales collateral, proposals, and presentations with
-            CommonOS, you can produce files that are more engaging, more
-            personalized, and more effective, in just minutes.
+            The CommonOS semi-automated approach creates tailored files.
           </SubTitle>
           {/* <SubTitle>
             CommonOS is different because it doesn&apos;t just help you generate

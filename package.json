@@ -52,6 +52,7 @@
     "react-cookie": "^6.1.1",
     "react-dom": "^18",
     "react-draggable": "^4.4.6",
+    "react-facebook-pixel": "^1.0.4",
     "react-hook-form": "^7.48.2",
     "react-konva": "^18.2.10",
     "react-quill": "^2.0.0",
