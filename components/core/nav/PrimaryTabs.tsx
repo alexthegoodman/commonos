@@ -1,13 +1,18 @@
 import { LauncherContext, allTabs } from "@/context/LauncherContext";
 import {
   Add,
+  Analytics,
   Apps,
   Article,
+  ChildFriendly,
+  ContentCopy,
   DocumentScanner,
+  Email,
   GridOn,
   InsertPhoto,
   Launch,
   LibraryMusic,
+  People,
   Slideshow,
   VideoLibrary,
 } from "@mui/icons-material";
@@ -22,48 +27,21 @@ import {
 } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import { useContext } from "react";
+import { Tab, TabsWrapper } from "../layout/Wrapper";
 
-const TabsWrapper = styled("div")(({ theme }) => ({
-  maxWidth: "100vw",
-  overflowX: "scroll",
-  [theme.breakpoints.up("md")]: {
-    overflowX: "hidden",
-  },
-}));
-
-const Tab = styled(Button)(({ theme }) => ({
-  textTransform: "none",
-  fontSize: "0.9rem",
-  fontWeight: "semibold",
-  "&:hover": {
-    color: theme.palette.primary.main,
-    opacity: 1,
-  },
-  // "&.Mui-selected": {
-  //     color: theme.palette.primary.main,
-  //     fontWeight: theme.typography.fontWeightMedium,
-  // },
-  // "&.Mui-focusVisible": {
-  //     backgroundColor: theme.palette.primary.main,
-  // },
-  [theme.breakpoints.down("sm")]: {
-    height: "40px",
-  },
-}));
-
-export default function PrimaryTabs() {
+export default function PrimaryTabs({ tabs = allTabs, pathNum = 1 }) {
   const { state, dispatch } = useContext(LauncherContext);
 
   const router = useRouter();
   const pathname = usePathname();
-  const slug1 = "/" + pathname.split("/")[1];
+  const slug1 = pathNum > 0 ? "/" + pathname.split("/")[pathNum] : pathname;
 
-  const currentTabData = allTabs.find((tab) => tab.href === pathname);
+  const currentTabData = tabs.find((tab) => tab.href === pathname);
 
   return (
     <TabsWrapper>
       <Box display="flex" flexDirection="row" width="fit-content" mb={2}>
-        {allTabs.map((tabData) => {
+        {tabs.map((tabData) => {
           // const tabData = allTabs.find((t) => t.id === tab.id);
 
           // if (!tabData) {
@@ -89,6 +67,10 @@ export default function PrimaryTabs() {
                 {tabData?.id === "drawings" && <InsertPhoto />}
                 {tabData?.id === "sounds" && <LibraryMusic />}
                 {tabData?.id === "videos" && <VideoLibrary />}
+                {tabData?.id === "content" && <ContentCopy />}
+                {tabData?.id === "analytics" && <Analytics />}
+                {tabData?.id === "send-email" && <Email />}
+                {tabData?.id === "relationships" && <People />}
               </Box>
 
               {tabData?.label}
@@ -108,9 +90,6 @@ export default function PrimaryTabs() {
             </Tab>
           );
         })}
-        {/* <Tab>
-        <Add />
-      </Tab> */}
       </Box>
     </TabsWrapper>
   );
