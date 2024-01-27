@@ -31,10 +31,6 @@ import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 const TreeWrapper = styled("section")(
   ({ theme, treeDisabled }) => `
-    height: calc(100vh - 100px);
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 15px 25px;
-
     opacity: ${treeDisabled ? 0.5 : 1};
   
     .documentTreeInner {

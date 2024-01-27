@@ -26,6 +26,7 @@
     "@uidotdev/usehooks": "^2.4.1",
     "@vercel/analytics": "^1.1.1",
     "@vercel/blob": "^0.15.1",
+    "@visx/visx": "^3.8.0",
     "bcryptjs": "^2.4.3",
     "canvas": "^2.11.2",
     "critters": "^0.0.20",
@@ -70,6 +71,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/luxon": "^3.4.2",
     "@types/micromodal": "^0.3.5",
     "@types/node": "^20",
     "@types/react": "^18",
