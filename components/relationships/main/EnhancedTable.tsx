@@ -221,7 +221,7 @@ interface EnhancedTableToolbarProps {
 }
 
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected, title } = props;
+  const { numSelected, title, rightToolbar } = props;
 
   return (
     <Toolbar
@@ -268,11 +268,12 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           </IconButton>
         </Tooltip>
       )}
+      {rightToolbar ? rightToolbar : <></>}
     </Toolbar>
   );
 }
 
-export default function EnhancedTable({ title }) {
+export default function EnhancedTable({ title, rightToolbar }) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("calories");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -345,7 +346,11 @@ export default function EnhancedTable({ title }) {
   return (
     <Box sx={{ width: "100%" }}>
       <Box sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} title={title} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          title={title}
+          rightToolbar={rightToolbar}
+        />
         <TableContainer>
           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
             <EnhancedTableHead

@@ -52,7 +52,7 @@ export default function SettingsForm({
         <Box>
           <>
             {fields.length < 1 && (
-              <EmptyNotice message="Add custom fields to your Contacts" />
+              <EmptyNotice message="Add custom fields here" />
             )}
             {fields.length >= 1 &&
               fields.map((field) => {

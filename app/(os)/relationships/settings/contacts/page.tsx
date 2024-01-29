@@ -9,7 +9,7 @@ import {
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 export default function Settings() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
@@ -29,6 +29,7 @@ export default function Settings() {
     console.log("onFormSubmit", fields);
     setFormLoading(true);
     await putContactSettings(token, fields);
+    mutate("contactSettingsKey", () => getContactSettings(token));
     setFormLoading(false);
   };
 

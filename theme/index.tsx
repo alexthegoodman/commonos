@@ -13,7 +13,7 @@ export const getThemeOptions = (mode: string) => {
     palette: {
       mode: "dark",
       primary: {
-        main: "#FFFFFF",
+        main: "#FFFFFF", // neon blue? 1F51FF
       },
       secondary: {
         main: "#E5E5E5",
@@ -79,6 +79,14 @@ export const getThemeOptions = (mode: string) => {
             border: "1px solid white !important",
             backgroundColor: "#FFF",
             color: "black",
+          },
+        },
+      },
+      MuiTablePagination: {
+        styleOverrides: {
+          input: {
+            backgroundColor: "transparent",
+            border: "none",
           },
         },
       },
