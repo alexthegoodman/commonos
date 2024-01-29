@@ -3,10 +3,11 @@
 import BarViz from "@/components/core/viz/BarViz";
 import LineViz from "@/components/core/viz/LineViz";
 import PieViz from "@/components/core/viz/PieViz";
+import { Box } from "@mui/material";
 
 export default function Dashboard() {
   return (
-    <>
+    <Box display="flex" flexDirection="row">
       <BarViz
         analysisData={[
           {
@@ -55,6 +56,6 @@ export default function Dashboard() {
           },
         ]}
       />
-    </>
+    </Box>
   );
 }

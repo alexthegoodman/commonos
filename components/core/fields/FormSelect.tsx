@@ -22,24 +22,19 @@ const FormSelect = ({
 }) => {
   return (
     <Box>
-      {/* <TextField
-        {...fieldProps}
-        {...register(fieldProps.name, validation)}
-        error={errors !== null && errors[fieldProps.name] ? true : false}
-        helperText={
-          errors !== null && errors[fieldProps.name]
-            ? errors[fieldProps.name].message
-            : ""
-        }
-      /> */}
       <FormControl fullWidth>
-        {label && <InputLabel id={fieldProps.name}>{label}</InputLabel>}
+        {label && (
+          <InputLabel id={fieldProps.name} style={{ color: "black" }}>
+            {label}
+          </InputLabel>
+        )}
         <Select
           labelId={fieldProps.name}
           label={label}
-          {...fieldProps}
           {...register(fieldProps.name, validation)}
+          {...fieldProps}
           error={errors !== null && errors[fieldProps.name] ? true : false}
+          // value="text"
         >
           {options?.map((option, i) => (
             <MenuItem

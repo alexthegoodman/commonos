@@ -14,8 +14,8 @@ const FormInput = ({
   return (
     <Box>
       <TextField
-        {...fieldProps}
         {...register(fieldProps.name, validation)}
+        {...fieldProps}
         error={errors !== null && errors[fieldProps.name] ? true : false}
         helperText={
           errors !== null && errors[fieldProps.name]

@@ -27,6 +27,12 @@ const relationshipTabs = [
     href: "/relationships/contacts",
     badge: null,
   },
+  {
+    id: "settings",
+    label: "Settings",
+    href: "/relationships/settings",
+    badge: null,
+  },
 ];
 
 export default function Layout({ children = null }) {
