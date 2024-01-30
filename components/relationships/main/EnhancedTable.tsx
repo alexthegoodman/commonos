@@ -22,6 +22,15 @@ import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
+import { Delete, Edit } from "@mui/icons-material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from "@mui/material";
 
 interface Data {
   id: number;
@@ -71,12 +80,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
       id: "name",
       label: "Full Name",
     },
-    ...settings.fields.map((field) => {
-      return {
-        id: field.id,
-        label: field.name,
-      };
-    }),
+    ...(settings?.fields
+      ? settings.fields.map((field) => {
+          return {
+            id: field.id,
+            label: field.name,
+          };
+        })
+      : []),
   ];
 
   return (
@@ -116,6 +127,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </Typography>
           </TableCell>
         ))}
+        <TableCell align="right" padding="normal">
+          <Typography variant="body1" style={{ fontWeight: 600 }}>
+            Actions
+          </Typography>
+        </TableCell>
       </TableRow>
     </TableHead>
   );
@@ -178,12 +194,47 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 
+const DeleteButton = ({ id, onDelete }) => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => setOpen(true);
+
+  const handleClose = () => {
+    onDelete(id);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <IconButton size="small" onClick={handleClickOpen}>
+        <Delete />
+      </IconButton>
+      <Dialog open={open} keepMounted onClose={handleClose}>
+        <DialogTitle>{"Are you sure?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this item?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button color="error" variant="contained" onClick={handleClose}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
 export default function EnhancedTable({
+  slug,
   title,
   rightToolbar,
   total,
   rows,
   settings,
+  onDelete,
 }) {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("calories");
@@ -290,6 +341,15 @@ export default function EnhancedTable({
                         </TableCell>
                       );
                     })}
+                    <TableCell align="right">
+                      <IconButton
+                        size="small"
+                        href={`/relationships/${slug}/${row.id}/`}
+                      >
+                        <Edit />
+                      </IconButton>
+                      <DeleteButton id={row.id} onDelete={onDelete} />
+                    </TableCell>
                   </TableRow>
                 );
               })}

@@ -1,11 +1,15 @@
 "use client";
 
 import EnhancedTable from "@/components/relationships/main/EnhancedTable";
-import { getContactSettings, getMyContacts } from "@/fetchers/relationship";
+import {
+  deleteContact,
+  getContactSettings,
+  getMyContacts,
+} from "@/fetchers/relationship";
 import { Box, Button, Typography } from "@mui/material";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 export default function Contacts() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
@@ -33,10 +37,17 @@ export default function Contacts() {
     }
   );
 
+  const handleRowDelete = async (id: string) => {
+    console.log("delete", id);
+    await deleteContact(token, id);
+    mutate("contactsKey" + page, () => getMyContacts(token, rowsPerPage, page));
+  };
+
   return (
     <>
       <Box>
         <EnhancedTable
+          slug="contacts"
           title="Contacts"
           rightToolbar={
             <Box minWidth="150px">
@@ -53,6 +64,7 @@ export default function Contacts() {
           total={contactsData?.count}
           rows={contactsData?.rows}
           settings={contactSettingsData}
+          onDelete={handleRowDelete}
         />
       </Box>
     </>

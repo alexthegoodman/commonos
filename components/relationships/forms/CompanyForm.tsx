@@ -5,7 +5,7 @@ import FormMessage from "@/components/core/fields/FormMessage";
 import FormSelect from "@/components/core/fields/FormSelect";
 import EmptyNotice from "@/components/core/layout/EmptyNotice";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
-import { getContactSettings } from "@/fetchers/relationship";
+import { getCompanySettings } from "@/fetchers/relationship";
 import { Box, Button, Link, Typography } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 //   },
 // ];
 
-export default function ContactForm({
+export default function CompanyForm({
   initialValues = [],
   onFormSubmit = (data) => console.info("submit"),
   isLoading = false,
@@ -36,16 +36,12 @@ export default function ContactForm({
   const [formInfoMessage, setFormInfoMessage] = useState("");
 
   const {
-    data: contactSettingsData,
+    data: companySettingsData,
     error,
-    isLoading: contactSettingsLoading,
-  } = useSWR("contactSettingsKey", () => getContactSettings(token), {
+    isLoading: companySettingsLoading,
+  } = useSWR("companySettingsKey", () => getCompanySettings(token), {
     revalidateOnMount: true,
   });
-
-  //   const allFields = !contactSettingsLoading
-  //     ? [...defaultFields, ...contactSettingsData?.fields]
-  //     : [];
 
   const {
     register,
@@ -64,13 +60,13 @@ export default function ContactForm({
 
   const onError = (error: any) => console.error(error);
 
-  if (contactSettingsLoading) return <PrimaryLoader />;
+  if (companySettingsLoading) return <PrimaryLoader />;
 
   return (
     <>
       <Typography variant="body1" mb={2}>
-        Add custom fields to your contacts{" "}
-        <Link href="/relationships/settings/contacts">here</Link>.
+        Add custom fields to your companies{" "}
+        <Link href="/relationships/settings/companies">here</Link>.
       </Typography>
       <form
         onSubmit={handleSubmit(onSubmit, onError)}
@@ -88,27 +84,13 @@ export default function ContactForm({
         <FormInput
           type="text"
           name="name"
-          placeholder="Full Name"
+          placeholder="Company Name"
           register={register}
           errors={errors}
           fullWidth
         />
 
-        <FormSelect
-          name={`company`}
-          label="Select Company"
-          placeholder="Select Company"
-          options={[
-            {
-              label: "test",
-              value: "",
-            },
-          ]}
-          register={register}
-          errors={errors}
-        />
-
-        {contactSettingsData?.fields.map((field) => {
+        {companySettingsData?.fields.map((field) => {
           switch (field.type) {
             case "text":
               return (
@@ -132,7 +114,7 @@ export default function ContactForm({
           style={{ marginTop: "5px" }}
           disabled={isLoading}
         >
-          {isUpdate ? "Update Contact" : "Save Contact"}
+          {isUpdate ? "Update Company" : "Save Company"}
         </Button>
       </form>
     </>

@@ -1,8 +1,12 @@
 import {
+  companyQuery,
   companySettingsQuery,
+  contactQuery,
   contactSettingsQuery,
   createCompanyMutation,
   createContactMutation,
+  deleteCompanyMutation,
+  deleteContactMutation,
   myCompaniesQuery,
   myContactsQuery,
   putCompanySettingsMutation,
@@ -56,6 +60,26 @@ export const putCompanySettings = async (token: string, fields: any) => {
   )) as any;
 
   return putCompanySettings;
+};
+
+export const getCompany = async (token: string, companyId: string) => {
+  graphClient.setupClient(token);
+
+  const { company } = (await graphClient.client?.request(companyQuery, {
+    companyId,
+  })) as any;
+
+  return company;
+};
+
+export const getContact = async (token: string, contactId: string) => {
+  graphClient.setupClient(token);
+
+  const { contact } = (await graphClient.client?.request(contactQuery, {
+    contactId,
+  })) as any;
+
+  return contact;
 };
 
 export const getMyCompanies = async (
@@ -148,4 +172,30 @@ export const updateContact = async (
   )) as any;
 
   return updateContact;
+};
+
+export const deleteContact = async (token: string, contactId: string) => {
+  graphClient.setupClient(token);
+
+  const { deleteContact } = (await graphClient.client?.request(
+    deleteContactMutation,
+    {
+      contactId,
+    }
+  )) as any;
+
+  return deleteContact;
+};
+
+export const deleteCompany = async (token: string, companyId: string) => {
+  graphClient.setupClient(token);
+
+  const { deleteCompany } = (await graphClient.client?.request(
+    deleteCompanyMutation,
+    {
+      companyId,
+    }
+  )) as any;
+
+  return deleteCompany;
 };

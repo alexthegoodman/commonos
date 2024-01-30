@@ -34,6 +34,28 @@ export const putCompanySettingsMutation = gql`
   }
 `;
 
+export const companyQuery = gql`
+  query CompanyQuery($companyId: String!) {
+    company(companyId: $companyId) {
+      id
+      fields
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const contactQuery = gql`
+  query ContactQuery($contactId: String!) {
+    contact(contactId: $contactId) {
+      id
+      fields
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
 export const myCompaniesQuery = gql`
   query MyCompaniesQuery($skip: Int!, $take: Int!) {
     rows: myCompanies(skip: $skip, take: $take) {
@@ -99,5 +121,17 @@ export const updateContactMutation = gql`
       updatedAt
       createdAt
     }
+  }
+`;
+
+export const deleteContactMutation = gql`
+  mutation DeleteContactMutation($contactId: String!) {
+    deleteContact(contactId: $contactId)
+  }
+`;
+
+export const deleteCompanyMutation = gql`
+  mutation DeleteCompanyMutation($companyId: String!) {
+    deleteCompany(companyId: $companyId)
   }
 `;
