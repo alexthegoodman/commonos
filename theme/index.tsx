@@ -80,6 +80,31 @@ export const getThemeOptions = (mode: string) => {
             backgroundColor: "#FFF",
             color: "black",
           },
+          input: {
+            "&::placeholder": {
+              color: "black",
+              opacity: 0.5,
+            },
+          },
+        },
+      },
+      // MuiOutlinedInput: {
+      //   styleOverrides: {
+      //     notchedOutline: {
+      //       "& span": {
+      //         color: "green",
+      //       },
+      //     },
+      //   },
+      // },
+      MuiInputLabel: {
+        styleOverrides: {
+          root: {
+            opacity: 0.5,
+          },
+          shrink: {
+            display: "none",
+          },
         },
       },
       MuiTablePagination: {

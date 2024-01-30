@@ -1,3 +1,4 @@
+import { Alert } from "@mui/material";
 import * as React from "react";
 
 const FormMessage = ({
@@ -9,17 +10,7 @@ const FormMessage = ({
 }) => {
   const clickHandler = (e: MouseEvent) => onClick(e);
   return (
-    <>
-      {message !== "" ? (
-        <section className={`formMessage ${type}`}>
-          <div className="formMessageInner">
-            <span className="messageContent">{message}</span>
-          </div>
-        </section>
-      ) : (
-        <></>
-      )}
-    </>
+    <>{message !== "" ? <Alert severity={type}>{message}</Alert> : <></>}</>
   );
 };
 

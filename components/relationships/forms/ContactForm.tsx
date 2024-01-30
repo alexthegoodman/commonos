@@ -14,13 +14,13 @@ import { useForm } from "react-hook-form";
 import useSWR from "swr";
 import { v4 as uuidv4 } from "uuid";
 
-const defaultFields = [
-  {
-    id: uuidv4(),
-    name: "Full Name",
-    type: "text",
-  },
-];
+// const defaultFields = [
+//   {
+//     id: uuidv4(),
+//     name: "Full Name",
+//     type: "text",
+//   },
+// ];
 
 export default function ContactForm({
   initialValues = [],
@@ -33,6 +33,7 @@ export default function ContactForm({
   const [cookies, setCookie, removeCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
   const [formErrorMessage, setFormErrorMessage] = useState("");
+  const [formInfoMessage, setFormInfoMessage] = useState("");
 
   const {
     data: contactSettingsData,
@@ -42,18 +43,21 @@ export default function ContactForm({
     revalidateOnMount: true,
   });
 
-  const allFields = !contactSettingsLoading
-    ? [...defaultFields, ...contactSettingsData?.fields]
-    : [];
+  //   const allFields = !contactSettingsLoading
+  //     ? [...defaultFields, ...contactSettingsData?.fields]
+  //     : [];
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
 
   const onSubmit = async (data: any) => {
     onFormSubmit(data);
+    reset();
+    setFormInfoMessage("Saved successfully!");
   };
 
   const onError = (error: any) => console.error(error);
@@ -76,9 +80,33 @@ export default function ContactForm({
           maxWidth: "400px",
         }}
       >
+        <FormMessage type="info" message={formInfoMessage} />
         <FormMessage type="error" message={formErrorMessage} />
 
-        {allFields.map((field) => {
+        <FormInput
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          register={register}
+          errors={errors}
+          fullWidth
+        />
+
+        <FormSelect
+          name={`company`}
+          label="Select Company"
+          placeholder="Select Company"
+          options={[
+            {
+              label: "test",
+              value: "",
+            },
+          ]}
+          register={register}
+          errors={errors}
+        />
+
+        {contactSettingsData?.fields.map((field) => {
           switch (field.type) {
             case "text":
               return (
@@ -89,7 +117,7 @@ export default function ContactForm({
                   placeholder={field.name}
                   register={register}
                   errors={errors}
-                  style={{ minWidth: "400px" }}
+                  fullWidth
                 />
               );
           }
