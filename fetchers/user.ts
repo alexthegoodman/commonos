@@ -1,4 +1,8 @@
-import { getCurrentUserQuery, updateUserMutation } from "../gql/user";
+import {
+  getCurrentUserQuery,
+  newCheckoutMutation,
+  updateUserMutation,
+} from "../gql/user";
 import graphClient from "../helpers/GQLClient";
 
 export const getUserData = async (token: string) => {
@@ -82,4 +86,13 @@ export const updateVideoFiles = async (token: string, videoFiles) => {
   });
 
   return updateUser;
+};
+
+export const newCheckout = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { newCheckout } =
+    await graphClient.client?.request(newCheckoutMutation);
+
+  return newCheckout;
 };
