@@ -78,7 +78,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const headCells: readonly HeadCell[] = [
     {
       id: "name",
-      label: "Full Name",
+      label: "Name",
     },
     ...(settings?.fields
       ? settings.fields.map((field) => {
