@@ -32,9 +32,29 @@ const applyChangesToRow = (
 const GridWrapper = styled("div")(({ theme }) => ({
   // backgroundColor: theme.palette.background.paper,
   backgroundColor: "rbga(255, 255, 255, 0.3)",
-  width: "100%",
-  maxHeight: "calc(100vh - 100px)",
+  width: "calc(100vw - 50px)",
+  height: "calc(100vh - 225px)",
   overflow: "scroll",
+}));
+
+const InnerWrapper = styled("div")(({ theme }) => ({
+  position: "relative",
+  width: "fit-content",
+  backgroundColor: "#E5E5E5",
+  "& .columnButton": {
+    position: "absolute",
+    bottom: "-37px",
+    left: 0,
+    width: "100%",
+    boxShadow: "none",
+  },
+  "& .rowButton": {
+    position: "absolute",
+    top: 0,
+    right: "-95px",
+    height: "100%",
+    boxShadow: "none",
+  },
 }));
 
 export default function SheetEditor() {
@@ -109,25 +129,40 @@ export default function SheetEditor() {
   return (
     <>
       <GridWrapper>
-        <ReactGrid
-          rows={rows}
-          columns={columns}
-          onCellsChanged={handleChanges}
-          onColumnResized={handleColumnResize}
-          enableRangeSelection
-          enableRowSelection
-          enableColumnSelection
-        />
+        <InnerWrapper>
+          <ReactGrid
+            rows={rows}
+            columns={columns}
+            onCellsChanged={handleChanges}
+            onColumnResized={handleColumnResize}
+            enableRangeSelection
+            enableRowSelection
+            enableColumnSelection
+          />
+          <Button
+            className="columnButton"
+            variant="contained"
+            color="secondary"
+            onClick={addColumn}
+          >
+            Add Column
+          </Button>
+          <Button
+            className="rowButton"
+            variant="contained"
+            color="secondary"
+            onClick={addRow}
+          >
+            Add Row
+          </Button>
+        </InnerWrapper>
       </GridWrapper>
-      <Button variant="contained" color="success" onClick={addColumn}>
-        Add Column
-      </Button>
-      <Button variant="contained" color="success" onClick={addRow}>
-        Add Row
-      </Button>
+
       <style jsx global>{`
         .rg-cell {
-          color: white !important;
+          // color: white !important;
+          background-color: #ffffff !important;
+          color: black !important;
         }
       `}</style>
     </>

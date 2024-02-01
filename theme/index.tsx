@@ -29,7 +29,7 @@ export const getThemeOptions = (mode: string) => {
     },
     typography: {
       allVariants: {
-        color: "white",
+        // color: "white",
         fontFamily: "inherit",
       },
       button: {
@@ -93,7 +93,7 @@ export const getThemeOptions = (mode: string) => {
           main: "#FFFFFF",
         },
         secondary: {
-          main: "#E5E5E5",
+          main: "#FFFFFF",
         },
         background: {
           default: "#333333",
@@ -106,14 +106,20 @@ export const getThemeOptions = (mode: string) => {
       },
       typography: {
         allVariants: {
-          color: "white",
+          color: "#FFFFFF",
         },
       },
       components: {
         MuiButton: {
           styleOverrides: {
             root: {
-              color: "white",
+              color: "#FFFFFF",
+            },
+            containedSecondary: {
+              color: "#000000",
+              "&:hover": {
+                backgroundColor: "#E5E5E5",
+              },
             },
           },
         },
