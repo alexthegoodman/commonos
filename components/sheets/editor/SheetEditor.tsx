@@ -63,6 +63,32 @@ export default function SheetEditor() {
   const columns = state.columns;
   const rows = state.rows;
 
+  // add index column to columns
+  const columnsWithIndex = [
+    {
+      columnId: "index",
+      width: 50,
+      reorderable: false,
+      resizable: false,
+      editorOnly: true,
+    },
+    ...columns,
+  ];
+
+  // add index column to each row
+  const rowsWithIndex = rows.map((row, index) => ({
+    ...row,
+    cells: [
+      {
+        editorOnly: true,
+        type: "header",
+        text: `${index + 1}`,
+        disabled: true,
+      },
+      ...row.cells,
+    ],
+  }));
+
   const handleChanges = (changes: CellChange<TextCell>[]) => {
     dispatch({
       type: "rows",
@@ -131,8 +157,8 @@ export default function SheetEditor() {
       <GridWrapper>
         <InnerWrapper>
           <ReactGrid
-            rows={rows}
-            columns={columns}
+            rows={rowsWithIndex}
+            columns={columnsWithIndex}
             onCellsChanged={handleChanges}
             onColumnResized={handleColumnResize}
             enableRangeSelection
