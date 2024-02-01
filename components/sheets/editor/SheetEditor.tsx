@@ -57,6 +57,8 @@ const InnerWrapper = styled("div")(({ theme }) => ({
   },
 }));
 
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
 export default function SheetEditor() {
   const [state, dispatch] = useSheetsContext();
 
@@ -76,18 +78,27 @@ export default function SheetEditor() {
   ];
 
   // add index column to each row
-  const rowsWithIndex = rows.map((row, index) => ({
-    ...row,
-    cells: [
-      {
-        editorOnly: true,
+  const rowsWithIndex = [
+    {
+      rowId: uuidv4(),
+      cells: columnsWithIndex.map((column, i) => ({
         type: "header",
-        text: `${index + 1}`,
-        disabled: true,
-      },
-      ...row.cells,
-    ],
-  }));
+        text: i === 0 ? "" : alphabet.charAt(i - 1),
+      })),
+    },
+    ...rows.map((row, index) => ({
+      ...row,
+      cells: [
+        {
+          editorOnly: true,
+          type: "header",
+          text: `${index + 1}`,
+          disabled: true,
+        },
+        ...row.cells,
+      ],
+    })),
+  ];
 
   const handleChanges = (changes: CellChange<TextCell>[]) => {
     dispatch({
