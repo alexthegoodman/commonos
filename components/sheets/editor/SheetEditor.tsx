@@ -43,16 +43,16 @@ const InnerWrapper = styled("div")(({ theme }) => ({
   backgroundColor: "#E5E5E5",
   "& .columnButton": {
     position: "absolute",
-    bottom: "-37px",
-    left: 0,
-    width: "100%",
+    top: 0,
+    right: "-119px",
+    height: "100%",
     boxShadow: "none",
   },
   "& .rowButton": {
     position: "absolute",
-    top: 0,
-    right: "-95px",
-    height: "100%",
+    bottom: "-37px",
+    left: 0,
+    width: "100%",
     boxShadow: "none",
   },
 }));
