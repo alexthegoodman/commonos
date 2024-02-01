@@ -1,5 +1,6 @@
 import {
   getCurrentUserQuery,
+  getPortalUrlQuery,
   newCheckoutMutation,
   updateUserMutation,
 } from "../gql/user";
@@ -95,4 +96,12 @@ export const newCheckout = async (token: string) => {
     await graphClient.client?.request(newCheckoutMutation);
 
   return newCheckout;
+};
+
+export const getPortalUrl = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { getPortalUrl } = await graphClient.client?.request(getPortalUrlQuery);
+
+  return getPortalUrl;
 };

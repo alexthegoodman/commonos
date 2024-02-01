@@ -16,10 +16,9 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useCookies } from "react-cookie";
-import { CookieSettings } from "../../../helpers/CookieSettings";
-import { useRouter } from "next/navigation";
 import { styled } from "@mui/material";
 import ColorModeSwitch from "@/components/core/nav/ColorModeSwitch";
+import LogoutButton from "@/components/core/settings/LogoutButton";
 
 interface Props {
   /**
@@ -47,20 +46,10 @@ const InnerWrappper = styled(Box)(({ theme }) => ({
 }));
 
 function LoggedInButtons() {
-  const router = useRouter();
-  const [cookies, setCookie, removeCookie] = useCookies(["cmUserToken"]);
-
-  const logout = () => {
-    removeCookie("cmUserToken", {
-      ...CookieSettings,
-    });
-    // router.push("/login");
-  };
-
   return (
     <>
       <Button href="/launcher">Enter CommonOS</Button>
-      <Button onClick={logout}>Logout</Button>
+      <LogoutButton />
     </>
   );
 }

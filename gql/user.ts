@@ -68,3 +68,9 @@ export const newCheckoutMutation = gql`
     newCheckout
   }
 `;
+
+export const getPortalUrlQuery = gql`
+  query GetPortalUrl {
+    getPortalUrl
+  }
+`;
