@@ -127,7 +127,12 @@ const AuthForm = ({
 
       // cleanup and
       setFormErrorMessage("");
-      router.push("/launcher");
+
+      if (type === "login") {
+        router.push("/launcher");
+      } else if (type === "sign-up") {
+        router.push("/welcome");
+      }
     } catch (error: any) {
       console.error(error);
       const errorMessage = error?.response?.errors[0].message;
