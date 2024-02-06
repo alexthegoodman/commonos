@@ -135,3 +135,25 @@ export const deleteCompanyMutation = gql`
     deleteCompany(companyId: $companyId)
   }
 `;
+
+export const funnelQuery = gql`
+  query FunnelQuery($funnelId: String!) {
+    funnel(funnelId: $funnelId) {
+      id
+      context
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const dashboardQuery = gql`
+  query DashboardQuery {
+    dashboard {
+      id
+      context
+      updatedAt
+      createdAt
+    }
+  }
+`;

@@ -5,8 +5,10 @@ import {
   contactSettingsQuery,
   createCompanyMutation,
   createContactMutation,
+  dashboardQuery,
   deleteCompanyMutation,
   deleteContactMutation,
+  funnelQuery,
   myCompaniesQuery,
   myContactsQuery,
   putCompanySettingsMutation,
@@ -198,4 +200,24 @@ export const deleteCompany = async (token: string, companyId: string) => {
   )) as any;
 
   return deleteCompany;
+};
+
+export const getFunnelData = async (token: string, funnelId: string) => {
+  graphClient.setupClient(token);
+
+  const { funnel } = (await graphClient.client?.request(funnelQuery, {
+    funnelId,
+  })) as any;
+
+  return funnel;
+};
+
+export const getDashboardData = async (token: string, dashboardId: string) => {
+  graphClient.setupClient(token);
+
+  const { dashboard } = (await graphClient.client?.request(dashboardQuery, {
+    dashboardId,
+  })) as any;
+
+  return dashboard;
 };

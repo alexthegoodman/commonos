@@ -1,5 +1,11 @@
 "use client";
 
+import EmptyNotice from "@/components/core/layout/EmptyNotice";
+
 export default function Relationships() {
-  return <>Welcome to Relationships</>;
+  return (
+    <>
+      <EmptyNotice message="Welcome to Relationships CRM!" />
+    </>
+  );
 }
