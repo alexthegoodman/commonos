@@ -62,7 +62,7 @@ export function KanbanZone(props) {
   );
 }
 
-export default function Kanban() {
+export default function Kanban({ zoneLabel = "Step" }) {
   const [state, dispatch] = useRelationshipsFunnelsContext();
 
   return (
@@ -111,14 +111,14 @@ export default function Kanban() {
             type: "zones",
             payload: state.zones.concat({
               id: uuidv4(),
-              name: "New Step",
+              name: "New " + zoneLabel,
               cards: [],
             }),
           });
         }}
         style={{ height: "57px", width: "200px" }}
       >
-        Add Zone
+        Add {zoneLabel}
       </Button>
     </Box>
   );
