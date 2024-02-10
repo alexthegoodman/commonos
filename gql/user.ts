@@ -4,6 +4,7 @@ const UserFragment = gql`
   fragment UserFragment on User {
     email
     role
+    algoliaApiKey
     subscription
     frequency
     lastTokenReset

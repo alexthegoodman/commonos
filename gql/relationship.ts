@@ -157,3 +157,14 @@ export const dashboardQuery = gql`
     }
   }
 `;
+
+export const searchContactsQuery = gql`
+  query SearchContactsQuery($query: String!) {
+    searchContacts(query: $query) {
+      id
+      fields
+      updatedAt
+      createdAt
+    }
+  }
+`;

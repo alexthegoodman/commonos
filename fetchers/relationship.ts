@@ -13,6 +13,7 @@ import {
   myContactsQuery,
   putCompanySettingsMutation,
   putContactSettingsMutation,
+  searchContactsQuery,
   updateCompanyMutation,
   updateContactMutation,
 } from "@/gql/relationship";
@@ -220,4 +221,17 @@ export const getDashboardData = async (token: string, dashboardId: string) => {
   })) as any;
 
   return dashboard;
+};
+
+export const searchContacts = async (token: string, query: string) => {
+  graphClient.setupClient(token);
+
+  const { searchContacts } = (await graphClient.client?.request(
+    searchContactsQuery,
+    {
+      query,
+    }
+  )) as any;
+
+  return searchContacts;
 };

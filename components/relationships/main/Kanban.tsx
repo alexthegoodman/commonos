@@ -1,10 +1,30 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDroppable, useDraggable } from "@dnd-kit/core";
 import { useRelationshipsFunnelsContext } from "@/context/RelationshipsFunnelsContext";
-import { Box, Button, TextField, styled } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  InputLabel,
+  TextField,
+  styled,
+} from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
+import { useDebounce } from "@/hooks/useDebounce";
+import { searchContacts } from "@/fetchers/relationship";
+import { useCookies } from "react-cookie";
+import { Autocomplete } from "@/components/core/fields/Autocomplete";
+
+import { getAlgoliaResults } from "@algolia/autocomplete-js";
+import algoliasearch from "algoliasearch";
+import useSWR from "swr";
+import { getUserData } from "@/fetchers/user";
 
 const ZoneWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -29,6 +49,25 @@ const CardBox = styled(Box)(({ theme }) => ({
   height: "100px",
   boxShadow: "0 0 5px 0 rgba(0,0,0,0.2)",
 }));
+
+export function Item({ hit, components, onItemClick }) {
+  console.info("hit", hit);
+  return (
+    <a
+      // href={hit.url}
+      href="#!"
+      className="aa-ItemLink"
+      style={{ width: "200px", background: "red" }}
+      onClick={() => onItemClick(hit.objectID)}
+    >
+      <div className="aa-ItemContent">
+        <div className="aa-ItemTitle">
+          <components.Highlight hit={hit} attribute="title" />
+        </div>
+      </div>
+    </a>
+  );
+}
 
 export function KanbanCard(props) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -62,8 +101,114 @@ export function KanbanZone(props) {
   );
 }
 
-export default function Kanban({ zoneLabel = "Step" }) {
+const AddItemButton = ({ label = "Item", onItemClick }) => {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => setOpen(true);
+
+  const handleClose = () => setOpen(false);
+
+  const appId = process.env.NEXT_PUBLIC_ALOGLIA_APP_ID;
+  const apiKey = userData?.algoliaApiKey;
+  const searchClient = useMemo(
+    () => algoliasearch(appId, apiKey),
+    [appId, apiKey]
+  );
+  // const contactsIndex = useMemo(
+  //   () => searchClient.initIndex("contacts"),
+  //   [searchClient]
+  // );
+
+  // console.info("searchClient", searchClient);
+
+  const handleItemClick = (id) => {
+    onItemClick(id);
+    handleClose();
+  };
+
+  return (
+    <>
+      <Button
+        variant="contained"
+        color="success"
+        onClick={handleClickOpen}
+        style={{ height: "57px", width: "100%" }}
+      >
+        Add {label}
+      </Button>
+
+      <Dialog open={open} keepMounted onClose={handleClose}>
+        <DialogTitle>{"Select " + label}</DialogTitle>
+        <DialogContent>
+          <InputLabel sx={{ marginBottom: 2 }}>
+            Search for {label} by name
+          </InputLabel>
+          <Autocomplete
+            openOnFocus={true}
+            getSources={async ({ query }) => {
+              return [
+                {
+                  sourceId: "query",
+                  getItems() {
+                    return getAlgoliaResults({
+                      searchClient,
+                      queries: [
+                        {
+                          indexName: "contacts",
+                          query,
+                        },
+                      ],
+                    });
+                  },
+                  templates: {
+                    item({ item, components }) {
+                      return (
+                        <Item
+                          hit={item}
+                          components={components}
+                          onItemClick={handleItemClick}
+                        />
+                      );
+                    },
+                  },
+                },
+              ];
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Go Back</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default function Kanban({ zoneLabel = "Step", cardLabel = "Contact" }) {
   const [state, dispatch] = useRelationshipsFunnelsContext();
+
+  const handleItemClick = (id) => {
+    console.info("id", id);
+    dispatch({
+      type: "zones",
+      payload: state.zones.map((zone) => {
+        return {
+          ...zone,
+          cards: zone.cards.concat({
+            id: uuidv4(),
+            itemId: id,
+          }),
+        };
+      }),
+    });
+  };
 
   return (
     <Box display="flex" flexDirection="row" gap={2}>
@@ -81,24 +226,7 @@ export default function Kanban({ zoneLabel = "Step" }) {
               {zone.cards.map((card) => {
                 return <KanbanCard key={card.id} card={card} />;
               })}
-              <Button
-                variant="contained"
-                color="success"
-                onClick={() => {
-                  dispatch({
-                    type: "cards",
-                    payload: state.zones.map((z) => {
-                      if (z.id === zone.id) {
-                        z.cards.push({ id: uuidv4(), content: "Test" });
-                      }
-                      return z;
-                    }),
-                  });
-                }}
-                style={{ height: "57px", width: "100%" }}
-              >
-                Add Card
-              </Button>
+              <AddItemButton label={cardLabel} onItemClick={handleItemClick} />
             </KanbanZone>
           </ZoneWrapper>
         );
