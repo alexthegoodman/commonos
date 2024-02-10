@@ -22,7 +22,7 @@ export default function InnerLayout({ funnelId, funnelData }) {
       <EditorHeader title={title} setTitle={setTitle} /> */}
       <Box>
         <DndContext>
-          <Kanban />
+          <Kanban kanbanId={funnelId} />
         </DndContext>
       </Box>
     </RelationshipsFunnelsContext.Provider>

@@ -168,3 +168,14 @@ export const searchContactsQuery = gql`
     }
   }
 `;
+
+export const contactsByIdsQuery = gql`
+  query ContactsByIdsQuery($ids: [String!]!) {
+    contactsByIds(ids: $ids) {
+      id
+      fields
+      updatedAt
+      createdAt
+    }
+  }
+`;

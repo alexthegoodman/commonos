@@ -3,6 +3,7 @@ import {
   companySettingsQuery,
   contactQuery,
   contactSettingsQuery,
+  contactsByIdsQuery,
   createCompanyMutation,
   createContactMutation,
   dashboardQuery,
@@ -234,4 +235,17 @@ export const searchContacts = async (token: string, query: string) => {
   )) as any;
 
   return searchContacts;
+};
+
+export const getContactsByIds = async (token: string, ids: string[]) => {
+  graphClient.setupClient(token);
+
+  const { contactsByIds } = (await graphClient.client?.request(
+    contactsByIdsQuery,
+    {
+      ids,
+    }
+  )) as any;
+
+  return contactsByIds;
 };

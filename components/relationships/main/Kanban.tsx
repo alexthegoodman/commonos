@@ -17,13 +17,17 @@ import {
 } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import { useDebounce } from "@/hooks/useDebounce";
-import { searchContacts } from "@/fetchers/relationship";
+import {
+  getContactsByIds,
+  getFunnelData,
+  searchContacts,
+} from "@/fetchers/relationship";
 import { useCookies } from "react-cookie";
 import { Autocomplete } from "@/components/core/fields/Autocomplete";
 
 import { getAlgoliaResults } from "@algolia/autocomplete-js";
 import algoliasearch from "algoliasearch";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { getUserData } from "@/fetchers/user";
 
 const ZoneWrapper = styled(Box)(({ theme }) => ({
@@ -79,9 +83,11 @@ export function KanbanCard(props) {
       }
     : undefined;
 
+  const title = props.cardData?.fields?.name || props.cardData?.fields?.title;
+
   return (
     <CardBox ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {props.card.content}
+      {title || "Loading..."}
     </CardBox>
   );
 }
@@ -101,14 +107,7 @@ export function KanbanZone(props) {
   );
 }
 
-const AddItemButton = ({ label = "Item", onItemClick }) => {
-  const [cookies, setCookie] = useCookies(["cmUserToken"]);
-  const token = cookies.cmUserToken;
-
-  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
-    revalidateOnMount: true,
-  });
-
+const AddItemButton = ({ userData, label = "Item", onItemClick }) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => setOpen(true);
@@ -191,8 +190,33 @@ const AddItemButton = ({ label = "Item", onItemClick }) => {
   );
 };
 
-export default function Kanban({ zoneLabel = "Step", cardLabel = "Contact" }) {
+export default function Kanban({
+  kanbanId = null,
+  zoneLabel = "Step",
+  cardLabel = "Contact",
+}) {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
   const [state, dispatch] = useRelationshipsFunnelsContext();
+
+  const allCardIds = state.zones.reduce((acc, zone) => {
+    return acc.concat(zone.cards.map((card) => card.itemId));
+  }, []);
+
+  const { data: kanbanData } = useSWR(
+    "kanban" + kanbanId,
+    () => getContactsByIds(token, allCardIds),
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
+
+  console.info("kanban data", allCardIds, kanbanData);
 
   const handleItemClick = (id) => {
     console.info("id", id);
@@ -208,6 +232,10 @@ export default function Kanban({ zoneLabel = "Step", cardLabel = "Contact" }) {
         };
       }),
     });
+
+    mutate("kanban" + kanbanId, () =>
+      getContactsByIds(token, [...allCardIds, id])
+    );
   };
 
   return (
@@ -224,9 +252,19 @@ export default function Kanban({ zoneLabel = "Step", cardLabel = "Contact" }) {
             />
             <KanbanZone>
               {zone.cards.map((card) => {
-                return <KanbanCard key={card.id} card={card} />;
+                const cardData = kanbanData?.find((contact) => {
+                  return contact.id === card.itemId;
+                });
+
+                return (
+                  <KanbanCard key={card.id} card={card} cardData={cardData} />
+                );
               })}
-              <AddItemButton label={cardLabel} onItemClick={handleItemClick} />
+              <AddItemButton
+                userData={userData}
+                label={cardLabel}
+                onItemClick={handleItemClick}
+              />
             </KanbanZone>
           </ZoneWrapper>
         );
