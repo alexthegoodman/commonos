@@ -149,8 +149,8 @@ export const funnelQuery = gql`
 `;
 
 export const dashboardQuery = gql`
-  query DashboardQuery {
-    dashboard {
+  query DashboardQuery($dashboardId: String!) {
+    dashboard(dashboardId: $dashboardId) {
       id
       title
       context

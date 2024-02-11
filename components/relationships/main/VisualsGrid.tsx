@@ -1,13 +1,35 @@
 "use client";
 
+import Dropdown from "@/components/core/fields/Dropdown";
 import BarViz from "@/components/core/viz/BarViz";
 import LineViz from "@/components/core/viz/LineViz";
 import PieViz from "@/components/core/viz/PieViz";
-import { Box } from "@mui/material";
+import { useRelationshipsDashboardsContext } from "@/context/RelationshipsDashboardsContext";
+import { Box, Grid } from "@mui/material";
+import CreateVisual from "./CreateVisual";
 
 export default function VisualsGrid() {
+  const [state, dispatch] = useRelationshipsDashboardsContext();
+
   return (
-    <Box display="flex" flexDirection="row">
+    <>
+      <Grid container spacing={3}>
+        {state.visuals.map((viz, index) => {
+          return (
+            <Grid item xs={12} md={4} key={index}>
+              {viz.type === "bar" && <BarViz analysisData={[]} />}
+              {viz.type === "line" && <LineViz analysisData={[]} />}
+              {viz.type === "pie" && <PieViz analysisData={[]} />}
+            </Grid>
+          );
+        })}
+        <Grid item xs={12} md={4}>
+          <Box>
+            <CreateVisual />
+          </Box>
+        </Grid>
+      </Grid>
+      {/* <Box display="flex" flexDirection="row">
       <BarViz
         analysisData={[
           {
@@ -56,6 +78,7 @@ export default function VisualsGrid() {
           },
         ]}
       />
-    </Box>
+    </Box> */}
+    </>
   );
 }

@@ -26,6 +26,8 @@ export default function Dashboard(props) {
     }
   );
 
+  console.info("dashboardData", dashboardData);
+
   return !isLoading ? (
     <>
       {dashboardData && dashboardData.context ? (
