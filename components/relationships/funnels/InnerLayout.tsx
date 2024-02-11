@@ -5,7 +5,6 @@ import { useReducer, useState } from "react";
 // import Autosaver from "./Autosaver";
 // import EditorHeader from "./EditorHeader";
 import Kanban from "../main/Kanban";
-import { DndContext } from "@dnd-kit/core";
 import {
   RelationshipsFunnelsContext,
   RelationshipsFunnelsContextReducer,
@@ -21,9 +20,7 @@ export default function InnerLayout({ funnelId, funnelData }) {
       {/* <Autosaver id={drawingId} title={title} />
       <EditorHeader title={title} setTitle={setTitle} /> */}
       <Box>
-        <DndContext>
-          <Kanban kanbanId={funnelId} />
-        </DndContext>
+        <Kanban kanbanId={funnelId} />
       </Box>
     </RelationshipsFunnelsContext.Provider>
   );

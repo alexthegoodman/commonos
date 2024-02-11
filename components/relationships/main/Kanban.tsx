@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { useDroppable, useDraggable } from "@dnd-kit/core";
+import { useDroppable, useDraggable, DndContext } from "@dnd-kit/core";
 import { useRelationshipsFunnelsContext } from "@/context/RelationshipsFunnelsContext";
 import {
   Box,
@@ -94,7 +94,7 @@ export function KanbanCard(props) {
 
 export function KanbanZone(props) {
   const { isOver, setNodeRef } = useDroppable({
-    id: "droppable",
+    id: props.droppableId,
   });
   const style = {
     color: isOver ? "green" : undefined,
@@ -238,54 +238,113 @@ export default function Kanban({
     );
   };
 
-  return (
-    <Box display="flex" flexDirection="row" gap={2}>
-      {state.zones.map((zone) => {
-        return (
-          <ZoneWrapper key={zone.id}>
-            <TextField
-              label="Name"
-              variant="outlined"
-              fullWidth
-              value={zone.name}
-              style={{ marginBottom: 5 }}
-            />
-            <KanbanZone>
-              {zone.cards.map((card) => {
-                const cardData = kanbanData?.find((contact) => {
-                  return contact.id === card.itemId;
-                });
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
 
-                return (
-                  <KanbanCard key={card.id} card={card} cardData={cardData} />
-                );
-              })}
-              <AddItemButton
-                userData={userData}
-                label={cardLabel}
-                onItemClick={handleItemClick}
+    console.info("active", active, "over", over);
+
+    if (active.id === over.id) {
+      return;
+    }
+
+    const activeZone = state.zones.find((zone) => {
+      return zone.cards.find((card) => card.id === active.id);
+    });
+
+    const overZone = state.zones.find((zone) => zone.id === over.id);
+
+    const activeCard = activeZone.cards.find((card) => card.id === active.id);
+    // const overCard = overZone.cards.find((card) => card.id === over.id);
+
+    const activeIndex = activeZone.cards.indexOf(activeCard);
+    // const overIndex = overZone.cards.indexOf(overCard);
+
+    const newActiveCards = activeZone.cards.filter(
+      (card) => card.id !== active.id
+    );
+    const newOverCards = [...overZone.cards, activeCard];
+
+    const newActiveZone = {
+      ...activeZone,
+      cards: newActiveCards,
+    };
+
+    const newOverZone = {
+      ...overZone,
+      cards: newOverCards,
+      // overIndex === -1
+      //   ? newOverCards
+      //   : newOverCards.splice(overIndex, 0, activeCard),
+    };
+
+    const newZones = state.zones.map((zone) => {
+      if (zone.id === activeZone.id) {
+        return newActiveZone;
+      }
+
+      if (zone.id === overZone.id) {
+        return newOverZone;
+      }
+
+      return zone;
+    });
+
+    dispatch({
+      type: "zones",
+      payload: newZones,
+    });
+  };
+
+  return (
+    <DndContext onDragEnd={handleDragEnd}>
+      <Box display="flex" flexDirection="row" gap={2}>
+        {state.zones.map((zone) => {
+          return (
+            <ZoneWrapper key={zone.id}>
+              <TextField
+                label="Name"
+                variant="outlined"
+                fullWidth
+                value={zone.name}
+                style={{ marginBottom: 5 }}
               />
-            </KanbanZone>
-          </ZoneWrapper>
-        );
-      })}
-      <Button
-        variant="contained"
-        color="success"
-        onClick={() => {
-          dispatch({
-            type: "zones",
-            payload: state.zones.concat({
-              id: uuidv4(),
-              name: "New " + zoneLabel,
-              cards: [],
-            }),
-          });
-        }}
-        style={{ height: "57px", width: "200px" }}
-      >
-        Add {zoneLabel}
-      </Button>
-    </Box>
+              <KanbanZone droppableId={zone.id}>
+                {zone.cards.map((card) => {
+                  const cardData = kanbanData?.find((contact) => {
+                    return contact.id === card.itemId;
+                  });
+
+                  return (
+                    <KanbanCard key={card.id} card={card} cardData={cardData} />
+                  );
+                })}
+                <AddItemButton
+                  userData={userData}
+                  label={cardLabel}
+                  onItemClick={handleItemClick}
+                />
+              </KanbanZone>
+            </ZoneWrapper>
+          );
+        })}
+        <Button
+          variant="contained"
+          color="success"
+          onClick={() => {
+            dispatch({
+              type: "zones",
+              payload: state.zones.concat({
+                id: uuidv4(),
+                name: "New " + zoneLabel,
+                cards: [],
+              }),
+            });
+          }}
+          style={{ height: "57px", width: "200px" }}
+        >
+          Add {zoneLabel}
+        </Button>
+      </Box>
+    </DndContext>
   );
 }
