@@ -7,7 +7,7 @@ import { getFunnelData } from "@/fetchers/relationship";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
 
-export default function Drawing(props) {
+export default function Funnel(props) {
   const { params } = props;
   const funnelId = params.funnelId;
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
