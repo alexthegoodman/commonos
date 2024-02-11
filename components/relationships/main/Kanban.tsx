@@ -55,7 +55,7 @@ const CardBox = styled(Box)(({ theme }) => ({
 }));
 
 export function Item({ hit, components, onItemClick }) {
-  console.info("hit", hit);
+  // console.info("hit", hit);
   return (
     <a
       // href={hit.url}
@@ -107,10 +107,19 @@ export function KanbanZone(props) {
   );
 }
 
-const AddItemButton = ({ userData, label = "Item", onItemClick }) => {
+const AddItemButton = ({
+  zoneId,
+  setItemDestinationZone,
+  userData,
+  label = "Item",
+  onItemClick,
+}) => {
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => setOpen(true);
+  const handleClickOpen = () => {
+    setItemDestinationZone(zoneId);
+    setOpen(true);
+  };
 
   const handleClose = () => setOpen(false);
 
@@ -200,6 +209,8 @@ export default function Kanban({
 
   const [state, dispatch] = useRelationshipsFunnelsContext();
 
+  const [itemDestinationZone, setItemDestinationZone] = React.useState(null);
+
   const allCardIds = state.zones.reduce((acc, zone) => {
     return acc.concat(zone.cards.map((card) => card.itemId));
   }, []);
@@ -216,20 +227,19 @@ export default function Kanban({
     revalidateOnMount: true,
   });
 
-  console.info("kanban data", allCardIds, kanbanData);
-
   const handleItemClick = (id) => {
     console.info("id", id);
     dispatch({
       type: "zones",
       payload: state.zones.map((zone) => {
-        return {
-          ...zone,
-          cards: zone.cards.concat({
-            id: uuidv4(),
-            itemId: id,
-          }),
-        };
+        if (zone.id === itemDestinationZone) {
+          return {
+            ...zone,
+            cards: zone.cards.concat({ id: uuidv4(), itemId: id }),
+          };
+        } else {
+          return zone;
+        }
       }),
     });
 
@@ -322,6 +332,8 @@ export default function Kanban({
                   userData={userData}
                   label={cardLabel}
                   onItemClick={handleItemClick}
+                  zoneId={zone.id}
+                  setItemDestinationZone={setItemDestinationZone}
                 />
               </KanbanZone>
             </ZoneWrapper>

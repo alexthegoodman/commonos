@@ -140,6 +140,7 @@ export const funnelQuery = gql`
   query FunnelQuery($funnelId: String!) {
     funnel(funnelId: $funnelId) {
       id
+      title
       context
       updatedAt
       createdAt
@@ -151,6 +152,7 @@ export const dashboardQuery = gql`
   query DashboardQuery {
     dashboard {
       id
+      title
       context
       updatedAt
       createdAt
@@ -174,6 +176,42 @@ export const contactsByIdsQuery = gql`
     contactsByIds(ids: $ids) {
       id
       fields
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const createFunnelMutation = gql`
+  mutation CreateFunnelMutation {
+    createFunnel {
+      id
+    }
+  }
+`;
+
+export const myFunnelsQuery = gql`
+  query MyFunnelsQuery {
+    myFunnels {
+      id
+      title
+      context
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const updateFunnelMutation = gql`
+  mutation UpdateFunnelMutation(
+    $funnelId: String!
+    $title: String
+    $context: String
+  ) {
+    updateFunnel(funnelId: $funnelId, title: $title, context: $context) {
+      id
+      title
+      context
       updatedAt
       createdAt
     }

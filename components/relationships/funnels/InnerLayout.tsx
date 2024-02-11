@@ -9,16 +9,18 @@ import {
   RelationshipsFunnelsContext,
   RelationshipsFunnelsContextReducer,
 } from "@/context/RelationshipsFunnelsContext";
+import Autosaver from "./Autosaver";
+import EditorHeader from "./EditorHeader";
 
 export default function InnerLayout({ funnelId, funnelData }) {
-  //   const [title, setTitle] = useState(drawingData.title);
+  const [title, setTitle] = useState(funnelData.title);
 
   return (
     <RelationshipsFunnelsContext.Provider
       value={useReducer(RelationshipsFunnelsContextReducer, funnelData.context)}
     >
-      {/* <Autosaver id={drawingId} title={title} />
-      <EditorHeader title={title} setTitle={setTitle} /> */}
+      <Autosaver id={funnelId} title={title} />
+      <EditorHeader title={title} setTitle={setTitle} />
       <Box>
         <Kanban kanbanId={funnelId} />
       </Box>

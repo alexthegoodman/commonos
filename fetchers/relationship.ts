@@ -6,17 +6,20 @@ import {
   contactsByIdsQuery,
   createCompanyMutation,
   createContactMutation,
+  createFunnelMutation,
   dashboardQuery,
   deleteCompanyMutation,
   deleteContactMutation,
   funnelQuery,
   myCompaniesQuery,
   myContactsQuery,
+  myFunnelsQuery,
   putCompanySettingsMutation,
   putContactSettingsMutation,
   searchContactsQuery,
   updateCompanyMutation,
   updateContactMutation,
+  updateFunnelMutation,
 } from "@/gql/relationship";
 import graphClient from "@/helpers/GQLClient";
 
@@ -248,4 +251,44 @@ export const getContactsByIds = async (token: string, ids: string[]) => {
   )) as any;
 
   return contactsByIds;
+};
+
+export const createFunnel = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { createFunnel } = (await graphClient.client?.request(
+    createFunnelMutation
+  )) as any;
+
+  return createFunnel;
+};
+
+export const myFunnels = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { myFunnels } = (await graphClient.client?.request(
+    myFunnelsQuery
+  )) as any;
+
+  return myFunnels;
+};
+
+export const updateFunnel = async (
+  token: string,
+  funnelId: string,
+  title: string,
+  context: any
+) => {
+  graphClient.setupClient(token);
+
+  const { updateFunnel } = (await graphClient.client?.request(
+    updateFunnelMutation,
+    {
+      funnelId,
+      title,
+      context,
+    }
+  )) as any;
+
+  return updateFunnel;
 };
