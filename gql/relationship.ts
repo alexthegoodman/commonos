@@ -217,3 +217,43 @@ export const updateFunnelMutation = gql`
     }
   }
 `;
+
+export const myDashboardsQuery = gql`
+  query MyDashboardsQuery {
+    myDashboards {
+      id
+      title
+      context
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const createDashboardMutation = gql`
+  mutation CreateDashboardMutation {
+    createDashboard {
+      id
+    }
+  }
+`;
+
+export const updateDashboardMutation = gql`
+  mutation UpdateDashboardMutation(
+    $dashboardId: String!
+    $title: String
+    $context: String
+  ) {
+    updateDashboard(
+      dashboardId: $dashboardId
+      title: $title
+      context: $context
+    ) {
+      id
+      title
+      context
+      updatedAt
+      createdAt
+    }
+  }
+`;
