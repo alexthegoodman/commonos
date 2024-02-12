@@ -7,6 +7,7 @@ import PieViz from "@/components/core/viz/PieViz";
 import { useRelationshipsDashboardsContext } from "@/context/RelationshipsDashboardsContext";
 import { Box, Grid } from "@mui/material";
 import CreateVisual from "./CreateVisual";
+import VisualItem from "./VisualItem";
 
 export default function VisualsGrid() {
   const [state, dispatch] = useRelationshipsDashboardsContext();
@@ -17,9 +18,7 @@ export default function VisualsGrid() {
         {state.visuals.map((viz, index) => {
           return (
             <Grid item xs={12} md={4} key={index}>
-              {viz.type === "bar" && <BarViz analysisData={[]} />}
-              {viz.type === "line" && <LineViz analysisData={[]} />}
-              {viz.type === "pie" && <PieViz analysisData={[]} />}
+              <VisualItem viz={viz} />
             </Grid>
           );
         })}

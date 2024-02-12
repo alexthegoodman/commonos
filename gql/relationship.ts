@@ -257,3 +257,9 @@ export const updateDashboardMutation = gql`
     }
   }
 `;
+
+export const visualDataQuery = gql`
+  query VisualDataQuery($item: String!, $field: String!) {
+    visualData(item: $item, field: $field)
+  }
+`;

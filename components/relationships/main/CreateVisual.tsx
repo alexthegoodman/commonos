@@ -10,6 +10,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { useForm } from "react-hook-form";
 import useSWR from "swr";
+import { v4 as uuidv4 } from "uuid";
 
 export default function CreateVisual() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
@@ -50,6 +51,7 @@ export default function CreateVisual() {
     dispatch({
       type: "visuals",
       payload: state.visuals.concat({
+        id: uuidv4(),
         item: data.item,
         field: data.field,
         type: data.type,

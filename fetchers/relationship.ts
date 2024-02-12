@@ -23,6 +23,7 @@ import {
   updateContactMutation,
   updateDashboardMutation,
   updateFunnelMutation,
+  visualDataQuery,
 } from "@/gql/relationship";
 import graphClient from "@/helpers/GQLClient";
 
@@ -334,4 +335,19 @@ export const updateDashboard = async (
   )) as any;
 
   return updateDashboard;
+};
+
+export const getVisualData = async (
+  token: string,
+  item: string,
+  field: string
+) => {
+  graphClient.setupClient(token);
+
+  const { visualData } = (await graphClient.client?.request(visualDataQuery, {
+    item,
+    field,
+  })) as any;
+
+  return visualData;
 };
