@@ -1,4 +1,4 @@
-import { Button, styled } from "@mui/material";
+import { Box, Button, styled } from "@mui/material";
 
 export const Wrapper = styled("main")(({ theme }) => ({
   width: "100%",
@@ -60,7 +60,7 @@ export const CmSidebar = styled("aside")(({ theme, mobileOpen }) => ({
   },
 }));
 
-export const CmContent = styled("section")(({ theme }) => ({
+export const CmContent = styled(Box)(({ theme }) => ({
   width: "calc(100% - 400px)",
   height: "100%",
   overflow: "auto",

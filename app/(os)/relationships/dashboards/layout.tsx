@@ -24,7 +24,7 @@ export default function Layout({ children }) {
       <CmSidebar mobileOpen={mobileOpen}>
         <DashboardList />
       </CmSidebar>
-      <CmContent>{children}</CmContent>
+      <CmContent paddingLeft={2}>{children}</CmContent>
     </Box>
   );
 }
