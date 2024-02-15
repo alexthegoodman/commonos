@@ -54,15 +54,16 @@ const CardBox = styled(Box)(({ theme }) => ({
   boxShadow: "0 0 5px 0 rgba(0,0,0,0.2)",
 }));
 
-export function Item({ hit, components, onItemClick }) {
+export function Item({ hit, components, onItemClick, state }) {
   // console.info("hit", hit);
+  console.info("item state", state);
   return (
     <a
       // href={hit.url}
       href="#!"
       className="aa-ItemLink"
       style={{ width: "200px", background: "red" }}
-      onClick={() => onItemClick(hit.objectID)}
+      onClick={() => onItemClick(hit.objectID, state)}
     >
       <div className="aa-ItemContent">
         <div className="aa-ItemTitle">
@@ -113,6 +114,7 @@ const AddItemButton = ({
   userData,
   label = "Item",
   onItemClick,
+  state,
 }) => {
   const [open, setOpen] = React.useState(false);
 
@@ -136,8 +138,8 @@ const AddItemButton = ({
 
   // console.info("searchClient", searchClient);
 
-  const handleItemClick = (id) => {
-    onItemClick(id);
+  const handleItemClick = (id, state) => {
+    onItemClick(id, state);
     handleClose();
   };
 
@@ -182,6 +184,7 @@ const AddItemButton = ({
                           hit={item}
                           components={components}
                           onItemClick={handleItemClick}
+                          state={state}
                         />
                       );
                     },
@@ -227,15 +230,15 @@ export default function Kanban({
     revalidateOnMount: true,
   });
 
-  const handleItemClick = (id) => {
-    console.info("id", id);
+  const handleItemClick = (id, propState) => {
+    console.info("id", propState.zones, id);
     dispatch({
       type: "zones",
-      payload: state.zones.map((zone) => {
+      payload: propState.zones.map((zone) => {
         if (zone.id === itemDestinationZone) {
           return {
             ...zone,
-            cards: zone.cards.concat({ id: uuidv4(), itemId: id }),
+            cards: [...zone.cards, { id: uuidv4(), itemId: id }],
           };
         } else {
           return zone;
@@ -334,6 +337,7 @@ export default function Kanban({
                   onItemClick={handleItemClick}
                   zoneId={zone.id}
                   setItemDestinationZone={setItemDestinationZone}
+                  state={state}
                 />
               </KanbanZone>
             </ZoneWrapper>
