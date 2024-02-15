@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { useDroppable, useDraggable, DndContext } from "@dnd-kit/core";
+import {
+  useDroppable,
+  useDraggable,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
 import { useRelationshipsFunnelsContext } from "@/context/RelationshipsFunnelsContext";
 import {
   Box,
@@ -29,6 +35,14 @@ import { getAlgoliaResults } from "@algolia/autocomplete-js";
 import algoliasearch from "algoliasearch";
 import useSWR, { mutate } from "swr";
 import { getUserData } from "@/fetchers/user";
+
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 const ZoneWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -75,14 +89,22 @@ export function Item({ hit, components, onItemClick, state }) {
 }
 
 export function KanbanCard(props) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: props.card.id,
-  });
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
+  // const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  //   id: props.card.id,
+  // });
+  // const style = transform
+  //   ? {
+  //       transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  //     }
+  //   : undefined;
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: props.card.itemId });
+
+  const style = {
+    transform: `translate3d(${transform?.x}px, ${transform?.y}px, 0)`,
+    transition,
+  };
 
   const title = props.cardData?.fields?.name || props.cardData?.fields?.title;
 
@@ -93,16 +115,24 @@ export function KanbanCard(props) {
   );
 }
 
+export function OverlayCard(props) {
+  const title = props.cardData?.fields?.name || props.cardData?.fields?.title;
+
+  return <CardBox>{title || "Loading..."}</CardBox>;
+}
+
 export function KanbanZone(props) {
-  const { isOver, setNodeRef } = useDroppable({
-    id: props.droppableId,
-  });
-  const style = {
-    color: isOver ? "green" : undefined,
-  };
+  // const { isOver, setNodeRef } = useDroppable({
+  //   id: props.droppableId,
+  // });
+  // const style = {
+  //   color: isOver ? "green" : undefined,
+  // };
 
   return (
-    <ZoneBox ref={setNodeRef} style={style}>
+    <ZoneBox
+    // ref={setNodeRef} style={style}
+    >
       {props.children}
     </ZoneBox>
   );
@@ -213,6 +243,7 @@ export default function Kanban({
   const [state, dispatch] = useRelationshipsFunnelsContext();
 
   const [itemDestinationZone, setItemDestinationZone] = React.useState(null);
+  const [activeId, setActiveId] = React.useState(null);
 
   const allCardIds = state.zones.reduce((acc, zone) => {
     return acc.concat(zone.cards.map((card) => card.itemId));
@@ -251,31 +282,49 @@ export default function Kanban({
     );
   };
 
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
+  const handleDragStart = (event) => {
+    console.info("drag start", event);
 
-    console.info("active", active, "over", over);
+    const { active } = event;
+
+    setActiveId(active.id);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over, collisions } = event;
+
+    console.info("active", active, "over", over, "collisions", collisions);
 
     if (active.id === over.id) {
       return;
     }
 
     const activeZone = state.zones.find((zone) => {
-      return zone.cards.find((card) => card.id === active.id);
+      return zone.cards.find((card) => card.itemId === active.id);
     });
 
-    const overZone = state.zones.find((zone) => zone.id === over.id);
+    // const overZone = state.zones.find((zone) => zone.id === over.id);
+    const overZone = state.zones.find((zone) => {
+      return zone.cards.find((card) => card.itemId === over.id);
+    });
 
-    const activeCard = activeZone.cards.find((card) => card.id === active.id);
-    // const overCard = overZone.cards.find((card) => card.id === over.id);
+    if (activeZone?.id === overZone?.id) {
+      console.info("same zone");
+      return;
+    }
+
+    const activeCard = activeZone.cards.find(
+      (card) => card.itemId === active.id
+    );
+    const overCard = overZone.cards.find((card) => card.itemId === over.id);
 
     const activeIndex = activeZone.cards.indexOf(activeCard);
-    // const overIndex = overZone.cards.indexOf(overCard);
+    const overIndex = overZone.cards.indexOf(overCard);
 
     const newActiveCards = activeZone.cards.filter(
-      (card) => card.id !== active.id
+      (card) => card.itemId !== active.id
     );
-    const newOverCards = [...overZone.cards, activeCard];
+    const newOverCards = overZone.cards.toSpliced(overIndex, 0, activeCard);
 
     const newActiveZone = {
       ...activeZone,
@@ -306,10 +355,12 @@ export default function Kanban({
       type: "zones",
       payload: newZones,
     });
+
+    setActiveId(null);
   };
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <Box display="flex" flexDirection="row" gap={2}>
         {state.zones.map((zone) => {
           return (
@@ -321,28 +372,45 @@ export default function Kanban({
                 value={zone.name}
                 style={{ marginBottom: 5 }}
               />
-              <KanbanZone droppableId={zone.id}>
-                {zone.cards.map((card) => {
-                  const cardData = kanbanData?.find((contact) => {
-                    return contact.id === card.itemId;
-                  });
+              <SortableContext items={zone.cards.map((card) => card.id)}>
+                <KanbanZone droppableId={zone.id}>
+                  {zone.cards.map((card) => {
+                    const cardData = kanbanData?.find((contact) => {
+                      return contact.id === card.itemId;
+                    });
 
-                  return (
-                    <KanbanCard key={card.id} card={card} cardData={cardData} />
-                  );
-                })}
-                <AddItemButton
-                  userData={userData}
-                  label={cardLabel}
-                  onItemClick={handleItemClick}
-                  zoneId={zone.id}
-                  setItemDestinationZone={setItemDestinationZone}
-                  state={state}
-                />
-              </KanbanZone>
+                    console.info("card", card);
+
+                    return (
+                      <KanbanCard
+                        key={card.id}
+                        card={card}
+                        cardData={cardData}
+                      />
+                    );
+                  })}
+                  <AddItemButton
+                    userData={userData}
+                    label={cardLabel}
+                    onItemClick={handleItemClick}
+                    zoneId={zone.id}
+                    setItemDestinationZone={setItemDestinationZone}
+                    state={state}
+                  />
+                </KanbanZone>
+              </SortableContext>
             </ZoneWrapper>
           );
         })}
+        <DragOverlay>
+          {activeId ? (
+            <OverlayCard
+              cardData={kanbanData?.find((contact) => {
+                return contact.id === activeId;
+              })}
+            />
+          ) : null}
+        </DragOverlay>
         <Button
           variant="contained"
           color="success"
