@@ -70,7 +70,7 @@ const CardBox = styled(Box)(({ theme }) => ({
 
 export function Item({ hit, components, onItemClick, state }) {
   // console.info("hit", hit);
-  console.info("item state", state);
+  // console.info("item state", state);
   return (
     <a
       // href={hit.url}
@@ -122,17 +122,15 @@ export function OverlayCard(props) {
 }
 
 export function KanbanZone(props) {
-  // const { isOver, setNodeRef } = useDroppable({
-  //   id: props.droppableId,
-  // });
-  // const style = {
-  //   color: isOver ? "green" : undefined,
-  // };
+  const { isOver, setNodeRef } = useDroppable({
+    id: props.droppableId,
+  });
+  const style = {
+    color: isOver ? "green" : undefined,
+  };
 
   return (
-    <ZoneBox
-    // ref={setNodeRef} style={style}
-    >
+    <ZoneBox ref={setNodeRef} style={style}>
       {props.children}
     </ZoneBox>
   );
@@ -299,62 +297,135 @@ export default function Kanban({
       return;
     }
 
-    const activeZone = state.zones.find((zone) => {
-      return zone.cards.find((card) => card.itemId === active.id);
-    });
+    const overIsZone = state.zones.find((zone) => zone.id === over.id);
 
-    // const overZone = state.zones.find((zone) => zone.id === over.id);
-    const overZone = state.zones.find((zone) => {
-      return zone.cards.find((card) => card.itemId === over.id);
-    });
+    if (overIsZone) {
+      // this is for an empty kanban zone
+      // put active card in over zone
+      const overZone = overIsZone;
+      const activeZone = state.zones.find((zone) => {
+        return zone.cards.find((card) => card.itemId === active.id);
+      });
 
-    if (activeZone?.id === overZone?.id) {
-      console.info("same zone");
-      return;
+      const activeCard = activeZone.cards.find(
+        (card) => card.itemId === active.id
+      );
+
+      const newActiveCards = activeZone.cards.filter(
+        (card) => card.itemId !== active.id
+      );
+
+      const newOverCards = overZone.cards.concat(activeCard);
+
+      const newActiveZone = {
+        ...activeZone,
+        cards: newActiveCards,
+      };
+
+      const newOverZone = {
+        ...overZone,
+        cards: newOverCards,
+      };
+
+      const newZones = state.zones.map((zone) => {
+        if (zone.id === activeZone.id) {
+          return newActiveZone;
+        }
+
+        if (zone.id === overZone.id) {
+          return newOverZone;
+        }
+
+        return zone;
+      });
+
+      dispatch({
+        type: "zones",
+        payload: newZones,
+      });
+    } else {
+      // this for a non-empty kanban zone, hovering over a card
+      const activeZone = state.zones.find((zone) => {
+        return zone.cards.find((card) => card.itemId === active.id);
+      });
+      const overZone = state.zones.find((zone) => {
+        return zone.cards.find((card) => card.itemId === over.id);
+      });
+
+      const activeCard = activeZone.cards.find(
+        (card) => card.itemId === active.id
+      );
+      const overCard = overZone.cards.find((card) => card.itemId === over.id);
+
+      const activeIndex = activeZone.cards.indexOf(activeCard);
+      const overIndex = overZone.cards.indexOf(overCard);
+
+      if (activeZone?.id === overZone?.id) {
+        console.info("same zone");
+        // dropping card on zone it came from
+
+        const newActiveCards = arrayMove(
+          activeZone.cards,
+          activeIndex,
+          overIndex
+        );
+
+        const newActiveZone = {
+          ...activeZone,
+          cards: newActiveCards,
+        };
+
+        const newZones = state.zones.map((zone) => {
+          if (zone.id === activeZone.id) {
+            return newActiveZone;
+          }
+
+          return zone;
+        });
+
+        dispatch({
+          type: "zones",
+          payload: newZones,
+        });
+      } else {
+        // drop card on different zone
+
+        const newActiveCards = activeZone.cards.filter(
+          (card) => card.itemId !== active.id
+        );
+        const newOverCards = overZone.cards.toSpliced(overIndex, 0, activeCard);
+
+        const newActiveZone = {
+          ...activeZone,
+          cards: newActiveCards,
+        };
+
+        const newOverZone = {
+          ...overZone,
+          cards: newOverCards,
+          // overIndex === -1
+          //   ? newOverCards
+          //   : newOverCards.splice(overIndex, 0, activeCard),
+        };
+
+        const newZones = state.zones.map((zone) => {
+          if (zone.id === activeZone.id) {
+            return newActiveZone;
+          }
+
+          if (zone.id === overZone.id) {
+            return newOverZone;
+          }
+
+          return zone;
+        });
+
+        dispatch({
+          type: "zones",
+          payload: newZones,
+        });
+      }
     }
-
-    const activeCard = activeZone.cards.find(
-      (card) => card.itemId === active.id
-    );
-    const overCard = overZone.cards.find((card) => card.itemId === over.id);
-
-    const activeIndex = activeZone.cards.indexOf(activeCard);
-    const overIndex = overZone.cards.indexOf(overCard);
-
-    const newActiveCards = activeZone.cards.filter(
-      (card) => card.itemId !== active.id
-    );
-    const newOverCards = overZone.cards.toSpliced(overIndex, 0, activeCard);
-
-    const newActiveZone = {
-      ...activeZone,
-      cards: newActiveCards,
-    };
-
-    const newOverZone = {
-      ...overZone,
-      cards: newOverCards,
-      // overIndex === -1
-      //   ? newOverCards
-      //   : newOverCards.splice(overIndex, 0, activeCard),
-    };
-
-    const newZones = state.zones.map((zone) => {
-      if (zone.id === activeZone.id) {
-        return newActiveZone;
-      }
-
-      if (zone.id === overZone.id) {
-        return newOverZone;
-      }
-
-      return zone;
-    });
-
-    dispatch({
-      type: "zones",
-      payload: newZones,
-    });
 
     setActiveId(null);
   };
@@ -379,7 +450,7 @@ export default function Kanban({
                       return contact.id === card.itemId;
                     });
 
-                    console.info("card", card);
+                    // console.info("card", card);
 
                     return (
                       <KanbanCard
