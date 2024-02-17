@@ -34,9 +34,10 @@ export default function PrimaryTabs({ tabs = allTabs, pathNum = 1 }) {
 
   const router = useRouter();
   const pathname = usePathname();
-  const slug1 = pathNum > 0 ? "/" + pathname.split("/")[pathNum] : pathname;
+  // const slug1 = pathNum > 0 ? "/" + pathname.split("/")[pathNum] : pathname;
 
-  const currentTabData = tabs.find((tab) => tab.href === pathname);
+  const currentTabData = tabs.find((tab) => pathname.includes(tab.href));
+  const slug1 = currentTabData?.href;
 
   return (
     <TabsWrapper>
@@ -71,6 +72,7 @@ export default function PrimaryTabs({ tabs = allTabs, pathNum = 1 }) {
                 {tabData?.id === "analytics" && <Analytics />}
                 {tabData?.id === "send-email" && <Email />}
                 {tabData?.id === "relationships" && <People />}
+                {tabData?.id === "work-email" && <Email />}
               </Box>
 
               {tabData?.label}

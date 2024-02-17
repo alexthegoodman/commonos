@@ -37,22 +37,28 @@ export const allTabs = [
     href: "/relationships",
     badge: null,
   },
-  {
-    id: "analytics",
-    label: "Analytics",
-    href: "/analytics",
-    badge: null,
-  },
+  // {
+  //   id: "analytics",
+  //   label: "Analytics",
+  //   href: "/analytics",
+  //   badge: null,
+  // },
   {
     id: "content",
     label: "Content",
     href: "/content",
     badge: null,
   },
+  // {
+  //   id: "send-email",
+  //   label: "Send Email",
+  //   href: "/send-email",
+  //   badge: null,
+  // },
   {
-    id: "send-email",
-    label: "Send Email",
-    href: "/send-email",
+    id: "work-email",
+    label: "Work Email",
+    href: "/work-email",
     badge: null,
   },
   // {
