@@ -1,7 +1,10 @@
 "use client";
 
+import { getInbox } from "@/fetchers/work-email";
 import { Box, Button, Typography, styled } from "@mui/material";
 import { usePathname } from "next/navigation";
+import { useCookies } from "react-cookie";
+import useSWR from "swr";
 
 const InboxWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -19,12 +22,15 @@ const ThreadsWrapper = styled(Box)(({ theme }) => ({
   overflowY: "auto",
 }));
 
-const ThreadItem = styled(Box)(({ theme, active }) => ({
+const ThreadItem = styled(Button)(({ theme, active }) => ({
   display: "flex",
   flexDirection: "column",
   padding: "10px 0",
   borderBottom: "1px solid #e0e0e0",
   cursor: "pointer",
+  textAlign: "left",
+  justifyContent: "flex-start",
+  alignItems: "flex-start",
   backgroundColor: active ? "rgba(255, 255, 255, 0.1)" : "transparent",
   "&:hover": {
     transform: "scale(1.02)",
@@ -33,12 +39,26 @@ const ThreadItem = styled(Box)(({ theme, active }) => ({
 
 export default function Layout({ params, children = null }) {
   const inboxId = params.inboxId;
+  const threadId = params.threadId;
+
+  console.info("threadId", threadId);
 
   const pathname = usePathname();
   const lastSlug = pathname.split("/").pop();
   const isNewEmail = lastSlug === "new-email";
 
   console.info("inboxId", inboxId);
+
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
+  const {
+    data: inboxData,
+    error,
+    isLoading,
+  } = useSWR("inboxKey" + inboxId, () => getInbox(token, inboxId), {
+    revalidateOnMount: true,
+  });
 
   return (
     <>
@@ -63,11 +83,38 @@ export default function Layout({ params, children = null }) {
               <Typography variant="body1">New Email</Typography>
             </ThreadItem>
           )}
-          <ThreadItem>
-            <Typography variant="body1">Thread 1</Typography>
-            <Typography variant="caption">Last message preview...</Typography>
-            <Typography variant="caption">01/01/20</Typography>
-          </ThreadItem>
+          {inboxData?.threads.map((thread) => {
+            if (!thread.mostRecentEmail) return null;
+
+            const body = { __html: thread.mostRecentEmail.body };
+
+            return (
+              <ThreadItem
+                key={thread.id}
+                active={lastSlug === thread.id}
+                href={`/work-email/inboxes/${inboxId}/${thread.id}`}
+              >
+                <Typography variant="body1">{thread.subject}</Typography>
+                <Typography
+                  variant="caption"
+                  dangerouslySetInnerHTML={body}
+                  sx={{
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    width: "100%",
+                    height: "20px",
+                    "& p": {
+                      margin: 0,
+                    },
+                  }}
+                />
+                <Typography variant="caption">
+                  {thread.mostRecentEmail.updatedAt}
+                </Typography>
+              </ThreadItem>
+            );
+          })}
         </ThreadsWrapper>
         <Box
           sx={{

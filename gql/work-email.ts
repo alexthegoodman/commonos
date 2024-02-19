@@ -31,6 +31,66 @@ export const inboxQuery = gql`
         id
         domainName
       }
+      threads {
+        id
+        subject
+        mostRecentEmail {
+          id
+          from
+          to
+          subject
+          body
+          unread
+          updatedAt
+          createdAt
+        }
+        updatedAt
+        createdAt
+      }
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const sendWorkEmailMutation = gql`
+  mutation SendWorkEmailMutation(
+    $inboxId: String!
+    $threadId: String
+    $to: String!
+    $subject: String!
+    $body: String!
+  ) {
+    sendWorkEmail(
+      inboxId: $inboxId
+      threadId: $threadId
+      to: $to
+      subject: $subject
+      body: $body
+    ) {
+      id
+      from
+      to
+      subject
+      body
+      thread {
+        id
+      }
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const myThreadEmailsQuery = gql`
+  query MyThreadEmailsQuery($threadId: String!) {
+    myThreadEmails(threadId: $threadId) {
+      id
+      from
+      to
+      subject
+      body
+      unread
       updatedAt
       createdAt
     }

@@ -16,7 +16,7 @@ import {
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import { EditorRefPlugin } from "@lexical/react/LexicalEditorRefPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import LexicalTheme from "@/components/documents/lexical/LexicalTheme";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import ToolbarPlugin from "@/components/documents/lexical/ToolbarPlugin";
@@ -28,15 +28,17 @@ import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import CodeHighlightPlugin from "@/components/documents/lexical/CodeHighlightPlugin";
 import PlaygroundAutoLinkPlugin from "@/components/documents/lexical/AutoLinkPlugin";
 import ListMaxIndentLevelPlugin from "@/components/documents/lexical/ListMaxIndentLevelPlugin";
+import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { Typography } from "@mui/material";
 import { $generateHtmlFromNodes } from "@lexical/html";
+import { CLEAR_EDITOR_COMMAND } from "lexical";
 
 function Placeholder() {
   // return <div className="editor-placeholder">Enter some text...</div>;
   return <></>;
 }
 
-export default function ComposeEmail({ handleChange }) {
+export default function ComposeEmail({ handleChange, clearEffect }) {
   const editorRef = useRef(null);
 
   const onChange = (delta) => {
@@ -77,6 +79,16 @@ export default function ComposeEmail({ handleChange }) {
     ],
   };
 
+  React.useEffect(() => {
+    if (clearEffect) {
+      console.info("clear editor");
+      editorRef.current.update(() => {
+        // editorRef.current.clear();
+        editorRef.current.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+      });
+    }
+  }, [clearEffect]);
+
   return (
     <>
       {/* <Typography variant="h6" gutterBottom>
@@ -104,6 +116,7 @@ export default function ComposeEmail({ handleChange }) {
             />
             <HistoryPlugin />
             {/* <TreeViewPlugin /> */}
+            <ClearEditorPlugin />
             <AutoFocusPlugin />
             <CodeHighlightPlugin />
             <ListPlugin />
