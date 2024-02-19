@@ -1,4 +1,8 @@
-import { createInboxMutation, myInboxesQuery } from "@/gql/work-email";
+import {
+  createInboxMutation,
+  inboxQuery,
+  myInboxesQuery,
+} from "@/gql/work-email";
 import graphClient from "@/helpers/GQLClient";
 
 export const myInboxes = async (token: string) => {
@@ -22,4 +26,14 @@ export const createInbox = async (token: string, username: string) => {
   )) as any;
 
   return createInbox;
+};
+
+export const getInbox = async (token: string, inboxId: string) => {
+  graphClient.setupClient(token);
+
+  const { inbox } = (await graphClient.client?.request(inboxQuery, {
+    inboxId,
+  })) as any;
+
+  return inbox;
 };

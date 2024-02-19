@@ -21,3 +21,18 @@ export const createInboxMutation = gql`
     }
   }
 `;
+
+export const inboxQuery = gql`
+  query InboxQuery($inboxId: String!) {
+    inbox(inboxId: $inboxId) {
+      id
+      username
+      domain {
+        id
+        domainName
+      }
+      updatedAt
+      createdAt
+    }
+  }
+`;
