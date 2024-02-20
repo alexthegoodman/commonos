@@ -31,7 +31,7 @@ export default function InnerLayout({
 
   const [mode, setMode] = useState<"light" | "dark">(
     // isDarkMode ? "dark" : "light"
-    "dark"
+    "light"
   );
   const colorMode = useMemo(
     () => ({

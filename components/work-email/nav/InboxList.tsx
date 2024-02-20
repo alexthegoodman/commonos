@@ -1,7 +1,7 @@
 "use client";
 
 import { createInbox, myInboxes } from "@/fetchers/work-email";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import useSWR, { mutate } from "swr";
 
@@ -83,6 +83,9 @@ export default function InboxList() {
 
   const [open, setOpen] = useState(false);
 
+  const pathname = usePathname();
+  const thirdSlug = pathname.split("/")[3];
+
   const { data: domainSettingsData } = useSWR(
     "domainSettingsKey",
     () => myDomainSettings(token),
@@ -101,12 +104,20 @@ export default function InboxList() {
 
   return (
     <Box display="flex" flexDirection="column">
-      <Typography variant="overline">Your Inboxes</Typography>
+      <Typography variant="h4" mb={2}>
+        Your Inboxes
+      </Typography>
       {inboxesData &&
         inboxesData.map((inbox) => (
           <Button
             key={inbox.id}
             onClick={() => router.push(`/work-email/inboxes/${inbox.id}`)}
+            sx={{
+              marginBottom: 1,
+              backgroundColor:
+                thirdSlug === inbox.id ? "#515151" : "transparent",
+              color: thirdSlug === inbox.id ? "#FFF" : "#515151",
+            }}
           >
             {inbox.username}@{domainSettingsData?.domainName}
           </Button>

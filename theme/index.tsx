@@ -23,14 +23,14 @@ export const getThemeOptions = (mode: string) => {
         paper: "#333333",
       },
       success: {
-        main: "#38ef7d",
-        dark: "#38ef7d",
+        main: "#99c7a2",
+        dark: "#99c7a2",
       },
     },
     typography: {
       allVariants: {
         color: "white",
-        fontFamily: "inherit",
+        fontFamily: "proxima-nova",
       },
       button: {
         textTransform: "none",
@@ -56,8 +56,35 @@ export const getThemeOptions = (mode: string) => {
         styleOverrides: {
           root: {
             color: "white",
-            borderRadius: "0px !important",
+            borderRadius: "20px !important",
             textTransform: "none",
+            minHeight: "70px",
+            boxShadow: "none",
+            fontSize: "18px",
+            "&:hover": {
+              boxShadow: "none",
+            },
+          },
+          textPrimary: {
+            textAlign: "left",
+            justifyContent: "flex-start",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+          },
+          containedSuccess: {
+            border: "1px solid #74ad7f",
+            background: "linear-gradient(145deg, #99c7a2 65%, #c8cc7c 100%)",
+            fontWeight: 600,
+            transition: "0.2s all",
+            "&:hover": {
+              background: "linear-gradient(145deg, #99c7a2 45%, #c8cc7c 100%)",
+              transition: "0.2s all",
+            },
+          },
+          containedSizeSmall: {
+            minHeight: "50px",
+            minWidth: "120px",
+            fontSize: "15px",
           },
         },
       },
@@ -75,14 +102,14 @@ export const getThemeOptions = (mode: string) => {
       MuiInputBase: {
         styleOverrides: {
           root: {
-            borderRadius: "0px !important",
+            borderRadius: "25px !important",
             border: "1px solid white !important",
             backgroundColor: "#FFF",
-            color: "black",
+            color: "#515151",
           },
           input: {
             "&::placeholder": {
-              color: "black",
+              color: "#515151",
               opacity: 0.5,
             },
           },
@@ -167,24 +194,25 @@ export const getThemeOptions = (mode: string) => {
           default: "#FFFFFF",
           paper: "#FFFFFF",
         },
-        success: {
-          main: "#38ef7d",
-          dark: "#38ef7d",
-        },
+        // success: {
+        //   main: "#38ef7d",
+        //   dark: "#38ef7d",
+        // },
       },
       typography: {
         allVariants: {
-          color: "black",
+          color: "#515151",
         },
       },
       components: {
         MuiButton: {
           styleOverrides: {
-            root: {
-              color: "black",
+            textPrimary: {
+              color: "#515151",
               backgroundColor: "white",
               "&:hover": {
-                backgroundColor: "white",
+                color: "white",
+                backgroundColor: "#515151",
               },
             },
           },

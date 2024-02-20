@@ -43,7 +43,7 @@ export const metadata = {
   },
 };
 
-const inter = Inter({ subsets: ["latin"] });
+// const inter = Inter({ subsets: ["latin"] });
 
 export default function RootLayout({
   children,
@@ -53,13 +53,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={inter.className}
+        // className={inter.className}
         style={{
           margin: 0,
         }}
       >
         <InnerLayout>{children}</InnerLayout>
         <Analytics />
+        <link rel="stylesheet" href="https://use.typekit.net/moh7wlc.css" />
       </body>
     </html>
   );

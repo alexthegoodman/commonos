@@ -25,15 +25,27 @@ const ThreadsWrapper = styled(Box)(({ theme }) => ({
 const ThreadItem = styled(Button)(({ theme, active }) => ({
   display: "flex",
   flexDirection: "column",
-  padding: "10px 0",
-  borderBottom: "1px solid #e0e0e0",
+  padding: "25px",
+  // borderBottom: "1px solid #e0e0e0",
+  border: "1px solid #e0e0e0",
+
   cursor: "pointer",
   textAlign: "left",
   justifyContent: "flex-start",
   alignItems: "flex-start",
-  backgroundColor: active ? "rgba(255, 255, 255, 0.1)" : "transparent",
+  backgroundColor: active ? "#99c7a2" : "transparent",
+  color: active ? "white" : "#515151",
+  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  marginBottom: "30px",
   "&:hover": {
-    transform: "scale(1.02)",
+    boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.25)",
+    backgroundColor: "white",
+    "& p, & span": {
+      color: active ? "#515151" : "#515151",
+    },
+  },
+  "& p, & span": {
+    color: active ? "white" : "#515151",
   },
 }));
 
@@ -68,12 +80,14 @@ export default function Layout({ params, children = null }) {
             display="flex"
             flexDirection="row"
             justifyContent="space-between"
+            mb={2}
           >
-            <Typography variant="overline">Your Threads</Typography>
+            <Typography variant="h6">Your Threads</Typography>
             <Button
               variant="contained"
               color="success"
               href={`/work-email/inboxes/${inboxId}/new-email`}
+              size="small"
             >
               New Email
             </Button>

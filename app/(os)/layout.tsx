@@ -16,9 +16,9 @@ const Background = styled("main")(({ theme }) => ({
   // // backgroundColor: theme.palette.background.default,
   // overflowY: "scroll",
 
-  background: "linear-gradient(355deg, #b92b27, #1565C0)",
-  backgroundSize: "400% 400%",
-  animation: "AnimationName 15s ease infinite",
+  // background: "linear-gradient(355deg, #b92b27, #1565C0)",
+  // backgroundSize: "400% 400%",
+  // animation: "AnimationName 15s ease infinite",
 }));
 
 const Container = styled(Box)(({ theme, hasSidebar }) => ({

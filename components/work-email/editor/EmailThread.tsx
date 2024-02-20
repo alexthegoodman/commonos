@@ -108,7 +108,12 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
       )}
       <ComposeEmail handleChange={handleBodyChange} clearEffect={clearEffect} />
       <Box mt={2}>
-        <Button variant="contained" color="success" onClick={handleSendEmail}>
+        <Button
+          variant="contained"
+          color="success"
+          size="small"
+          onClick={handleSendEmail}
+        >
           Send Email
         </Button>
       </Box>

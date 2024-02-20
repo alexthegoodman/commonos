@@ -18,17 +18,12 @@ export const Tab = styled(Button)(({ theme }) => ({
   textTransform: "none",
   fontSize: "0.9rem",
   fontWeight: "semibold",
+  minHeight: "40px",
+  height: "40px",
   "&:hover": {
-    color: theme.palette.primary.main,
+    color: "#515151",
     opacity: 1,
   },
-  // "&.Mui-selected": {
-  //     color: theme.palette.primary.main,
-  //     fontWeight: theme.typography.fontWeightMedium,
-  // },
-  // "&.Mui-focusVisible": {
-  //     backgroundColor: theme.palette.primary.main,
-  // },
   [theme.breakpoints.down("sm")]: {
     height: "40px",
   },
@@ -40,8 +35,9 @@ export const CmSidebar = styled("aside")(({ theme, mobileOpen }) => ({
   borderRight: `1px solid ${theme.palette.divider}`,
   overflow: "auto",
   height: "calc(100vh - 100px)",
-  backgroundColor: "rgba(255, 255, 255, 0.05)",
-  padding: "15px 25px",
+  // backgroundColor: "rgba(255, 255, 255, 0.05)",
+  // padding: "15px 25px",
+  padding: "0px 25px",
   [theme.breakpoints.down("xl")]: {
     width: "300px",
   },
