@@ -55,7 +55,7 @@ export default function PrimaryTabs({ tabs = allTabs, pathNum = 1 }) {
               disabled={tabData.href === ""}
               onClick={() => router.push(tabData.href)}
               size="small"
-              style={
+              sx={
                 tabData.href === slug1
                   ? { background: "#99c7a2", color: "white" }
                   : { background: "transparent" }

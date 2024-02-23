@@ -67,10 +67,18 @@ export const getThemeOptions = (mode: string) => {
             },
           },
           textPrimary: {
+            color: "#515151",
             textAlign: "left",
             justifyContent: "flex-start",
             paddingLeft: "20px",
             paddingRight: "20px",
+            "&:hover": {
+              backgroundColor: "#515151 !important",
+              color: "white !important",
+              "& p, & span": {
+                color: "white !important",
+              },
+            },
           },
           containedSuccess: {
             border: "1px solid #74ad7f",
@@ -78,7 +86,7 @@ export const getThemeOptions = (mode: string) => {
             fontWeight: 600,
             transition: "0.2s all",
             "&:hover": {
-              background: "linear-gradient(145deg, #99c7a2 45%, #c8cc7c 100%)",
+              background: "linear-gradient(145deg, #99c7a2 25%, #c8cc7c 100%)",
               transition: "0.2s all",
             },
           },
@@ -110,9 +118,11 @@ export const getThemeOptions = (mode: string) => {
             color: "#515151",
           },
           input: {
+            borderRadius: "25px !important",
             boxSizing: "border-box",
             minHeight: "70px",
-            boxShadow: "0px 6px 12px 1px rgba(0, 0, 0, 0.2)",
+            // boxShadow: "0px 6px 12px 1px rgba(0, 0, 0, 0.2)",
+            boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
             border: "none",
             padding: "0px 25px !important",
             outline: "none",
@@ -217,18 +227,18 @@ export const getThemeOptions = (mode: string) => {
         },
       },
       components: {
-        MuiButton: {
-          styleOverrides: {
-            textPrimary: {
-              color: "#515151",
-              backgroundColor: "white",
-              "&:hover": {
-                color: "white",
-                backgroundColor: "#515151",
-              },
-            },
-          },
-        },
+        // MuiButton: {
+        //   styleOverrides: {
+        //     textPrimary: {
+        //       color: "#515151",
+        //       backgroundColor: "white",
+        //       "&:hover": {
+        //         color: "white",
+        //         backgroundColor: "#515151",
+        //       },
+        //     },
+        //   },
+        // },
         MuiLink: {
           root: {
             color: "#515151",

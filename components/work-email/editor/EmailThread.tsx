@@ -78,13 +78,13 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
           <TextField
             placeholder="To"
             variant="outlined"
-            sx={{ width: "400px", marginBottom: 1 }}
+            sx={{ width: "400px", marginBottom: 2 }}
             onChange={(e) => setTo(e.target.value)}
           />
           <TextField
             placeholder="Subject"
             variant="outlined"
-            sx={{ width: "400px", marginBottom: 2 }}
+            sx={{ width: "400px", marginBottom: 3 }}
             onChange={(e) => setSubject(e.target.value)}
           />
         </Box>
@@ -106,7 +106,12 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
           })}
         </Box>
       )}
-      <ComposeEmail handleChange={handleBodyChange} clearEffect={clearEffect} />
+      <Box sx={{ paddingRight: 5 }}>
+        <ComposeEmail
+          handleChange={handleBodyChange}
+          clearEffect={clearEffect}
+        />
+      </Box>
       <Box mt={2}>
         <Button
           variant="contained"
