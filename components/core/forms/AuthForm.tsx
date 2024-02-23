@@ -155,7 +155,7 @@ const AuthForm = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "10px",
+          gap: "12px",
           marginBottom: "10px",
         }}
       >

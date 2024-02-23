@@ -12,7 +12,15 @@ const FormMessage = ({
 }) => {
   const clickHandler = (e: MouseEvent) => onClick(e);
   return (
-    <>{message !== "" ? <Alert severity={type}>{message}</Alert> : <></>}</>
+    <>
+      {message !== "" ? (
+        <Alert severity={type} sx={{ borderRadius: "25px", padding: "15px" }}>
+          {message}
+        </Alert>
+      ) : (
+        <></>
+      )}
+    </>
   );
 };
 

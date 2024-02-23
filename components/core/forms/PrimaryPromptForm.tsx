@@ -67,7 +67,7 @@ const ExamplePromptsButton = ({ setPromptValue }) => {
   return (
     <>
       <Button
-        variant="outlined"
+        variant="contained"
         color="primary"
         size="small"
         onClick={handleClickOpen}
@@ -80,11 +80,11 @@ const ExamplePromptsButton = ({ setPromptValue }) => {
           <DialogContentText>
             {examplePrompts.map((prompt, i) => (
               <Box key={`prompt${i}`} mb={2}>
-                <Typography variant="body2" mb={1}>
+                <Typography variant="body1" mb={1}>
                   {prompt}
                 </Typography>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   color="primary"
                   size="small"
                   onClick={() => {
@@ -156,8 +156,8 @@ const PrimaryPromptForm = ({
 
   return (
     <Box>
-      <Alert severity="info">
-        <Typography variant="body2" mb={1}>
+      <Alert severity="info" sx={{ borderRadius: "25px", padding: "15px" }}>
+        <Typography variant="body1" mb={1}>
           The magic of CommonOS is in the Flow experience.
           <br />
           Try it with a prompt!
@@ -181,8 +181,9 @@ const PrimaryPromptForm = ({
           style={{
             fontSize: "1rem",
             lineHeight: "1.5rem",
-            padding: "20px",
+            // padding: "20px",
             boxSizing: "border-box",
+            marginBottom: "20px",
           }}
         />
 
@@ -191,6 +192,7 @@ const PrimaryPromptForm = ({
           color="success"
           variant="contained"
           disabled={submitLoading}
+          sx={{ minWidth: "200px" }}
         >
           {submitButtonText}
         </Button>

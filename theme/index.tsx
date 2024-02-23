@@ -61,6 +61,7 @@ export const getThemeOptions = (mode: string) => {
             minHeight: "70px",
             boxShadow: "none",
             fontSize: "18px",
+            padding: "0px 15px",
             "&:hover": {
               boxShadow: "none",
             },
@@ -103,11 +104,18 @@ export const getThemeOptions = (mode: string) => {
         styleOverrides: {
           root: {
             borderRadius: "25px !important",
-            border: "1px solid white !important",
+            // border: "1px solid white !important",
+            border: "none",
             backgroundColor: "#FFF",
             color: "#515151",
           },
           input: {
+            boxSizing: "border-box",
+            minHeight: "70px",
+            boxShadow: "0px 6px 12px 1px rgba(0, 0, 0, 0.2)",
+            border: "none",
+            padding: "0px 25px !important",
+            outline: "none",
             "&::placeholder": {
               color: "#515151",
               opacity: 0.5,
@@ -115,15 +123,14 @@ export const getThemeOptions = (mode: string) => {
           },
         },
       },
-      // MuiOutlinedInput: {
-      //   styleOverrides: {
-      //     notchedOutline: {
-      //       "& span": {
-      //         color: "green",
-      //       },
-      //     },
-      //   },
-      // },
+      MuiOutlinedInput: {
+        styleOverrides: {
+          notchedOutline: {
+            borderColor: "white",
+            borderWidth: "2px",
+          },
+        },
+      },
       MuiInputLabel: {
         styleOverrides: {
           root: {
@@ -140,6 +147,11 @@ export const getThemeOptions = (mode: string) => {
             backgroundColor: "transparent",
             border: "none",
           },
+        },
+      },
+      MuiPaper: {
+        root: {
+          borderRadius: "25px",
         },
       },
     },
@@ -185,7 +197,7 @@ export const getThemeOptions = (mode: string) => {
       palette: {
         mode: "light",
         primary: {
-          main: "#FFFFFF",
+          main: "#99c7a2",
         },
         secondary: {
           main: "#E5E5E5",
@@ -215,6 +227,11 @@ export const getThemeOptions = (mode: string) => {
                 backgroundColor: "#515151",
               },
             },
+          },
+        },
+        MuiLink: {
+          root: {
+            color: "#515151",
           },
         },
       },
