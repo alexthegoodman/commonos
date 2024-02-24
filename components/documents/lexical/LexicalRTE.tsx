@@ -105,6 +105,7 @@ export default function LexicalRTE({ documentId, documentData, refetch }) {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        mb={2}
       >
         <EditorHeader
           documentId={documentId}

@@ -68,6 +68,7 @@ const TreeWrapper = styled("section")(
   
         li {
           position: relative;
+          margin-bottom: 2px;
 
           .documentOptions {
             position: absolute;
@@ -90,7 +91,7 @@ const TreeWrapper = styled("section")(
           span, p {
             display: flex;
             flex-direction: row;
-            padding: 3px 0;
+            padding: 4px 0;
   
             &.selected {
               background-color: grey;
@@ -108,6 +109,7 @@ const TreeWrapper = styled("section")(
               padding: 2px 2px;
               text-decoration: none;
               line-height: 21px;
+              color: #515151;
             }
           }
   
@@ -143,6 +145,10 @@ const TreeWrapper = styled("section")(
     }
 `
 );
+
+const TreeText = styled(Typography)(({ theme }) => ({
+  fontSize: "16px",
+}));
 
 const getItemFromTree = (tree, targetId) => {
   console.info("getItemFromTree", tree, targetId);
@@ -251,13 +257,13 @@ const AddDocumentMenu = ({
       className="addDocument"
       style={{ display: "flex", flexDirection: "row", gap: "10px" }}
     >
-      <Typography variant="body2" onClick={() => addPageHandler(id)}>
+      <TreeText variant="body2" onClick={() => addPageHandler(id)}>
         <Add /> <span>Add Document</span>
-      </Typography>
+      </TreeText>
       {id !== null && (
-        <Typography variant="body2" onClick={() => generateTitlesHandler(id)}>
+        <TreeText variant="body2" onClick={() => generateTitlesHandler(id)}>
           <AutoAwesome /> <span>Generate Titles</span>
-        </Typography>
+        </TreeText>
       )}
     </li>
   );
@@ -557,7 +563,7 @@ const DocumentTree = ({ documentId = "" }) => {
                 onDrop={dropHandler}
                 onDragOver={dragoverHandler}
               >
-                <Typography
+                <TreeText
                   variant="body2"
                   className={documentId === child.id ? "selected" : ""}
                 >
@@ -580,7 +586,7 @@ const DocumentTree = ({ documentId = "" }) => {
                     userData={userData}
                     id={child.id}
                   />
-                </Typography>
+                </TreeText>
 
                 {child.id ? displayChildren(child, newAddPage) : <></>}
               </li>
@@ -606,7 +612,9 @@ const DocumentTree = ({ documentId = "" }) => {
   return (
     <TreeWrapper treeDisabled={treeDisabled}>
       <div className="documentTreeInner">
-        <Typography variant="overline">Your Documents</Typography>
+        <Typography variant="h4" mb={2}>
+          Your Documents
+        </Typography>
         <Box className="treeWrapper">
           {treeData && typeof treeData === "object" && documentsData ? (
             treeData.map((item) => {
@@ -637,7 +645,7 @@ const DocumentTree = ({ documentId = "" }) => {
                         onDrop={dropHandler}
                         onDragOver={dragoverHandler}
                       >
-                        <Typography
+                        <TreeText
                           variant="body2"
                           className={documentId === item.id ? "selected" : ""}
                         >
@@ -660,7 +668,7 @@ const DocumentTree = ({ documentId = "" }) => {
                             userData={userData}
                             id={item.id}
                           />
-                        </Typography>
+                        </TreeText>
 
                         {item.id ? displayChildren(item, newAddPage) : <></>}
                       </li>

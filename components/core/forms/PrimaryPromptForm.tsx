@@ -79,22 +79,32 @@ const ExamplePromptsButton = ({ setPromptValue }) => {
         <DialogContent>
           <DialogContentText>
             {examplePrompts.map((prompt, i) => (
-              <Box key={`prompt${i}`} mb={2}>
-                <Typography variant="body1" mb={1}>
-                  {prompt}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={() => {
-                    setPromptValue("prompt", prompt);
-                    handleClose();
-                  }}
+              <>
+                <Box
+                  key={`prompt${i}`}
+                  display="flex"
+                  flexDirection="row"
+                  alignItems="center"
+                  mb={2}
+                  mt={2}
                 >
-                  Try Prompt
-                </Button>
-              </Box>
+                  <Typography variant="body1" mr={2}>
+                    {prompt}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => {
+                      setPromptValue("prompt", prompt);
+                      handleClose();
+                    }}
+                  >
+                    Try Prompt
+                  </Button>
+                </Box>
+                <hr />
+              </>
             ))}
           </DialogContentText>
         </DialogContent>
