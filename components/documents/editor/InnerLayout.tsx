@@ -18,7 +18,7 @@ export default function InnerLayout({
     <DocumentsContext.Provider
       value={useReducer(DocumentsContextReducer, context)}
     >
-      <Box>
+      <Box pl={2}>
         <LexicalRTE
           documentId={documentId}
           documentData={documentData}

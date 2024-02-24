@@ -85,3 +85,19 @@ export const MobileSideButton = styled(Button)(({ theme }) => ({
     display: "none",
   },
 }));
+
+export const FilesItem = styled(Button)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  minHeight: "100px",
+  textAlign: "center",
+  border: `1px solid ${theme.palette.divider}`,
+  padding: "35px 15px",
+  width: "100%",
+  "& svg": {
+    fontSize: "64px",
+  },
+  "&:hover": {
+    boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  },
+}));
