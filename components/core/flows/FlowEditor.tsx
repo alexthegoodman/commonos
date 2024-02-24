@@ -75,10 +75,13 @@ const PromptTitle = styled(Typography)(({ theme }) => ({
 
 export const IconBox = styled(Box)(({ theme, app }) => {
   const backgroundColor = {
-    documents: "rgba(155,255,255,0.2)",
-    slides: "rgba(255,155,255,0.2)",
-    sheets: "rgba(255,255,155,0.2)",
-    images: "rgba(255,255,255,0.2)",
+    documents: "#99c7a2",
+    slides: "#faf56e",
+    sheets: "#89e0d3",
+    images: "#9190e0",
+    relationships: "#E493B3",
+    content: "#FFB996",
+    "work-email": "#AAD7D9",
   }[app];
   return {
     width: "40px",

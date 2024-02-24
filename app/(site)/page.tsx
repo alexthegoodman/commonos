@@ -5,9 +5,12 @@ import HowToUse from "@/components/core/landing/HowToUse";
 import { InnerWrapper } from "@/components/core/landing/InnerWrapper";
 import {
   ArrowRightSharp,
+  ContentCopy,
   DocumentScanner,
+  Email,
   Image,
   List,
+  People,
   PresentToAllOutlined,
 } from "@mui/icons-material";
 import {
@@ -53,7 +56,7 @@ const HistoryLabel = styled(StepLabel)(({ theme }) => ({
 }));
 
 const HeroHeadline = styled(Typography)(({ theme }) => ({
-  background: "linear-gradient(90deg, #38efaf 0%, #38ef7d 100%)",
+  background: "linear-gradient(90deg, #99c7a2 0%, #c8cc7c 100%)",
   backgroundClip: "text",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
@@ -94,9 +97,36 @@ const LIconBox = styled(IconBox)(({ theme }) => ({
 const HelpChip = styled(Chip)(({ theme }) => ({
   marginRight: "5px",
   marginBottom: "10px",
-  backgroundColor: "#38ef7d",
+  backgroundColor: "#99c7a2",
   color: "#000",
   fontWeight: "bold",
+}));
+
+const UseCaseItem = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  marginBottom: "25px",
+  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  padding: "25px",
+  borderRadius: "25px",
+  width: "fit-content",
+  "& .num": {
+    backgroundColor: "#99c7a2",
+    color: "#000",
+    fontWeight: "bold",
+    fontSize: "22px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    marginRight: "15px",
+  },
+  "& p": {
+    fontSize: "18px",
+  },
 }));
 
 export default function Home() {
@@ -148,6 +178,7 @@ export default function Home() {
                     md: "4vw",
                     xl: "4.5rem",
                   },
+                  fontWeight: "900",
                 }}
               >
                 CommonOS
@@ -204,7 +235,8 @@ export default function Home() {
                   //   xl: "880px",
                   // },
                   width: "100%",
-
+                  borderRadius: "25px",
+                  // overflow: "hidden",
                   backgroundColor: "grey",
                   position: {
                     xs: "relative",
@@ -220,9 +252,11 @@ export default function Home() {
                     md: "-250px",
                     xl: "-275px",
                   },
-                  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+                  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
                   "& > div": {
                     height: "100%",
+                    borderRadius: "25px",
+                    overflow: "hidden",
                   },
                 }}
               >
@@ -270,7 +304,7 @@ export default function Home() {
               }}
             >
               <Typography
-                variant="h3"
+                variant="body1"
                 sx={{
                   fontSize: {
                     xs: "1.2rem",
@@ -279,9 +313,9 @@ export default function Home() {
                   lineHeight: "1.7",
                 }}
               >
-                Sales should be about the customer, not the paperwork. CommonOS
-                is a lightweight, semi-automated OS that helps you generate
-                documents, slides, sheets, and drawings.
+                Business should be about the customer, not the paperwork.
+                CommonOS helps you generate documents, slides, sheets, images,
+                emails, posts, and dashboards.
               </Typography>
               <Typography
                 variant="overline"
@@ -302,6 +336,9 @@ export default function Home() {
                 <HelpChip label="Maps" />
                 <HelpChip label="Presentations" />
                 <HelpChip label="Concepts" />
+                <HelpChip label="Drafts" />
+                <HelpChip label="Posts" />
+                <HelpChip label="Dashboards" />
               </Box>
 
               <Typography
@@ -311,7 +348,7 @@ export default function Home() {
                 The Technology
               </Typography>
               <Typography
-                variant="h3"
+                variant="body1"
                 sx={{
                   fontSize: {
                     xs: "1.2rem",
@@ -363,7 +400,7 @@ export default function Home() {
                 <BenefitsContainer container>
                   <BenefitItem item xs={12} md={6}>
                     <Typography
-                      variant="h3"
+                      variant="body1"
                       sx={{
                         fontSize: {
                           xs: "1.2rem",
@@ -377,7 +414,7 @@ export default function Home() {
                   </BenefitItem>
                   <BenefitItem item xs={12} md={6}>
                     <Typography
-                      variant="h3"
+                      variant="body1"
                       sx={{
                         fontSize: {
                           xs: "1.2rem",
@@ -391,7 +428,7 @@ export default function Home() {
                   </BenefitItem>
                   <BenefitItem item xs={12} md={6}>
                     <Typography
-                      variant="h3"
+                      variant="body1"
                       sx={{
                         fontSize: {
                           xs: "1.2rem",
@@ -405,7 +442,7 @@ export default function Home() {
                   </BenefitItem>
                   <BenefitItem item xs={12} md={6}>
                     <Typography
-                      variant="h3"
+                      variant="body1"
                       sx={{
                         fontSize: {
                           xs: "1.2rem",
@@ -430,21 +467,33 @@ export default function Home() {
               <Typography variant="h3" mb={4}>
                 Use Cases
               </Typography>
-              <Typography variant="body1" mb={2}>
-                1. Initialize project plans, requirements, and documentation in
-                15 mins
-              </Typography>
-              <Typography variant="body1" mb={2}>
-                2. Initialize proposals, literature, and presentations in one
-                powerful motion
-              </Typography>{" "}
-              <Typography variant="body1" mb={2}>
-                3. Refine your work with the intelligence of mankind
-              </Typography>{" "}
-              <Typography variant="body1" mb={2}>
-                4. Abstract away some manual work, opening time for more
-                important tasks
-              </Typography>
+              <UseCaseItem>
+                <Box className="num">1</Box>
+                <Typography variant="body1">
+                  Initialize project plans, requirements, and documentation in
+                  15 mins
+                </Typography>
+              </UseCaseItem>
+              <UseCaseItem>
+                <Box className="num">2</Box>
+                <Typography variant="body1">
+                  Initialize proposals, literature, and presentations in one
+                  powerful motion
+                </Typography>
+              </UseCaseItem>
+              <UseCaseItem>
+                <Box className="num">3</Box>
+                <Typography variant="body1">
+                  Refine your work with the intelligence of mankind
+                </Typography>
+              </UseCaseItem>
+              <UseCaseItem>
+                <Box className="num">4</Box>
+                <Typography variant="body1">
+                  Abstract away some manual work, opening time for more
+                  important tasks
+                </Typography>
+              </UseCaseItem>
             </Grid>
             <Grid item xs={12} md={6}>
               <Typography variant="h3" mb={4}>
@@ -474,6 +523,24 @@ export default function Home() {
                     <Image />
                   </LIconBox>
                   <Typography>Drawings</Typography>
+                </AppBox>
+                <AppBox>
+                  <LIconBox app={"relationships"}>
+                    <People />
+                  </LIconBox>
+                  <Typography>Relationships (CRM)</Typography>
+                </AppBox>
+                <AppBox>
+                  <LIconBox app={"content"}>
+                    <ContentCopy />
+                  </LIconBox>
+                  <Typography>Content (CMS)</Typography>
+                </AppBox>
+                <AppBox>
+                  <LIconBox app={"work-email"}>
+                    <Email />
+                  </LIconBox>
+                  <Typography>Work Email</Typography>
                 </AppBox>
               </AppsWrapper>
             </Grid>

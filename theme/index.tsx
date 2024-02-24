@@ -164,6 +164,13 @@ export const getThemeOptions = (mode: string) => {
           borderRadius: "25px",
         },
       },
+      MuiTypography: {
+        styleOverrides: {
+          h3: {
+            fontWeight: "600",
+          },
+        },
+      },
     },
   };
 

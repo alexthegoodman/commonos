@@ -10,7 +10,7 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import { BlockImage } from "./InnerWrapper";
+import { BlockContent, BlockImage } from "./InnerWrapper";
 
 export default function HowToUse() {
   return (
@@ -18,9 +18,9 @@ export default function HowToUse() {
       <Typography variant="h3" mb={4}>
         How To Use CommonOS
       </Typography>
-      <Grid container mb={3}>
+      <Grid container mb={4}>
         <Grid item xs={12} md={6}>
-          <Box
+          <BlockContent
             display="flex"
             flexDirection="column"
             justifyContent="center"
@@ -33,15 +33,15 @@ export default function HowToUse() {
               Include any unique or important information so we can tailor your
               file plan.
             </Typography>
-          </Box>
+          </BlockContent>
         </Grid>
         <Grid item xs={12} md={6}>
           <BlockImage src="/img/process/prompt.png" />
         </Grid>
       </Grid>
-      <Grid container mb={3}>
+      <Grid container mb={4}>
         <Grid item xs={12} md={6}>
-          <Box
+          <BlockContent
             display="flex"
             flexDirection="column"
             justifyContent="center"
@@ -53,15 +53,15 @@ export default function HowToUse() {
             <Typography variant="body1" mb={2}>
               This is how you achieve custom, personalized results.
             </Typography>
-          </Box>
+          </BlockContent>
         </Grid>
         <Grid item xs={12} md={6}>
           <BlockImage src="/img/process/questions.png" />
         </Grid>
       </Grid>
-      <Grid container mb={3}>
+      <Grid container mb={4}>
         <Grid item xs={12} md={6}>
-          <Box
+          <BlockContent
             display="flex"
             flexDirection="column"
             justifyContent="center"
@@ -74,7 +74,7 @@ export default function HowToUse() {
               Review and change your file plan as desired before generating your
               files.
             </Typography>
-          </Box>
+          </BlockContent>
         </Grid>
         <Grid item xs={12} md={6}>
           <BlockImage src="/img/process/review.png" />
@@ -82,7 +82,7 @@ export default function HowToUse() {
       </Grid>
       <Grid container>
         <Grid item xs={12} md={6}>
-          <Box
+          <BlockContent
             display="flex"
             flexDirection="column"
             justifyContent="center"
@@ -94,7 +94,7 @@ export default function HowToUse() {
             <Typography variant="body1" mb={2}>
               Use the built-in editors to refine, store, or transfer your files.
             </Typography>
-          </Box>
+          </BlockContent>
         </Grid>
         <Grid item xs={12} md={6}>
           <BlockImage src="/img/process/refine2.png" />
