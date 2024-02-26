@@ -113,7 +113,7 @@ const UseCaseItem = styled(Box)(({ theme }) => ({
   width: "fit-content",
   "& .num": {
     backgroundColor: "#99c7a2",
-    color: "#000",
+    color: "#515151",
     fontWeight: "bold",
     fontSize: "22px",
     display: "flex",
@@ -463,7 +463,7 @@ export default function Home() {
       <Box pb={10}>
         <InnerWrapper>
           <Grid container>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={7}>
               <Typography variant="h3" mb={4}>
                 Use Cases
               </Typography>
@@ -495,7 +495,7 @@ export default function Home() {
                 </Typography>
               </UseCaseItem>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={5}>
               <Typography variant="h3" mb={4}>
                 Integrated Apps
               </Typography>
