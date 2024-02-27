@@ -34,6 +34,26 @@ export const Tab = styled(Button)(({ theme }) => ({
   },
 }));
 
+export const LiveTab = styled(Box)(({ theme }) => ({
+  textTransform: "none",
+  fontSize: "0.9rem",
+  fontWeight: "semibold",
+  minHeight: "40px",
+  height: "40px",
+  borderRadius: "15px !important",
+  marginRight: "10px",
+  "&:last-of-type": {
+    marginRight: 0,
+  },
+  "&:hover": {
+    color: "#515151",
+    opacity: 1,
+  },
+  [theme.breakpoints.down("sm")]: {
+    height: "40px",
+  },
+}));
+
 export const CmSidebar = styled("aside")(({ theme, mobileOpen }) => ({
   width: "400px",
   // height: "100%",
