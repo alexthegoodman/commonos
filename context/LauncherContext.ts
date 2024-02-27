@@ -1,12 +1,12 @@
 import React, { useState, useReducer } from "react";
 
 export const allTabs = [
-  {
-    id: "launcher",
-    label: "Launcher",
-    href: "/launcher",
-    badge: null,
-  },
+  // {
+  //   id: "launcher",
+  //   label: "Launcher",
+  //   href: "/launcher",
+  //   badge: null,
+  // },
   {
     id: "documents",
     label: "Documents",
@@ -93,19 +93,20 @@ export const allTabs = [
 //   pinned: false,
 // }));
 
-// export interface OpenTab {
-//   id: string;
-//   pinned: boolean;
-// }
+export interface OpenTab {
+  id: string;
+  appId: string;
+  // pinned: boolean;
+}
 
 export interface LauncherContextState {
-  // openTabs: OpenTab[];
+  openTabs: OpenTab[];
   currentOrganizationId: string | null;
   currentProjectId: string | null;
 }
 
 export const LauncherContextState = {
-  // openTabs: testDefaultTabs,
+  openTabs: [],
   currentOrganizationId: null,
   currentProjectId: null,
 };

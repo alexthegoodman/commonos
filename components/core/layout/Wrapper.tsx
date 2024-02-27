@@ -20,6 +20,11 @@ export const Tab = styled(Button)(({ theme }) => ({
   fontWeight: "semibold",
   minHeight: "40px",
   height: "40px",
+  borderRadius: "15px !important",
+  marginRight: "5px",
+  "&:last-of-type": {
+    marginRight: 0,
+  },
   "&:hover": {
     color: "#515151",
     opacity: 1,

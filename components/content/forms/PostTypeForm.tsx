@@ -63,7 +63,7 @@ export default function PostTypeForm({
               sx={{ marginBottom: 1, minWidth: "450px" }}
             />
 
-            <EmptyNotice message="Add additional fields here. Every post type comes with a main content field by default." />
+            <EmptyNotice message="Add additional fields here. Every post type comes with main title and content fields by default." />
 
             {fields.length >= 1 &&
               fields.map((field) => {

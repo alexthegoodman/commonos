@@ -4,6 +4,7 @@ import useScrollPosition from "@/hooks/useScrollPosition";
 import { Box, styled } from "@mui/material";
 import PrimaryHeader from "./PrimaryHeader";
 import PrimaryTabs from "./PrimaryTabs";
+import DynamicTabs from "./DynamicTabs";
 
 const FixedHeader = styled("div")(({ theme, opaque }) => ({
   position: "fixed",
@@ -46,7 +47,8 @@ export default function HeaderWrapper({ hasSidebar }) {
       <Container hasSidebar={hasSidebar}>
         <InnerContainer opaque={isScrolling}>
           <PrimaryHeader />
-          <PrimaryTabs />
+          {/* <PrimaryTabs /> */}
+          <DynamicTabs />
         </InnerContainer>
       </Container>
     </FixedHeader>

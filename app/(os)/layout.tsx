@@ -41,7 +41,7 @@ const InnerContainer = styled(Box)(({ theme, opaque }) => ({
 }));
 
 const Spacer = styled("div")(({ theme }) => ({
-  paddingTop: "100px",
+  paddingTop: "120px",
   // [theme.breakpoints.down("sm")]: {
   //   paddingTop: "125px",
   // },
