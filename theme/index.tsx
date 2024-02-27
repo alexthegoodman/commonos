@@ -133,6 +133,25 @@ export const getThemeOptions = (mode: string) => {
           },
         },
       },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            borderRadius: "25px !important",
+            boxSizing: "border-box",
+            minHeight: "70px",
+            boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+            border: "none",
+            padding: "0px 25px !important",
+            outline: "none",
+            display: "flex",
+            alignItems: "center",
+            "&::placeholder": {
+              color: "#515151",
+              opacity: 0.5,
+            },
+          },
+        },
+      },
       MuiOutlinedInput: {
         styleOverrides: {
           notchedOutline: {
