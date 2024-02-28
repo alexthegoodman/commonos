@@ -12,8 +12,8 @@ export const myPostTypesQuery = gql`
 `;
 
 export const createPostTypeMutation = gql`
-  mutation CreatePostType {
-    createPostType {
+  mutation CreatePostType($name: String!, $fields: String!) {
+    createPostType(name: $name, fields: $fields) {
       id
       name
       updatedAt
@@ -47,6 +47,8 @@ export const postTypeQuery = gql`
       posts {
         id
         title
+        updatedAt
+        createdAt
       }
 
       updatedAt

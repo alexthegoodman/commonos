@@ -30,7 +30,7 @@ export default function PostTypeForm({
 
   const onSubmit = async (data: any) => {
     // console.info("data", data, fields);
-    onFormSubmit(fields);
+    onFormSubmit(data, fields);
   };
 
   const onError = (error: any) => console.error(error);
