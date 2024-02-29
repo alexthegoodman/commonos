@@ -85,6 +85,7 @@ export const getThemeOptions = (mode: string) => {
             background: "linear-gradient(145deg, #99c7a2 65%, #c8cc7c 100%)",
             fontWeight: 600,
             transition: "0.2s all",
+            minWidth: "100px",
             "&:hover": {
               background: "linear-gradient(145deg, #99c7a2 25%, #c8cc7c 100%)",
               transition: "0.2s all",
@@ -100,6 +101,11 @@ export const getThemeOptions = (mode: string) => {
       MuiLink: {
         defaultProps: {
           component: LinkBehaviour,
+        },
+        styleOverrides: {
+          root: {
+            fontFamily: "proxima-nova",
+          },
         },
       },
       MuiButtonBase: {
@@ -187,6 +193,21 @@ export const getThemeOptions = (mode: string) => {
         styleOverrides: {
           h3: {
             fontWeight: "600",
+          },
+        },
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            borderRadius: "25px",
+            boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+          },
+        },
+      },
+      MuiCardActionArea: {
+        styleOverrides: {
+          root: {
+            padding: "15px",
           },
         },
       },

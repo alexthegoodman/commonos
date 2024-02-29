@@ -38,18 +38,19 @@ import PrimaryLoader from "../layout/PrimaryLoader";
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: "200px",
+  // width: "200px",
+  width: "18vw",
   height: "200px",
-  backgroundColor: "rgba(255,255,255,0.1)",
+  backgroundColor: "rgba(0,0,0,0.1)",
   transition: "all 0.2s ease-in-out",
   "&:hover": {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(0,0,0,0.2)",
     transform: "scale(1.05)",
     transition: "all 0.2s ease-in-out",
   },
   [theme.breakpoints.down("md")]: {
-    width: "150px",
-    height: "150px",
+    width: "40vw",
+    height: "auto",
   },
 }));
 
@@ -64,13 +65,18 @@ const PromptTitle = styled(Typography)(({ theme }) => ({
   // background:
   //   "linear-gradient(90deg, rgba(126,345,255,1) 0%, rgba(255,185,90,0.1) 100%)",
   background:
-    "-webkit-repeating-linear-gradient(bottom, #38efaf 0%, #38ef7d 100%) !important",
+    "-webkit-repeating-linear-gradient(bottom, #c8cc7c 0%, #c8cc7c 100%) !important",
   // "-webkit-background-clip": "text !important",
   // "-webkit-text-fill-color": "transparent !important",
   color: "black",
   // boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
   lineHeight: "3rem",
   padding: "4px",
+  // borderRadius: "15px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "24px",
+    lineHeight: "2.2rem",
+  },
 }));
 
 export const IconBox = styled(Box)(({ theme, app }) => {
@@ -117,7 +123,9 @@ const FileTextField = styled(TextField)(({ theme }) => ({
 function QuestionItem({ type, fileId = null, question, state, dispatch }) {
   return (
     <Grid key={question.id} item xs={12} md={12}>
-      <Typography variant="subtitle1">{question.question}</Typography>
+      <Typography variant="body1" sx={{ fontSize: "20px", marginBottom: 2 }}>
+        {question.question}
+      </Typography>
       <Box
         display="flex"
         flexDirection="row"
@@ -220,7 +228,7 @@ function QuestionItem({ type, fileId = null, question, state, dispatch }) {
                 }
               }}
             >
-              {chosen && <CheckCircle />}
+              {chosen && <CheckCircle style={{ marginRight: "5px" }} />}
               {answer}
             </AnswerButton>
           );
@@ -589,7 +597,7 @@ export default function FlowEditor({ id, prompt }) {
   }, [view, questionsView]);
 
   return (
-    <Box>
+    <Box pb={4}>
       <PromptWrapper>
         <Typography variant="overline">Your Prompt</Typography>
         <Box>

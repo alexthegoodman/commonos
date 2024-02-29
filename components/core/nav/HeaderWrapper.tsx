@@ -32,7 +32,7 @@ const Container = styled(Box)(({ theme, opaque, hasSidebar }) => ({
 
 const InnerContainer = styled(Box)(({ theme, opaque }) => ({
   transition: "background-color 0.2s ease",
-  backgroundColor: opaque ? "#1565C0 !important" : "transparent !important",
+  backgroundColor: opaque ? "#99c7a2 !important" : "transparent !important",
   padding: "0 1vw",
 }));
 

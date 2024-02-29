@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Link, styled } from "@mui/material";
 
 const CmFooter = styled("footer")(({ theme }) => ({
@@ -20,9 +22,9 @@ export default function LauncherFooter() {
       {/* <Box>
         <Link href="/apps">See Apps</Link>
       </Box> */}
-      <Box>
+      {/* <Box>
         <Link href="/settings">Settings</Link>
-      </Box>
+      </Box> */}
     </CmFooter>
   );
 }
