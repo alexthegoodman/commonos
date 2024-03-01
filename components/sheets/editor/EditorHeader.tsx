@@ -16,6 +16,9 @@ const EditorHeader = ({ title, setTitle }) => {
           onChange={onTitleChange}
           defaultValue={title}
           placeholder="Title"
+          style={{
+            width: "400px",
+          }}
         />
       </Box>
     </header>

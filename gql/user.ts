@@ -63,3 +63,15 @@ export const registerMutation = gql`
     registerUser
   }
 `;
+
+export const newCheckoutMutation = gql`
+  mutation NewCheckout {
+    newCheckout
+  }
+`;
+
+export const getPortalUrlQuery = gql`
+  query GetPortalUrl {
+    getPortalUrl
+  }
+`;
