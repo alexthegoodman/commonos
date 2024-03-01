@@ -77,8 +77,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   const headCells: readonly HeadCell[] = [
     {
-      id: "name",
-      label: "Name",
+      id: "title",
+      label: "Title",
     },
     // ...(settings?.fields
     //   ? settings.fields.map((field) => {
@@ -331,9 +331,9 @@ export default function ContentTable({
                         }}
                       />
                     </TableCell>
-                    {/* <TableCell component="th" id={labelId} scope="row">
-                      {row.fields.name}
-                    </TableCell> */}
+                    <TableCell component="th" id={labelId} scope="row">
+                      {row.title}
+                    </TableCell>
                     {/* {settings?.fields.map((field) => {
                       return (
                         <TableCell key={field.id}>

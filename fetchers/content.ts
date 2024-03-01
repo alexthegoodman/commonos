@@ -65,13 +65,22 @@ export const getPostType = async (token: string, postTypeId: string) => {
   return postType;
 };
 
-export const createPost = async (token: string, postTypeId: string) => {
+export const createPost = async (
+  token: string,
+  postTypeId: string,
+  title: string,
+  markdown: string,
+  fields: any
+) => {
   graphClient.setupClient(token);
 
   const { createPost } = (await graphClient.client?.request(
     createPostMutation,
     {
       postTypeId,
+      title,
+      markdown,
+      fields: JSON.stringify(fields),
     }
   )) as any;
 

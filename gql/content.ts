@@ -58,8 +58,18 @@ export const postTypeQuery = gql`
 `;
 
 export const createPostMutation = gql`
-  mutation CreatePost($postTypeId: String!) {
-    createPost(postTypeId: $postTypeId) {
+  mutation CreatePost(
+    $postTypeId: String!
+    $title: String!
+    $markdown: String!
+    $fields: String
+  ) {
+    createPost(
+      postTypeId: $postTypeId
+      title: $title
+      markdown: $markdown
+      fields: $fields
+    ) {
       id
       title
       updatedAt

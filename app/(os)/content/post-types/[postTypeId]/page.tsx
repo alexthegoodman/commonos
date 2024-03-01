@@ -1,10 +1,10 @@
 "use client";
 
 import ContentTable from "@/components/content/main/ContentTable";
-import { getPostType } from "@/fetchers/content";
+import { deletePost, getPostType } from "@/fetchers/content";
 import { Box, Button } from "@mui/material";
 import { useCookies } from "react-cookie";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
 export default function PostType({ params }) {
   const postTypeId = params.postTypeId;
@@ -20,9 +20,15 @@ export default function PostType({ params }) {
     revalidateOnMount: true,
   });
 
+  const handleRowDelete = async (id) => {
+    console.info("handleRowDelete", id);
+    await deletePost(token, id);
+    mutate("postType" + postTypeId, () => getPostType(token, postTypeId));
+  };
+
   return (
     <>
-      <Box>
+      <Box pl={2}>
         <ContentTable
           slug={postTypeId}
           title={`${postTypeData?.name}`}
@@ -32,6 +38,7 @@ export default function PostType({ params }) {
                 href={`/content/post-types/${postTypeId}/new-post/`}
                 variant="contained"
                 color="success"
+                size="small"
                 fullWidth
               >
                 Add Post
@@ -40,7 +47,7 @@ export default function PostType({ params }) {
           }
           //   total={companiesData?.count}
           rows={postTypeData?.posts}
-          //   onDelete={handleRowDelete}
+          onDelete={handleRowDelete}
         />
       </Box>
     </>
