@@ -3,15 +3,26 @@
 import { useFlowQuestionsContext } from "@/context/FlowQuestionsContext";
 import { getFileListData, getQuestionsData } from "@/fetchers/flow";
 import {
+  Analytics,
+  Apps,
+  Article,
   AutoAwesome,
   Check,
   CheckCircle,
   Close,
+  ContentCopy,
   DocumentScanner,
+  Email,
+  GridOn,
   Image,
+  InsertPhoto,
+  LibraryMusic,
   List,
+  People,
   PresentToAllOutlined,
   Refresh,
+  Slideshow,
+  VideoLibrary,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -35,6 +46,7 @@ import FormSelect from "../fields/FormSelect";
 import FormInput from "../fields/FormInput";
 import { useRouter } from "next/navigation";
 import PrimaryLoader from "../layout/PrimaryLoader";
+import { allTabs } from "@/context/LauncherContext";
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -581,6 +593,14 @@ export default function FlowEditor({ id, prompt }) {
         getInitialQuestions();
       }
     }
+    if (view === "apps") {
+      if (!state.chosenApps || state.chosenApps.length === 0) {
+        dispatch({
+          type: "chosenApps",
+          payload: ["documents", "slides", "work-email"],
+        });
+      }
+    }
     if (view === "files") {
       if (state.files.length === 0 && !gotFiles) {
         getFiles();
@@ -637,6 +657,81 @@ export default function FlowEditor({ id, prompt }) {
               ))}
             {loading && <PrimaryLoader />}
           </Grid>
+          <Button
+            color="success"
+            variant="contained"
+            onClick={() => {
+              setView("apps");
+            }}
+          >
+            Next
+          </Button>
+        </>
+      )}
+      {view === "apps" && (
+        <>
+          <Typography variant="h4" mb={1}>
+            App Selection
+          </Typography>
+          <Typography variant="body1" mb={4}>
+            Please select the apps you would like to generate files for.
+          </Typography>
+          <Box maxWidth="700px" mb={1}>
+            {!loading && allTabs && (
+              <>
+                {allTabs.map((tab, i) => {
+                  const chosen = state?.chosenApps?.find((id) => id === tab.id)
+                    ? true
+                    : false;
+                  return (
+                    <Button
+                      key={tab.id}
+                      sx={{
+                        backgroundColor: chosen ? "#99c7a2" : "transparent",
+                        color: chosen ? "white" : "black",
+                        marginLeft: 2,
+                        marginBottom: 2,
+                      }}
+                      onClick={() => {
+                        let chosenApps = state.chosenApps || [];
+                        if (chosen) {
+                          dispatch({
+                            type: "chosenApps",
+                            payload: chosenApps.filter((id) => id !== tab.id),
+                          });
+                        } else {
+                          dispatch({
+                            type: "chosenApps",
+                            payload: [...chosenApps, tab.id],
+                          });
+                        }
+                      }}
+                    >
+                      {chosen && <CheckCircle style={{ marginRight: "5px" }} />}
+                      <Box>
+                        <Box mr={0.5} position="relative" top="3px">
+                          {tab?.id === "launcher" && <Apps />}
+                          {tab?.id === "documents" && <Article />}
+                          {tab?.id === "slides" && <Slideshow />}
+                          {tab?.id === "sheets" && <GridOn />}
+                          {tab?.id === "drawings" && <InsertPhoto />}
+                          {tab?.id === "sounds" && <LibraryMusic />}
+                          {tab?.id === "videos" && <VideoLibrary />}
+                          {tab?.id === "content" && <ContentCopy />}
+                          {tab?.id === "analytics" && <Analytics />}
+                          {tab?.id === "send-email" && <Email />}
+                          {tab?.id === "relationships" && <People />}
+                          {tab?.id === "work-email" && <Email />}
+                        </Box>
+                      </Box>
+                      {tab.label}
+                    </Button>
+                  );
+                })}
+              </>
+            )}
+            {loading && <PrimaryLoader />}
+          </Box>
           <Button
             color="success"
             variant="contained"
