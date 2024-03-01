@@ -91,7 +91,7 @@ export const getThemeOptions = (mode: string) => {
               transition: "0.2s all",
             },
           },
-          containedSizeSmall: {
+          sizeSmall: {
             minHeight: "50px",
             minWidth: "120px",
             fontSize: "15px",

@@ -117,9 +117,13 @@ export const IconBox = styled(Box)(({ theme, app }) => {
 export const FileItem = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: "rgba(255,255,255,0.1)",
-  borderRadius: "0px",
-  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
-  marginBottom: theme.spacing(2),
+  // boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  marginBottom: theme.spacing(3),
+  borderRadius: "25px",
+  "& input": {
+    boxShadow: "none",
+  },
 }));
 
 const FileTextField = styled(TextField)(({ theme }) => ({
@@ -757,7 +761,12 @@ export default function FlowEditor({ id, prompt }) {
                     mb={2}
                   >
                     <Typography variant="overline">Your File Plan</Typography>
-                    <Button color="info" variant="contained" onClick={getFiles}>
+                    <Button
+                      size="small"
+                      color="info"
+                      variant="contained"
+                      onClick={getFiles}
+                    >
                       <Refresh />
                     </Button>
                   </Box>
