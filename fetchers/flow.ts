@@ -83,8 +83,8 @@ export const updateFlow = async (
 var callingFileList = false;
 export const getFileListData = async (
   token: string,
-  flowId: string,
-  getThis: string
+  flowId: string
+  // getThis: string
 ) => {
   try {
     graphClient.setupClient(token);
@@ -101,7 +101,7 @@ export const getFileListData = async (
       getFileListQuery,
       {
         flowId,
-        getThis,
+        // getThis,
       }
     )) as any;
 

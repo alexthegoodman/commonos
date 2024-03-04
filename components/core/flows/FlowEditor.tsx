@@ -500,89 +500,37 @@ export default function FlowEditor({ id, prompt }) {
 
     setLoading(true);
 
-    getFileListData(token, id, "documents")
+    getFileListData(token, id)
       .then((data1) => {
         console.info("got file list 1", data1);
 
-        let files = data1.documents.map((file) => {
-          return {
-            id: uuidv4(),
-            name: file,
-            app: "documents",
-            questions: [],
-            skipQuestions: true,
-          };
+        let files = [] as any;
+
+        Object.keys(data1).forEach((key) => {
+          if (data1[key].length) {
+            files = [
+              ...files,
+              ...data1[key].map((file) => {
+                return {
+                  id: uuidv4(),
+                  name: file,
+                  app: key,
+                  questions: [],
+                  skipQuestions: true,
+                };
+              }),
+            ];
+          }
         });
 
-        if (data1?.documents?.length) {
-          getFileListData(token, id, "additionalFiles")
-            .then((data2) => {
-              console.info("got file list 2", data2);
-
-              if (data2?.presentations?.length) {
-                files = [
-                  ...files,
-                  ...data2.presentations.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "slides",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-              }
-
-              if (data2?.spreadsheets?.length) {
-                files = [
-                  ...files,
-                  ...data2.spreadsheets.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "sheets",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-              }
-
-              if (data2?.images?.length) {
-                files = [
-                  ...files,
-                  ...data2.images.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "images",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-              }
-
-              if (
-                data1.documents.length ||
-                data2?.spreadsheets?.length ||
-                data2?.presentations?.length ||
-                data2?.images?.length
-              ) {
-                console.info("dispatch files", files);
-                dispatch({
-                  type: "files",
-                  payload: files,
-                });
-                setGotFiles(true);
-                setLoading(false);
-              }
-            })
-            .catch((err) => {
-              console.error("caught error", err);
-              // TODO: display error
-            });
+        if (files.length > 0) {
+          console.info("dispatch files", files);
+          dispatch({
+            type: "files",
+            payload: files,
+          });
+          setGotFiles(true);
+          setLoading(false);
         }
       })
       .catch((err) => {
@@ -804,6 +752,9 @@ export default function FlowEditor({ id, prompt }) {
                               )}
                               {file.app === "sheets" && <List />}
                               {file.app === "images" && <Image />}
+                              {file.app === "relationships" && <People />}
+                              {file.app === "content" && <ContentCopy />}
+                              {file.app === "work-email" && <Email />}
                             </IconBox>
 
                             {file.app}
@@ -915,24 +866,38 @@ export default function FlowEditor({ id, prompt }) {
                     name="app"
                     placeholder="Select an app"
                     label="Select an app"
-                    options={[
-                      {
-                        label: "Documents",
-                        value: "documents",
-                      },
-                      {
-                        label: "Slides",
-                        value: "slides",
-                      },
-                      {
-                        label: "Sheets",
-                        value: "sheets",
-                      },
-                      {
-                        label: "Images",
-                        value: "images",
-                      },
-                    ]}
+                    options={
+                      [
+                        {
+                          label: "Documents",
+                          value: "documents",
+                        },
+                        {
+                          label: "Slides",
+                          value: "slides",
+                        },
+                        {
+                          label: "Sheets",
+                          value: "sheets",
+                        },
+                        {
+                          label: "Images",
+                          value: "images",
+                        },
+                        {
+                          label: "Relationships",
+                          value: "relationships",
+                        },
+                        {
+                          label: "Content",
+                          value: "content",
+                        },
+                        {
+                          label: "Work Email",
+                          value: "work-email",
+                        },
+                      ] as any
+                    }
                     register={register}
                     errors={errors}
                     validation={{ required: true }}
