@@ -96,7 +96,7 @@ export const IconBox = styled(Box)(({ theme, app }) => {
     documents: "#99c7a2",
     slides: "#faf56e",
     sheets: "#89e0d3",
-    images: "#9190e0",
+    drawings: "#9190e0",
     relationships: "#E493B3",
     content: "#FFB996",
     "work-email": "#AAD7D9",
@@ -751,7 +751,7 @@ export default function FlowEditor({ id, prompt }) {
                                 <PresentToAllOutlined />
                               )}
                               {file.app === "sheets" && <List />}
-                              {file.app === "images" && <Image />}
+                              {file.app === "drawings" && <Image />}
                               {file.app === "relationships" && <People />}
                               {file.app === "content" && <ContentCopy />}
                               {file.app === "work-email" && <Email />}
