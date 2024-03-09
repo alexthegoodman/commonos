@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
 
+const { DateTime } = require("luxon");
+
 const InboxWrapper = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
@@ -124,7 +126,13 @@ export default function Layout({ params, children = null }) {
                   }}
                 />
                 <Typography variant="caption">
-                  {thread.mostRecentEmail.updatedAt}
+                  {DateTime.fromISO(
+                    thread.mostRecentEmail.createdAt
+                  ).toLocaleString(DateTime.DATETIME_MED)}
+                  ,{" "}
+                  {DateTime.fromISO(
+                    thread.mostRecentEmail.createdAt
+                  ).toRelative()}
                 </Typography>
               </ThreadItem>
             );

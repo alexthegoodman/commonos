@@ -108,7 +108,7 @@ export default function PostForm({
           clearEffect={clearEffect}
         />
 
-        {postTypeData?.fields.map((field) => {
+        {postTypeData?.fields?.map((field) => {
           switch (field.type) {
             case "text":
               return (

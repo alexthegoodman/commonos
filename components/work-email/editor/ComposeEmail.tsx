@@ -38,7 +38,11 @@ function Placeholder() {
   return <></>;
 }
 
-export default function ComposeEmail({ handleChange, clearEffect }) {
+export default function ComposeEmail({
+  handleChange,
+  clearEffect,
+  initialMarkdown = "",
+}) {
   const editorRef = useRef(null);
 
   const onChange = (delta) => {
@@ -58,7 +62,8 @@ export default function ComposeEmail({ handleChange, clearEffect }) {
   const editorConfig = {
     // The editor theme
     theme: LexicalTheme,
-    // editorState: () => $convertFromMarkdownString(initialMarkdwn, TRANSFORMERS),
+    editorState: () =>
+      $convertFromMarkdownString(initialMarkdown, TRANSFORMERS),
     // Handling of errors during update
     onError(error) {
       throw error;
@@ -107,6 +112,7 @@ export default function ComposeEmail({ handleChange, clearEffect }) {
                     width: "100%",
                     padding: "5px 15px",
                     lineHeight: "1.35",
+                    fontFamily: "proxima-nova",
                   }}
                   className="editor-input"
                 />

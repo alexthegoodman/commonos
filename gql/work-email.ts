@@ -41,6 +41,7 @@ export const inboxQuery = gql`
           subject
           body
           unread
+          draft
           updatedAt
           createdAt
         }
@@ -90,7 +91,9 @@ export const myThreadEmailsQuery = gql`
       to
       subject
       body
+      initialMarkdown
       unread
+      draft
       updatedAt
       createdAt
     }

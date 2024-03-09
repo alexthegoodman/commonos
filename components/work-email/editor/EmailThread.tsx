@@ -1,8 +1,18 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import ComposeEmail from "@/components/work-email/editor/ComposeEmail";
 import { getInbox, myThreadEmails, sendWorkEmail } from "@/fetchers/work-email";
-import { Box, Button, TextField, Typography, styled } from "@mui/material";
+import { Warning } from "@mui/icons-material";
+import {
+  Alert,
+  Badge,
+  Box,
+  Button,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -33,6 +43,7 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
   console.info("inboxData", inboxData);
 
   const initialEmail = emails[0];
+  const draftEmail = emails.find((email) => email.draft);
 
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
@@ -71,6 +82,8 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
     router.push(`/work-email/inboxes/${inboxId}/${emailData.thread.id}`);
   };
 
+  if (isLoading) return <PrimaryLoader />;
+
   return (
     <>
       {!threadId && (
@@ -93,12 +106,46 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
         <Box>
           <Typography variant="h6">{initialEmail?.subject}</Typography>
           {emails.map((email) => {
+            console.info("email", email);
+            const isDraft = email.draft;
             const body = { __html: email.body };
 
             return (
               <EmailItem key={email.id}>
-                <Typography variant="body1">From: {email.from}</Typography>
-                <Typography variant="body1">To: {email.to}</Typography>
+                {isDraft && (
+                  <>
+                    <Alert
+                      variant="outlined"
+                      color="info"
+                      sx={{ marginBottom: 1 }}
+                      icon={<Warning />}
+                    >
+                      Draft
+                    </Alert>
+                    <Box display="flex" flexDirection="column">
+                      <TextField
+                        placeholder="To"
+                        variant="outlined"
+                        sx={{ width: "400px", marginBottom: 2 }}
+                        onChange={(e) => setTo(e.target.value)}
+                        defaultValue={email.to}
+                      />
+                      <TextField
+                        placeholder="Subject"
+                        variant="outlined"
+                        sx={{ width: "400px", marginBottom: 3 }}
+                        onChange={(e) => setSubject(e.target.value)}
+                        defaultValue={email.subject}
+                      />
+                    </Box>
+                  </>
+                )}
+                {!isDraft && (
+                  <>
+                    <Typography variant="body1">From: {email.from}</Typography>
+                    <Typography variant="body1">To: {email.to}</Typography>
+                  </>
+                )}
 
                 <Typography variant="body1" dangerouslySetInnerHTML={body} />
               </EmailItem>
@@ -110,6 +157,7 @@ export default function EmailThread({ inboxId, threadId = null, emails = [] }) {
         <ComposeEmail
           handleChange={handleBodyChange}
           clearEffect={clearEffect}
+          initialMarkdown={draftEmail?.initialMarkdown || ""}
         />
       </Box>
       <Box mt={2}>
