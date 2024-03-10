@@ -46,34 +46,45 @@ export default function MultiPageRTE() {
         </Layer>
         <Layer>
           {masterJson.map((charText, i) => {
+            const randomColor = `#${Math.floor(
+              Math.random() * 16777215
+            ).toString(16)}`;
+
             return (
-              <Text
-                key={`${charText.characterId}-${i}`}
-                id={charText.characterId}
-                x={charText.position.x}
-                y={charText.position.y}
-                text={charText.character}
-                fontSize={charText.style.fontSize}
-                fontFamily={charText.style.fontFamily}
-                fontStyle={charText.style.italic ? "italic" : "normal"}
-                fill={charText.style.color}
-                onClick={handleTextClick}
-              />
+              <>
+                {/* <Rect
+                  key={`${charText.characterId}-${i}`}
+                  x={charText.position.x}
+                  y={charText.position.y}
+                  width={charText.size.width}
+                  height={charText.size.height}
+                  fill={randomColor}
+                /> */}
+                <Text
+                  key={`${charText.characterId}-${i}`}
+                  id={charText.characterId}
+                  x={charText.position.x}
+                  y={charText.position.y}
+                  text={charText.character}
+                  fontSize={charText.style.fontSize}
+                  fontFamily={charText.style.fontFamily}
+                  fontStyle={charText.style.italic ? "italic" : "normal"}
+                  fill={charText.style.color}
+                  onClick={handleTextClick}
+                />
+              </>
             );
           })}
-          {/* <Text
-                  key={`${pageId}-${charText}-${i}`}
-                  id={charText.id}
-                  x={charText.x}
-                  y={charText.y}
-                  text={charText.text}
-                  fontSize={charText.fontSize}
-                  fontFamily={charText.fontFamily}
-                  fontStyle={charText.fontStyle}
-                  fill="black"
-                /> */}
         </Layer>
       </Stage>
+      <style jsx>{`
+        @font-face {
+          font-family: "Inter";
+          src: url("/fonts/Inter-Regular.ttf");
+          font-weight: normal;
+          font-style: normal;
+        }
+      `}</style>
     </>
   );
 }

@@ -116,6 +116,15 @@ export const useCanvasRTE = (initialMarkdown: string) => {
     const glyph = fontData?.layout(character);
     const boundingBox = glyph?.bbox;
     const unitsPerEm = fontDataRef.current?.unitsPerEm;
+    const { xAdvance, xOffset } = glyph.positions[0];
+
+    console.info(
+      "advance",
+      xAdvance,
+      xOffset,
+      glyph.advanceWidth,
+      boundingBox.width
+    );
 
     if (
       !boundingBox ||
@@ -130,7 +139,7 @@ export const useCanvasRTE = (initialMarkdown: string) => {
     }
 
     return {
-      width: (glyph.advanceWidth / unitsPerEm) * style.fontSize,
+      width: (boundingBox.width / unitsPerEm) * style.fontSize,
       height: (boundingBox.height / unitsPerEm) * style.fontSize,
     };
   };
@@ -150,7 +159,7 @@ export const useCanvasRTE = (initialMarkdown: string) => {
 
   const calculateNextPosition = (insertCharacter: Character) => {
     // TODO: calculate positioning based on bounding box or other factors
-    const letterSpacing = 0;
+    const letterSpacing = 1;
     const nextPosition = {
       x:
         insertCharacter.position.x + insertCharacter.size.width + letterSpacing,
