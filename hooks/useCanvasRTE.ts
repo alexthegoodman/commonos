@@ -109,13 +109,30 @@ export const useCanvasRTE = (initialMarkdown: string) => {
 
   const getCharacterBoundingBox = (
     fontData: fontkit.Font,
-    character: string
+    character: string,
+    style: Style
   ) => {
+    const defaultSpacing = 5;
     const glyph = fontData?.layout(character);
     const boundingBox = glyph?.bbox;
+    const unitsPerEm = fontDataRef.current?.unitsPerEm;
 
-    console.info("boundingBox", character, glyph, boundingBox);
-    return boundingBox;
+    if (
+      !boundingBox ||
+      boundingBox.width == -Infinity ||
+      boundingBox.height == -Infinity ||
+      !unitsPerEm
+    ) {
+      return {
+        width: defaultSpacing,
+        height: defaultSpacing,
+      };
+    }
+
+    return {
+      width: (glyph.advanceWidth / unitsPerEm) * style.fontSize,
+      height: (boundingBox.height / unitsPerEm) * style.fontSize,
+    };
   };
 
   const calculateNextLocation = (location: Location) => {
@@ -131,11 +148,13 @@ export const useCanvasRTE = (initialMarkdown: string) => {
     return nextLocation;
   };
 
-  const calculateNextPosition = (position: Position) => {
+  const calculateNextPosition = (insertCharacter: Character) => {
     // TODO: calculate positioning based on bounding box or other factors
+    const letterSpacing = 0;
     const nextPosition = {
-      x: position.x + 10,
-      y: position.y,
+      x:
+        insertCharacter.position.x + insertCharacter.size.width + letterSpacing,
+      y: insertCharacter.position.y,
     };
 
     return nextPosition;
@@ -157,10 +176,11 @@ export const useCanvasRTE = (initialMarkdown: string) => {
   };
 
   const handleKeypress = (e: KeyboardEvent) => {
+    e.preventDefault();
     console.info("keypress", e.key, editorActiveRef.current);
 
     if (editorActiveRef.current) {
-      console.info("in");
+      console.info("in", fontDataRef.current?.unitsPerEm);
 
       if (!fontDataRef.current) {
         return;
@@ -168,19 +188,6 @@ export const useCanvasRTE = (initialMarkdown: string) => {
 
       const character = e.key;
       const characterId = uuidv4();
-      const boundingBox = getCharacterBoundingBox(
-        fontDataRef.current,
-        character
-      );
-
-      if (!boundingBox) {
-        return;
-      }
-
-      const newSize = {
-        width: boundingBox?.maxX - boundingBox?.minX,
-        height: boundingBox?.maxY - boundingBox?.minY,
-      };
 
       const defaultStyle = {
         color: "black",
@@ -190,6 +197,23 @@ export const useCanvasRTE = (initialMarkdown: string) => {
         italic: false,
         underline: false,
       };
+
+      const boundingBox = getCharacterBoundingBox(
+        fontDataRef.current,
+        character,
+        defaultStyle
+      );
+
+      if (!boundingBox) {
+        return;
+      }
+
+      const newSize = {
+        width: boundingBox?.width,
+        height: boundingBox?.height,
+      };
+
+      console.info("newSize", newSize);
 
       if (insertCharacterIdRef.current === null) {
         const newLocation = {
@@ -233,7 +257,7 @@ export const useCanvasRTE = (initialMarkdown: string) => {
         }
 
         const newLocation = calculateNextLocation(insertCharacter.location);
-        const newPosition = calculateNextPosition(insertCharacter.position);
+        const newPosition = calculateNextPosition(insertCharacter);
 
         const newCharacter: Character = {
           characterId,
@@ -257,7 +281,7 @@ export const useCanvasRTE = (initialMarkdown: string) => {
 
             if (afterInsertIndex > -1) {
               const newLocation = calculateNextLocation(char.location);
-              const newPosition = calculateNextPosition(char.position);
+              const newPosition = calculateNextPosition(char);
 
               return {
                 ...char,
