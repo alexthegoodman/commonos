@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import * as fontkit from "fontkit";
@@ -63,23 +63,47 @@ export type Character = {
 export type MasterJson = Character[];
 
 // extend window type
-declare global {
-  interface Window {
-    __canvasRTEEditorActive: boolean;
-    __canvasRTEInsertCharacterId: string | null;
-  }
-}
+// declare global {
+//   interface Window {
+//     __canvasRTEEditorActive: boolean;
+//     __canvasRTEInsertCharacterId: string | null;
+//   }
+// }
 
-window.__canvasRTEEditorActive = false;
-window.__canvasRTEInsertCharacterId = null;
+// window.__canvasRTEEditorActive = false;
+// window.__canvasRTEInsertCharacterId = null;
 
 export const useCanvasRTE = (initialMarkdown: string) => {
-  //   const [editorActive, setEditorActive] = useState(false);
-  //   const [insertCharacterId, setInsertCharcterId] = useState<string | null>(
-  //     null
-  //   );
-  const [masterJson, setMasterJson] = useState<MasterJson>([]);
-  const [fontData, setFontData] = useState<fontkit.Font | null>(null);
+  const [editorActive, _setEditorActive] = useState(false);
+  // use ref to get up-to-date values in event listener
+  const editorActiveRef = useRef(editorActive);
+  const setEditorActive = (active: boolean) => {
+    editorActiveRef.current = active;
+    _setEditorActive(active);
+  };
+
+  const [insertCharacterId, _setInsertCharcterId] = useState<string | null>(
+    null
+  );
+  const insertCharacterIdRef = useRef(insertCharacterId);
+  const setInsertCharcterId = (id: string | null) => {
+    insertCharacterIdRef.current = id;
+    _setInsertCharcterId(id);
+  };
+
+  const [masterJson, _setMasterJson] = useState<MasterJson>([]);
+  const masterJsonRef = useRef(masterJson);
+  const setMasterJson = (data: MasterJson) => {
+    masterJsonRef.current = data;
+    _setMasterJson(data);
+  };
+
+  const [fontData, _setFontData] = useState<fontkit.Font | null>(null);
+  const fontDataRef = useRef(fontData);
+  const setFontData = (font: fontkit.Font) => {
+    fontDataRef.current = font;
+    _setFontData(font);
+  };
 
   console.info("masterJson", masterJson);
 
@@ -133,142 +157,158 @@ export const useCanvasRTE = (initialMarkdown: string) => {
   };
 
   const handleKeypress = (e: KeyboardEvent) => {
-    console.info("keypress", e.key, window.__canvasRTEEditorActive);
-    if (window.__canvasRTEEditorActive) {
-      setFontData((fontData) => {
-        console.info("in");
+    console.info("keypress", e.key, editorActiveRef.current);
 
-        if (!fontData) {
-          return fontData;
-        }
+    if (editorActiveRef.current) {
+      console.info("in");
 
-        const character = e.key;
-        const characterId = uuidv4();
-        const boundingBox = getCharacterBoundingBox(fontData, character);
+      if (!fontDataRef.current) {
+        return;
+      }
 
-        if (!boundingBox) {
-          return fontData;
-        }
+      const character = e.key;
+      const characterId = uuidv4();
+      const boundingBox = getCharacterBoundingBox(
+        fontDataRef.current,
+        character
+      );
 
-        const newSize = {
-          width: boundingBox?.maxX - boundingBox?.minX,
-          height: boundingBox?.maxY - boundingBox?.minY,
+      if (!boundingBox) {
+        return;
+      }
+
+      const newSize = {
+        width: boundingBox?.maxX - boundingBox?.minX,
+        height: boundingBox?.maxY - boundingBox?.minY,
+      };
+
+      const defaultStyle = {
+        color: "black",
+        fontSize: 12,
+        fontWeight: "normal",
+        fontFamily: "Inter",
+        italic: false,
+        underline: false,
+      };
+
+      if (insertCharacterIdRef.current === null) {
+        const newLocation = {
+          page: 0,
+          line: 0,
+          lineIndex: 0,
         };
 
-        const defaultStyle = {
-          color: "black",
-          fontSize: 12,
-          fontWeight: "normal",
-          fontFamily: "Inter",
-          italic: false,
-          underline: false,
+        const newPosition = {
+          x: 0,
+          y: 0,
         };
 
-        if (window.__canvasRTEInsertCharacterId === null) {
-          const newLocation = {
-            page: 0,
-            line: 0,
-            lineIndex: 0,
-          };
+        const newCharacter: Character = {
+          characterId,
+          character,
+          location: newLocation,
+          position: newPosition,
+          size: newSize,
+          style: defaultStyle,
+        };
 
-          const newPosition = {
-            x: 0,
-            y: 0,
-          };
+        console.info("to set json");
 
-          const newCharacter: Character = {
-            characterId,
-            character,
-            location: newLocation,
-            position: newPosition,
-            size: newSize,
-            style: defaultStyle,
-          };
+        console.info("setting json");
+        // add the new character to the master json
+        const next = [...masterJsonRef.current, newCharacter];
 
-          console.info("to set json");
+        setMasterJson(next);
 
-          setMasterJson((prev) => {
-            console.info("setting json");
-            // add the new character to the master json
-            const next = [...prev, newCharacter];
+        setInsertCharcterId(characterId);
+        // return characterId;
+        // window.__canvasRTEInsertCharacterId = characterId;
+      } else {
+        const insertCharacter = masterJsonRef.current.find(
+          (char) => char.characterId === insertCharacterIdRef.current
+        );
 
-            return next;
-          });
-          // setInsertCharcterId(characterId);
-          window.__canvasRTEInsertCharacterId = characterId;
-        } else {
-          setMasterJson((prev) => {
-            const insertCharacter = prev.find(
-              (char) => char.characterId === window.__canvasRTEInsertCharacterId
+        if (!insertCharacter) {
+          return;
+        }
+
+        const newLocation = calculateNextLocation(insertCharacter.location);
+        const newPosition = calculateNextPosition(insertCharacter.position);
+
+        const newCharacter: Character = {
+          characterId,
+          character,
+          location: newLocation,
+          position: newPosition,
+          size: newSize,
+          style: defaultStyle,
+        };
+
+        // add the new character to the master json
+        // then calculate the next location and position for all characters after the insert
+        const next = [...masterJsonRef.current, newCharacter];
+        const afterInsert = getAllCharactersAfterInsert(insertCharacter);
+
+        if (afterInsert.length > 0) {
+          const updated = next.map((char) => {
+            const afterInsertIndex = afterInsert.findIndex(
+              (c) => c.characterId === char.characterId
             );
 
-            if (!insertCharacter) {
-              return prev;
+            if (afterInsertIndex > -1) {
+              const newLocation = calculateNextLocation(char.location);
+              const newPosition = calculateNextPosition(char.position);
+
+              return {
+                ...char,
+                location: newLocation,
+                position: newPosition,
+              };
             }
 
-            const newLocation = calculateNextLocation(insertCharacter.location);
-            const newPosition = calculateNextPosition(insertCharacter.position);
-
-            const newCharacter: Character = {
-              characterId,
-              character,
-              location: newLocation,
-              position: newPosition,
-              size: newSize,
-              style: defaultStyle,
-            };
-
-            // add the new character to the master json
-            // then calculate the next location and position for all characters after the insert
-            const next = [...prev, newCharacter];
-            const afterInsert = getAllCharactersAfterInsert(insertCharacter);
-
-            if (afterInsert.length > 0) {
-              const updated = next.map((char) => {
-                const afterInsertIndex = afterInsert.findIndex(
-                  (c) => c.characterId === char.characterId
-                );
-
-                if (afterInsertIndex > -1) {
-                  const newLocation = calculateNextLocation(char.location);
-                  const newPosition = calculateNextPosition(char.position);
-
-                  return {
-                    ...char,
-                    location: newLocation,
-                    position: newPosition,
-                  };
-                }
-
-                return char;
-              });
-
-              return updated;
-            } else {
-              return next;
-            }
+            return char;
           });
+
+          // return updated;
+          setMasterJson(updated);
+        } else {
+          // return next;
+          setMasterJson(next);
         }
 
-        return fontData;
-      });
+        setInsertCharcterId(characterId);
+      }
     }
   };
 
   useEffect(() => {
-    loadFont(setFontData);
-    window.addEventListener("keypress", handleKeypress);
+    // avert react strictmode double mount
+    const loadFontTimer = setTimeout(() => {
+      loadFont(setFontData);
+    }, 500);
 
     return () => {
-      window.removeEventListener("keypress", handleKeypress);
+      clearTimeout(loadFontTimer);
     };
   }, []);
+
+  useEffect(() => {
+    if (fontData) {
+      console.info("welcome!");
+
+      window.addEventListener("keypress", handleKeypress);
+
+      return () => {
+        window.removeEventListener("keypress", handleKeypress);
+      };
+    }
+  }, [fontData]);
 
   // when no text exists, will calculate at first character
   const handleCanvasClick = (e: KonvaEventObject<MouseEvent>) => {
     console.info("canvas click");
-    // setEditorActive(true);
-    window.__canvasRTEEditorActive = true;
+    setEditorActive(true);
+    // window.__canvasRTEEditorActive = true;
   };
 
   // set the insert index to this character
@@ -280,10 +320,10 @@ export const useCanvasRTE = (initialMarkdown: string) => {
       (char) => char.characterId === characterId
     );
     const character = masterJson[characterIndex];
-    // setInsertCharcterId(character.characterId);
-    window.__canvasRTEInsertCharacterId = character.characterId;
-    // setEditorActive(true);
-    window.__canvasRTEEditorActive = true;
+    setInsertCharcterId(character.characterId);
+    // window.__canvasRTEInsertCharacterId = character.characterId;
+    setEditorActive(true);
+    // window.__canvasRTEEditorActive = true;
   };
 
   return { masterJson, handleCanvasClick, handleTextClick };
