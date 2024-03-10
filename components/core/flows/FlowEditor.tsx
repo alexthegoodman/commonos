@@ -3,15 +3,26 @@
 import { useFlowQuestionsContext } from "@/context/FlowQuestionsContext";
 import { getFileListData, getQuestionsData } from "@/fetchers/flow";
 import {
+  Analytics,
+  Apps,
+  Article,
   AutoAwesome,
   Check,
   CheckCircle,
   Close,
+  ContentCopy,
   DocumentScanner,
+  Email,
+  GridOn,
   Image,
+  InsertPhoto,
+  LibraryMusic,
   List,
+  People,
   PresentToAllOutlined,
   Refresh,
+  Slideshow,
+  VideoLibrary,
 } from "@mui/icons-material";
 import {
   Alert,
@@ -35,21 +46,23 @@ import FormSelect from "../fields/FormSelect";
 import FormInput from "../fields/FormInput";
 import { useRouter } from "next/navigation";
 import PrimaryLoader from "../layout/PrimaryLoader";
+import { allTabs } from "@/context/LauncherContext";
 
 const AnswerButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
-  width: "200px",
+  // width: "200px",
+  width: "18vw",
   height: "200px",
-  backgroundColor: "rgba(255,255,255,0.1)",
+  backgroundColor: "rgba(0,0,0,0.1)",
   transition: "all 0.2s ease-in-out",
   "&:hover": {
-    backgroundColor: "rgba(255,255,255,0.2)",
+    backgroundColor: "rgba(0,0,0,0.2)",
     transform: "scale(1.05)",
     transition: "all 0.2s ease-in-out",
   },
   [theme.breakpoints.down("md")]: {
-    width: "150px",
-    height: "150px",
+    width: "40vw",
+    height: "auto",
   },
 }));
 
@@ -64,21 +77,29 @@ const PromptTitle = styled(Typography)(({ theme }) => ({
   // background:
   //   "linear-gradient(90deg, rgba(126,345,255,1) 0%, rgba(255,185,90,0.1) 100%)",
   background:
-    "-webkit-repeating-linear-gradient(bottom, #38efaf 0%, #38ef7d 100%) !important",
+    "-webkit-repeating-linear-gradient(bottom, #c8cc7c 0%, #c8cc7c 100%) !important",
   // "-webkit-background-clip": "text !important",
   // "-webkit-text-fill-color": "transparent !important",
   color: "black",
   // boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
   lineHeight: "3rem",
   padding: "4px",
+  // borderRadius: "15px",
+  [theme.breakpoints.down("md")]: {
+    fontSize: "24px",
+    lineHeight: "2.2rem",
+  },
 }));
 
 export const IconBox = styled(Box)(({ theme, app }) => {
   const backgroundColor = {
-    documents: "rgba(155,255,255,0.2)",
-    slides: "rgba(255,155,255,0.2)",
-    sheets: "rgba(255,255,155,0.2)",
-    images: "rgba(255,255,255,0.2)",
+    documents: "#99c7a2",
+    slides: "#faf56e",
+    sheets: "#89e0d3",
+    drawings: "#9190e0",
+    relationships: "#E493B3",
+    content: "#FFB996",
+    "work-email": "#AAD7D9",
   }[app];
   return {
     width: "40px",
@@ -96,9 +117,13 @@ export const IconBox = styled(Box)(({ theme, app }) => {
 export const FileItem = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   backgroundColor: "rgba(255,255,255,0.1)",
-  borderRadius: "0px",
-  boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
-  marginBottom: theme.spacing(2),
+  // boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
+  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  marginBottom: theme.spacing(3),
+  borderRadius: "25px",
+  "& input": {
+    boxShadow: "none",
+  },
 }));
 
 const FileTextField = styled(TextField)(({ theme }) => ({
@@ -114,7 +139,9 @@ const FileTextField = styled(TextField)(({ theme }) => ({
 function QuestionItem({ type, fileId = null, question, state, dispatch }) {
   return (
     <Grid key={question.id} item xs={12} md={12}>
-      <Typography variant="subtitle1">{question.question}</Typography>
+      <Typography variant="body1" sx={{ fontSize: "20px", marginBottom: 2 }}>
+        {question.question}
+      </Typography>
       <Box
         display="flex"
         flexDirection="row"
@@ -217,7 +244,7 @@ function QuestionItem({ type, fileId = null, question, state, dispatch }) {
                 }
               }}
             >
-              {chosen && <CheckCircle />}
+              {chosen && <CheckCircle style={{ marginRight: "5px" }} />}
               {answer}
             </AnswerButton>
           );
@@ -473,89 +500,37 @@ export default function FlowEditor({ id, prompt }) {
 
     setLoading(true);
 
-    getFileListData(token, id, "documents")
+    getFileListData(token, id)
       .then((data1) => {
         console.info("got file list 1", data1);
 
-        let files = data1.documents.map((file) => {
-          return {
-            id: uuidv4(),
-            name: file,
-            app: "documents",
-            questions: [],
-            skipQuestions: true,
-          };
+        let files = [] as any;
+
+        Object.keys(data1).forEach((key) => {
+          if (data1[key].length) {
+            files = [
+              ...files,
+              ...data1[key].map((file) => {
+                return {
+                  id: uuidv4(),
+                  name: file,
+                  app: key,
+                  questions: [],
+                  skipQuestions: true,
+                };
+              }),
+            ];
+          }
         });
 
-        if (data1?.documents?.length) {
-          getFileListData(token, id, "additionalFiles")
-            .then((data2) => {
-              console.info("got file list 2", data2);
-
-              if (data2?.presentations?.length) {
-                files = [
-                  ...files,
-                  ...data2.presentations.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "slides",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-              }
-
-              if (data2?.spreadsheets?.length) {
-                files = [
-                  ...files,
-                  ...data2.spreadsheets.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "sheets",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-              }
-
-              if (data2?.images?.length) {
-                files = [
-                  ...files,
-                  ...data2.images.map((file) => {
-                    return {
-                      id: uuidv4(),
-                      name: file,
-                      app: "images",
-                      questions: [],
-                      skipQuestions: true,
-                    };
-                  }),
-                ];
-              }
-
-              if (
-                data1.documents.length ||
-                data2?.spreadsheets?.length ||
-                data2?.presentations?.length ||
-                data2?.images?.length
-              ) {
-                console.info("dispatch files", files);
-                dispatch({
-                  type: "files",
-                  payload: files,
-                });
-                setGotFiles(true);
-                setLoading(false);
-              }
-            })
-            .catch((err) => {
-              console.error("caught error", err);
-              // TODO: display error
-            });
+        if (files.length > 0) {
+          console.info("dispatch files", files);
+          dispatch({
+            type: "files",
+            payload: files,
+          });
+          setGotFiles(true);
+          setLoading(false);
         }
       })
       .catch((err) => {
@@ -568,6 +543,14 @@ export default function FlowEditor({ id, prompt }) {
     if (view === "initial") {
       if (!state.initialQuestions || state.initialQuestions.length === 0) {
         getInitialQuestions();
+      }
+    }
+    if (view === "apps") {
+      if (!state.chosenApps || state.chosenApps.length === 0) {
+        dispatch({
+          type: "chosenApps",
+          payload: ["documents", "slides", "work-email"],
+        });
       }
     }
     if (view === "files") {
@@ -586,7 +569,7 @@ export default function FlowEditor({ id, prompt }) {
   }, [view, questionsView]);
 
   return (
-    <Box>
+    <Box pb={4}>
       <PromptWrapper>
         <Typography variant="overline">Your Prompt</Typography>
         <Box>
@@ -630,6 +613,81 @@ export default function FlowEditor({ id, prompt }) {
             color="success"
             variant="contained"
             onClick={() => {
+              setView("apps");
+            }}
+          >
+            Next
+          </Button>
+        </>
+      )}
+      {view === "apps" && (
+        <>
+          <Typography variant="h4" mb={1}>
+            App Selection
+          </Typography>
+          <Typography variant="body1" mb={4}>
+            Please select the apps you would like to generate files for.
+          </Typography>
+          <Box maxWidth="700px" mb={1}>
+            {!loading && allTabs && (
+              <>
+                {allTabs.map((tab, i) => {
+                  const chosen = state?.chosenApps?.find((id) => id === tab.id)
+                    ? true
+                    : false;
+                  return (
+                    <Button
+                      key={tab.id}
+                      sx={{
+                        backgroundColor: chosen ? "#99c7a2" : "transparent",
+                        color: chosen ? "white" : "black",
+                        marginLeft: 2,
+                        marginBottom: 2,
+                      }}
+                      onClick={() => {
+                        let chosenApps = state.chosenApps || [];
+                        if (chosen) {
+                          dispatch({
+                            type: "chosenApps",
+                            payload: chosenApps.filter((id) => id !== tab.id),
+                          });
+                        } else {
+                          dispatch({
+                            type: "chosenApps",
+                            payload: [...chosenApps, tab.id],
+                          });
+                        }
+                      }}
+                    >
+                      {chosen && <CheckCircle style={{ marginRight: "5px" }} />}
+                      <Box>
+                        <Box mr={0.5} position="relative" top="3px">
+                          {tab?.id === "launcher" && <Apps />}
+                          {tab?.id === "documents" && <Article />}
+                          {tab?.id === "slides" && <Slideshow />}
+                          {tab?.id === "sheets" && <GridOn />}
+                          {tab?.id === "drawings" && <InsertPhoto />}
+                          {tab?.id === "sounds" && <LibraryMusic />}
+                          {tab?.id === "videos" && <VideoLibrary />}
+                          {tab?.id === "content" && <ContentCopy />}
+                          {tab?.id === "analytics" && <Analytics />}
+                          {tab?.id === "send-email" && <Email />}
+                          {tab?.id === "relationships" && <People />}
+                          {tab?.id === "work-email" && <Email />}
+                        </Box>
+                      </Box>
+                      {tab.label}
+                    </Button>
+                  );
+                })}
+              </>
+            )}
+            {loading && <PrimaryLoader />}
+          </Box>
+          <Button
+            color="success"
+            variant="contained"
+            onClick={() => {
               setView("files");
             }}
           >
@@ -651,7 +709,12 @@ export default function FlowEditor({ id, prompt }) {
                     mb={2}
                   >
                     <Typography variant="overline">Your File Plan</Typography>
-                    <Button color="info" variant="contained" onClick={getFiles}>
+                    <Button
+                      size="small"
+                      color="info"
+                      variant="contained"
+                      onClick={getFiles}
+                    >
                       <Refresh />
                     </Button>
                   </Box>
@@ -688,7 +751,10 @@ export default function FlowEditor({ id, prompt }) {
                                 <PresentToAllOutlined />
                               )}
                               {file.app === "sheets" && <List />}
-                              {file.app === "images" && <Image />}
+                              {file.app === "drawings" && <Image />}
+                              {file.app === "relationships" && <People />}
+                              {file.app === "content" && <ContentCopy />}
+                              {file.app === "work-email" && <Email />}
                             </IconBox>
 
                             {file.app}
@@ -800,24 +866,38 @@ export default function FlowEditor({ id, prompt }) {
                     name="app"
                     placeholder="Select an app"
                     label="Select an app"
-                    options={[
-                      {
-                        label: "Documents",
-                        value: "documents",
-                      },
-                      {
-                        label: "Slides",
-                        value: "slides",
-                      },
-                      {
-                        label: "Sheets",
-                        value: "sheets",
-                      },
-                      {
-                        label: "Images",
-                        value: "images",
-                      },
-                    ]}
+                    options={
+                      [
+                        {
+                          label: "Documents",
+                          value: "documents",
+                        },
+                        {
+                          label: "Slides",
+                          value: "slides",
+                        },
+                        {
+                          label: "Sheets",
+                          value: "sheets",
+                        },
+                        {
+                          label: "Images",
+                          value: "images",
+                        },
+                        {
+                          label: "Relationships",
+                          value: "relationships",
+                        },
+                        {
+                          label: "Content",
+                          value: "content",
+                        },
+                        {
+                          label: "Work Email",
+                          value: "work-email",
+                        },
+                      ] as any
+                    }
                     register={register}
                     errors={errors}
                     validation={{ required: true }}

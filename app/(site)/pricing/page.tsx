@@ -1,8 +1,9 @@
 "use client";
 
-import { getUserData } from "@/fetchers/user";
+import { getUserData, newCheckout } from "@/fetchers/user";
 import { Box, Button, Typography, styled } from "@mui/material";
 import { Check } from "@phosphor-icons/react";
+import { useState } from "react";
 import { useCookies } from "react-cookie";
 import useSWR from "swr";
 
@@ -41,11 +42,19 @@ export default function Page() {
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
     revalidateOnMount: true,
   });
 
   console.info("userData", userData);
+
+  const handleUpgrade = async () => {
+    setIsLoading(true);
+    const checkoutUrl = await newCheckout(token);
+    window.location.href = checkoutUrl;
+  };
 
   return (
     <Container>
@@ -111,8 +120,9 @@ export default function Page() {
               <Button
                 variant="contained"
                 color="success"
-                href="/upgrade"
+                onClick={handleUpgrade}
                 style={{ marginTop: "15px", minWidth: "150px" }}
+                disabled={isLoading}
               >
                 Upgrade
               </Button>

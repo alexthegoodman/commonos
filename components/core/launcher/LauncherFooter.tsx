@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Link, styled } from "@mui/material";
 
 const CmFooter = styled("footer")(({ theme }) => ({

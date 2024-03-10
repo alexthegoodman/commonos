@@ -1,6 +1,7 @@
 "use client";
 
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
+import { FilesItem } from "@/components/core/layout/Wrapper";
 import { getSlideData, getSlidesData, newSlide } from "@/fetchers/slide";
 import { getUserData, updatePresentationFiles } from "@/fetchers/user";
 import Directories from "@/helpers/Directories";
@@ -103,8 +104,8 @@ export default function Slides(props) {
   );
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={2}>
+    <Grid container spacing={3}>
+      <Grid item xs={12} md={3}>
         <Button onClick={addPresentation}>Add Presentation</Button>
         <Button onClick={addFolder}>Add Folder</Button>
       </Grid>
@@ -120,8 +121,8 @@ export default function Slides(props) {
               );
 
           return (
-            <Grid item xs={12} md={2} key={slide.id}>
-              <Button
+            <Grid item xs={12} md={3} key={slide.id}>
+              <FilesItem
                 onClick={() => {
                   if (slide.type === "file") {
                     router.push(`/slides/${slide.id}`);
@@ -134,8 +135,10 @@ export default function Slides(props) {
                 {slide.type === "file" && <FileCopy />}
                 {slide.type === "folder" && <Folder />}
                 {fileData?.title ? fileData?.title : slide?.folderTitle}
-              </Button>
-              <Typography variant="body2">{creationDate}</Typography>
+                <Typography variant="body2" mt={1}>
+                  {creationDate}
+                </Typography>
+              </FilesItem>
             </Grid>
           );
         })

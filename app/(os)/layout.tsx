@@ -16,9 +16,9 @@ const Background = styled("main")(({ theme }) => ({
   // // backgroundColor: theme.palette.background.default,
   // overflowY: "scroll",
 
-  background: "linear-gradient(355deg, #b92b27, #1565C0)",
-  backgroundSize: "400% 400%",
-  animation: "AnimationName 15s ease infinite",
+  // background: "linear-gradient(355deg, #b92b27, #1565C0)",
+  // backgroundSize: "400% 400%",
+  // animation: "AnimationName 15s ease infinite",
 }));
 
 const Container = styled(Box)(({ theme, hasSidebar }) => ({
@@ -41,7 +41,7 @@ const InnerContainer = styled(Box)(({ theme, opaque }) => ({
 }));
 
 const Spacer = styled("div")(({ theme }) => ({
-  paddingTop: "100px",
+  paddingTop: "120px",
   // [theme.breakpoints.down("sm")]: {
   //   paddingTop: "125px",
   // },
@@ -52,9 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // use regex to check if pathname includes /slides/ or /sheets/ and a id
-  let hasSidebar = /\/(slides|sheets|documents|drawings)\/[a-zA-Z0-9]+/.test(
-    pathname
-  );
+  let hasSidebar = /\/(slides|documents)\/[a-zA-Z0-9]+/.test(pathname);
 
   console.info("LauncherContext state", state);
 

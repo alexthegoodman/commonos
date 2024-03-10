@@ -33,9 +33,9 @@ export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
   padding: "20px 0",
   boxSizing: "border-box",
 
-  background: "linear-gradient(355deg, #373b44, #4286f4)",
-  backgroundSize: "400% 400%",
-  animation: "AnimationName 15s ease infinite",
+  // background: "linear-gradient(355deg, #373b44, #4286f4)",
+  // backgroundSize: "400% 400%",
+  // animation: "AnimationName 15s ease infinite",
 
   [theme.breakpoints.down("lg")]: {
     padding: "10px 0",
@@ -50,13 +50,14 @@ export const SidebarWrapper = styled("aside")(({ theme, mobileOpen }) => ({
 }));
 
 const AnswerButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
-  width: "28%",
+  margin: "4px",
+  width: "30%",
   minHeight: "90px",
   aspectRatio: "3/2",
-  fontSize: "0.7rem",
+  fontSize: "14px",
   backgroundColor: "rgba(255,255,255,0.1)",
   transition: "all 0.2s ease-in-out",
+  padding: "4px",
   "&:hover": {
     backgroundColor: "rgba(255,255,255,0.2)",
     transform: "scale(1.05)",
@@ -66,7 +67,7 @@ const AnswerButton = styled(Button)(({ theme }) => ({
 
 export const MessageItem = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
-  backgroundColor: "rgba(0,0,0,0.1)",
+  backgroundColor: "rgba(0,0,0,0.02)",
   padding: theme.spacing(2),
   boxSizing: "border-box",
 }));
@@ -80,7 +81,7 @@ export function SidebarQuestionItem({
 }) {
   return (
     <Grid key={question.id} item xs={12} md={12}>
-      <Typography variant="subtitle2">{question.question}</Typography>
+      <Typography variant="body1">{question.question}</Typography>
       <Box
         display="flex"
         flexDirection="row"

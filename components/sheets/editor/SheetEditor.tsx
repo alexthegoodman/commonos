@@ -32,16 +32,73 @@ const applyChangesToRow = (
 const GridWrapper = styled("div")(({ theme }) => ({
   // backgroundColor: theme.palette.background.paper,
   backgroundColor: "rbga(255, 255, 255, 0.3)",
-  width: "100%",
-  maxHeight: "calc(100vh - 100px)",
+  width: "calc(100vw - 50px)",
+  height: "calc(100vh - 225px)",
   overflow: "scroll",
 }));
+
+const InnerWrapper = styled("div")(({ theme }) => ({
+  position: "relative",
+  width: "fit-content",
+  backgroundColor: "#E5E5E5",
+  "& .columnButton": {
+    position: "absolute",
+    top: 0,
+    right: "-119px",
+    height: "100%",
+    boxShadow: "none",
+  },
+  "& .rowButton": {
+    position: "absolute",
+    bottom: "-37px",
+    left: 0,
+    width: "100%",
+    boxShadow: "none",
+  },
+}));
+
+const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 export default function SheetEditor() {
   const [state, dispatch] = useSheetsContext();
 
   const columns = state.columns;
   const rows = state.rows;
+
+  // add index column to columns
+  const columnsWithIndex = [
+    {
+      columnId: "index",
+      width: 50,
+      reorderable: false,
+      resizable: false,
+      editorOnly: true,
+    },
+    ...columns,
+  ];
+
+  // add index column to each row
+  const rowsWithIndex = [
+    {
+      rowId: uuidv4(),
+      cells: columnsWithIndex.map((column, i) => ({
+        type: "header",
+        text: i === 0 ? "" : alphabet.charAt(i - 1),
+      })),
+    },
+    ...rows.map((row, index) => ({
+      ...row,
+      cells: [
+        {
+          editorOnly: true,
+          type: "header",
+          text: `${index + 1}`,
+          disabled: true,
+        },
+        ...row.cells,
+      ],
+    })),
+  ];
 
   const handleChanges = (changes: CellChange<TextCell>[]) => {
     dispatch({
@@ -109,25 +166,40 @@ export default function SheetEditor() {
   return (
     <>
       <GridWrapper>
-        <ReactGrid
-          rows={rows}
-          columns={columns}
-          onCellsChanged={handleChanges}
-          onColumnResized={handleColumnResize}
-          enableRangeSelection
-          enableRowSelection
-          enableColumnSelection
-        />
+        <InnerWrapper>
+          <ReactGrid
+            rows={rowsWithIndex}
+            columns={columnsWithIndex}
+            onCellsChanged={handleChanges}
+            onColumnResized={handleColumnResize}
+            enableRangeSelection
+            enableRowSelection
+            enableColumnSelection
+          />
+          <Button
+            className="columnButton"
+            variant="contained"
+            color="secondary"
+            onClick={addColumn}
+          >
+            Add Column
+          </Button>
+          <Button
+            className="rowButton"
+            variant="contained"
+            color="secondary"
+            onClick={addRow}
+          >
+            Add Row
+          </Button>
+        </InnerWrapper>
       </GridWrapper>
-      <Button variant="contained" color="success" onClick={addColumn}>
-        Add Column
-      </Button>
-      <Button variant="contained" color="success" onClick={addRow}>
-        Add Row
-      </Button>
+
       <style jsx global>{`
         .rg-cell {
-          color: white !important;
+          // color: white !important;
+          background-color: #ffffff !important;
+          color: black !important;
         }
       `}</style>
     </>

@@ -18,6 +18,7 @@ import {
 } from "react";
 import { useDarkMode, useLocalStorage } from "usehooks-ts";
 import Hotjar from "@hotjar/browser";
+import { FacebookPixelEvents } from "../landing/FacebookPixel";
 
 export default function InnerLayout({
   children,
@@ -30,7 +31,7 @@ export default function InnerLayout({
 
   const [mode, setMode] = useState<"light" | "dark">(
     // isDarkMode ? "dark" : "light"
-    "dark"
+    "light"
   );
   const colorMode = useMemo(
     () => ({
@@ -59,6 +60,7 @@ export default function InnerLayout({
   return (
     <>
       <ColorModeContext.Provider value={colorMode}>
+        <FacebookPixelEvents />
         <ThemeProvider theme={theme}>
           <LauncherContext.Provider value={{ state, dispatch }}>
             {children}

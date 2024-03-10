@@ -88,6 +88,11 @@ const AuthForm = ({
 
         // const ReactPixel = require("react-facebook-pixel");
         // ReactPixel.default.trackCustom("SignUp", {});
+        import("react-facebook-pixel")
+          .then((x) => x.default)
+          .then((ReactPixel) => {
+            ReactPixel.trackCustom("SignUp", {});
+          });
       }
 
       const expireCookie = DateTime.now()
@@ -122,7 +127,12 @@ const AuthForm = ({
 
       // cleanup and
       setFormErrorMessage("");
-      router.push("/launcher");
+
+      if (type === "login") {
+        router.push("/launcher");
+      } else if (type === "sign-up") {
+        router.push("/welcome");
+      }
     } catch (error: any) {
       console.error(error);
       const errorMessage = error?.response?.errors[0].message;
@@ -150,7 +160,7 @@ const AuthForm = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "10px",
+          gap: "12px",
           marginBottom: "10px",
         }}
       >

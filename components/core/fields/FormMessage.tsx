@@ -1,3 +1,6 @@
+"use client";
+
+import { Alert } from "@mui/material";
 import * as React from "react";
 
 const FormMessage = ({
@@ -11,11 +14,9 @@ const FormMessage = ({
   return (
     <>
       {message !== "" ? (
-        <section className={`formMessage ${type}`}>
-          <div className="formMessageInner">
-            <span className="messageContent">{message}</span>
-          </div>
-        </section>
+        <Alert severity={type} sx={{ borderRadius: "25px", padding: "15px" }}>
+          {message}
+        </Alert>
       ) : (
         <></>
       )}

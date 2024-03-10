@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 import SimpleErrorMessage from "./SimpleErrorMessage";
@@ -14,8 +16,8 @@ const FormInput = ({
   return (
     <Box>
       <TextField
-        {...fieldProps}
         {...register(fieldProps.name, validation)}
+        {...fieldProps}
         error={errors !== null && errors[fieldProps.name] ? true : false}
         helperText={
           errors !== null && errors[fieldProps.name]

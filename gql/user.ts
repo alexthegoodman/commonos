@@ -4,6 +4,7 @@ const UserFragment = gql`
   fragment UserFragment on User {
     email
     role
+    algoliaApiKey
     subscription
     frequency
     lastTokenReset
@@ -60,5 +61,17 @@ export const authenticateQuery = gql`
 export const registerMutation = gql`
   mutation RegisterUser {
     registerUser
+  }
+`;
+
+export const newCheckoutMutation = gql`
+  mutation NewCheckout {
+    newCheckout
+  }
+`;
+
+export const getPortalUrlQuery = gql`
+  query GetPortalUrl {
+    getPortalUrl
   }
 `;

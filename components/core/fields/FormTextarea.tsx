@@ -20,7 +20,17 @@ const FormTextarea = ({
   ...fieldProps
 }) => {
   return (
-    <Box width="100%">
+    <Box
+      width="100%"
+      sx={{
+        "& textarea": {
+          // boxShadow: "0px 6px 12px 1px rgba(0, 0, 0, 0.2)",
+          boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+          borderRadius: "25px",
+          padding: "30px",
+        },
+      }}
+    >
       <CmTextarea {...fieldProps} {...register(fieldProps.name, validation)} />
       {errors !== null && errors[fieldProps.name] ? (
         <Typography variant="body2" color="red">

@@ -105,6 +105,7 @@ export default function LexicalRTE({ documentId, documentData, refetch }) {
         flexDirection="row"
         alignItems="center"
         justifyContent="space-between"
+        mb={2}
       >
         <EditorHeader
           documentId={documentId}
@@ -133,6 +134,7 @@ export default function LexicalRTE({ documentId, documentData, refetch }) {
                     minHeight: "80vh",
                     padding: "5px 15px",
                     lineHeight: "1.35",
+                    fontFamily: "proxima-nova",
                   }}
                   className="editor-input"
                 />

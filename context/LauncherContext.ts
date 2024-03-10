@@ -1,12 +1,12 @@
 import React, { useState, useReducer } from "react";
 
 export const allTabs = [
-  {
-    id: "launcher",
-    label: "Launcher",
-    href: "/launcher",
-    badge: null,
-  },
+  // {
+  //   id: "launcher",
+  //   label: "Launcher",
+  //   href: "/launcher",
+  //   badge: null,
+  // },
   {
     id: "documents",
     label: "Documents",
@@ -32,11 +32,41 @@ export const allTabs = [
     badge: null,
   },
   {
-    id: "rss",
-    label: "RSS News",
-    href: "",
-    badge: "Coming Soon",
+    id: "relationships",
+    label: "Relationships",
+    href: "/relationships",
+    badge: null,
   },
+  // {
+  //   id: "analytics",
+  //   label: "Analytics",
+  //   href: "/analytics",
+  //   badge: null,
+  // },
+  {
+    id: "content",
+    label: "Content",
+    href: "/content",
+    badge: null,
+  },
+  // {
+  //   id: "send-email",
+  //   label: "Send Email",
+  //   href: "/send-email",
+  //   badge: null,
+  // },
+  {
+    id: "work-email",
+    label: "Work Email",
+    href: "/work-email",
+    badge: null,
+  },
+  // {
+  //   id: "rss",
+  //   label: "RSS News",
+  //   href: "",
+  //   badge: "Coming Soon",
+  // },
   // {
   //   id: "sounds",
   //   label: "Sounds",
@@ -63,19 +93,20 @@ export const allTabs = [
 //   pinned: false,
 // }));
 
-// export interface OpenTab {
-//   id: string;
-//   pinned: boolean;
-// }
+export interface OpenTab {
+  id: string;
+  appId: string;
+  // pinned: boolean;
+}
 
 export interface LauncherContextState {
-  // openTabs: OpenTab[];
+  openTabs: OpenTab[];
   currentOrganizationId: string | null;
   currentProjectId: string | null;
 }
 
 export const LauncherContextState = {
-  // openTabs: testDefaultTabs,
+  openTabs: [],
   currentOrganizationId: null,
   currentProjectId: null,
 };
