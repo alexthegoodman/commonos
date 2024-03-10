@@ -7,6 +7,7 @@ import { Box } from "@mui/material";
 import AutoSidebar from "./AutoSidebar";
 import { useReducer } from "react";
 import DynamicInner from "../konva/DynamicInner";
+import MultiPageRTE from "../konva/MultiPageRTE";
 
 export default function InnerLayout({
   context,
@@ -27,7 +28,8 @@ export default function InnerLayout({
           documentData={documentData}
           refetch={refetch}
         /> */}
-        <DynamicInner />
+        {/* <DynamicInner /> */}
+        <MultiPageRTE />
         <AutoSidebar documentId={documentId} documentData={documentData} />
       </Box>
     </DocumentsContext.Provider>
