@@ -2,27 +2,37 @@
 
 import { useCanvasRTE } from "@/hooks/useCanvasRTE";
 import { useRef } from "react";
-import { Layer, Rect, Stage, Text } from "react-konva";
+import { Group, Layer, Rect, Stage, Text } from "react-konva";
 
 export default function MultiPageRTE() {
   const stageRef = useRef(null);
 
-  const { masterJson, handleCanvasClick, handleTextClick } =
-    useCanvasRTE("Hello World!");
-
   const pxPerIn = 96;
+  const marginSizeIn = {
+    x: 1,
+    y: 0.5,
+  };
   const marginSize = {
-    x: 1 * 2,
-    y: 0.5 * 2,
+    x: marginSizeIn.x * pxPerIn,
+    y: marginSizeIn.y * pxPerIn,
+  };
+  const documentSizeIn = {
+    width: 8.3,
+    height: 11.7,
   };
   const documentSize = {
-    width: 8.3 * pxPerIn,
-    height: 11.7 * pxPerIn,
+    width: documentSizeIn.width * pxPerIn,
+    height: documentSizeIn.height * pxPerIn,
   };
   const mainTextSize = {
-    width: (8.3 - marginSize.x) * pxPerIn,
-    height: (11.7 - marginSize.y) * pxPerIn,
+    width: (documentSizeIn.width - marginSizeIn.x * 2) * pxPerIn,
+    height: (documentSizeIn.height - marginSizeIn.y * 2) * pxPerIn,
   };
+
+  const { masterJson, handleCanvasClick, handleTextClick } = useCanvasRTE(
+    "Hello World!",
+    mainTextSize
+  );
 
   return (
     <>
@@ -33,7 +43,7 @@ export default function MultiPageRTE() {
         // onMouseDown={handleMouseDown}
         // onMousemove={handleMouseMove}
         // onMouseup={handleMouseUp}
-        onMouseDown={handleCanvasClick}
+        // onMouseDown={handleCanvasClick}
       >
         <Layer>
           <Rect
@@ -45,14 +55,25 @@ export default function MultiPageRTE() {
           />
         </Layer>
         <Layer>
-          {masterJson.map((charText, i) => {
-            const randomColor = `#${Math.floor(
-              Math.random() * 16777215
-            ).toString(16)}`;
+          <Rect
+            x={marginSize.x}
+            y={marginSize.y}
+            width={mainTextSize.width}
+            height={mainTextSize.height}
+            fill="#fff"
+            onMouseDown={handleCanvasClick}
+          />
+        </Layer>
+        <Layer>
+          <Group x={marginSize.x} y={marginSize.y}>
+            {masterJson.map((charText, i) => {
+              const randomColor = `#${Math.floor(
+                Math.random() * 16777215
+              ).toString(16)}`;
 
-            return (
-              <>
-                {/* <Rect
+              return (
+                <>
+                  {/* <Rect
                   key={`${charText.characterId}-${i}`}
                   x={charText.position.x}
                   y={charText.position.y}
@@ -60,21 +81,22 @@ export default function MultiPageRTE() {
                   height={charText.size.height}
                   fill={randomColor}
                 /> */}
-                <Text
-                  key={`${charText.characterId}-${i}`}
-                  id={charText.characterId}
-                  x={charText.position.x}
-                  y={charText.position.y}
-                  text={charText.character}
-                  fontSize={charText.style.fontSize}
-                  fontFamily={charText.style.fontFamily}
-                  fontStyle={charText.style.italic ? "italic" : "normal"}
-                  fill={charText.style.color}
-                  onClick={handleTextClick}
-                />
-              </>
-            );
-          })}
+                  <Text
+                    key={`${charText.characterId}-${i}`}
+                    id={charText.characterId}
+                    x={charText.position.x}
+                    y={charText.position.y}
+                    text={charText.character}
+                    fontSize={charText.style.fontSize}
+                    fontFamily={charText.style.fontFamily}
+                    fontStyle={charText.style.italic ? "italic" : "normal"}
+                    fill={charText.style.color}
+                    onClick={handleTextClick}
+                  />
+                </>
+              );
+            })}
+          </Group>
         </Layer>
       </Stage>
       <style jsx>{`

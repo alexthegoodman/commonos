@@ -62,6 +62,11 @@ export type Character = {
 
 export type MasterJson = Character[];
 
+export type DocumentSize = {
+  width: number;
+  height: number;
+};
+
 // extend window type
 // declare global {
 //   interface Window {
@@ -73,7 +78,11 @@ export type MasterJson = Character[];
 // window.__canvasRTEEditorActive = false;
 // window.__canvasRTEInsertCharacterId = null;
 
-export const useCanvasRTE = (initialMarkdown: string) => {
+export const useCanvasRTE = (
+  initialMarkdown: string,
+  mainTextSize: DocumentSize
+) => {
+  const letterSpacing = 1;
   const [editorActive, _setEditorActive] = useState(false);
   // use ref to get up-to-date values in event listener
   const editorActiveRef = useRef(editorActive);
@@ -159,7 +168,7 @@ export const useCanvasRTE = (initialMarkdown: string) => {
 
   const calculateNextPosition = (insertCharacter: Character) => {
     // TODO: calculate positioning based on bounding box or other factors
-    const letterSpacing = 1;
+
     const nextPosition = {
       x:
         insertCharacter.position.x + insertCharacter.size.width + letterSpacing,
@@ -171,9 +180,13 @@ export const useCanvasRTE = (initialMarkdown: string) => {
 
   // this needs to select characters based on location value
   const getAllCharactersAfterInsert = (insertCharacter: Character) => {
-    return masterJson.filter((char) => {
-      if (char.location.page >= insertCharacter.location.page) {
-        if (char.location.line >= insertCharacter.location.line) {
+    return masterJsonRef.current.filter((char) => {
+      if (char.location.page > insertCharacter.location.page) {
+        return true;
+      } else if (char.location.page === insertCharacter.location.page) {
+        if (char.location.line > insertCharacter.location.line) {
+          return true;
+        } else if (char.location.line === insertCharacter.location.line) {
           if (char.location.lineIndex > insertCharacter.location.lineIndex) {
             return true;
           }
@@ -282,15 +295,21 @@ export const useCanvasRTE = (initialMarkdown: string) => {
         const next = [...masterJsonRef.current, newCharacter];
         const afterInsert = getAllCharactersAfterInsert(insertCharacter);
 
+        console.info("afterInsert", afterInsert);
+
         if (afterInsert.length > 0) {
           const updated = next.map((char) => {
             const afterInsertIndex = afterInsert.findIndex(
               (c) => c.characterId === char.characterId
             );
 
+            // if the character is after the insert, calculate new location and position
             if (afterInsertIndex > -1) {
               const newLocation = calculateNextLocation(char.location);
-              const newPosition = calculateNextPosition(char);
+              const newPosition = {
+                x: char.position.x + newSize.width + letterSpacing,
+                y: char.position.y,
+              };
 
               return {
                 ...char,
@@ -349,6 +368,7 @@ export const useCanvasRTE = (initialMarkdown: string) => {
     console.info("text click");
     const target = e.target;
     const characterId = target.id();
+    console.info("characterId", characterId);
     const characterIndex = masterJson.findIndex(
       (char) => char.characterId === characterId
     );
