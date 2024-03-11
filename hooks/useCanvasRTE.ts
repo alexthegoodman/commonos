@@ -51,6 +51,8 @@ export type Style = {
   underline: boolean;
 };
 
+export type CharacterType = "newline" | "character";
+
 export type Character = {
   characterId: string;
   character: string;
@@ -58,6 +60,7 @@ export type Character = {
   position: Position;
   size: Size;
   style: Style;
+  type: CharacterType;
 };
 
 export type MasterJson = Character[];
@@ -83,6 +86,8 @@ export const useCanvasRTE = (
   mainTextSize: DocumentSize
 ) => {
   const letterSpacing = 1;
+  const defaultSpacing = 5;
+
   const [editorActive, _setEditorActive] = useState(false);
   // use ref to get up-to-date values in event listener
   const editorActiveRef = useRef(editorActive);
@@ -121,7 +126,6 @@ export const useCanvasRTE = (
     character: string,
     style: Style
   ) => {
-    const defaultSpacing = 5;
     const glyph = fontData?.layout(character);
     const boundingBox = glyph?.bbox;
     const unitsPerEm = fontDataRef.current?.unitsPerEm;
@@ -153,44 +157,72 @@ export const useCanvasRTE = (
     };
   };
 
-  const calculateNextLocation = (location: Location, size: Size) => {
+  const calculateNextLocation = (
+    insertLocation: Location,
+    newSize: Size,
+    newType: CharacterType
+  ) => {
     // calculate newlines and pages as needed
     // will need to calculate width of current line and compare to page width
 
-    const currentLine = masterJsonRef.current.filter(
-      (char) =>
-        char.location.page === location.page &&
-        char.location.line === location.line
-    );
-    const currentLineWidth = currentLine.reduce((acc, char) => {
-      return acc + char.size.width + letterSpacing;
-    }, 0);
-    const fitsOnLine = currentLineWidth + size.width < mainTextSize.width;
-
-    // console.info(
-    //   "fitsOnLine",
-    //   fitsOnLine,
-    //   currentLineWidth + size.width,
-    //   mainTextSize.width
-    // );
-
-    if (fitsOnLine) {
+    if (newType === "newline") {
       const nextLocation = {
-        page: location.page,
-        line: location.line,
-        lineIndex: location.lineIndex + 1,
-      };
-
-      return nextLocation;
-    } else {
-      const nextLocation = {
-        page: location.page,
-        line: location.line + 1,
+        page: insertLocation.page,
+        line: insertLocation.line + 1,
         lineIndex: 0,
       };
 
       return nextLocation;
+    } else {
+      const currentLine = masterJsonRef.current.filter(
+        (char) =>
+          char.location.page === insertLocation.page &&
+          char.location.line === insertLocation.line
+      );
+      const currentLineWidth = currentLine.reduce((acc, char) => {
+        return char.size ? acc + char.size.width + letterSpacing : acc;
+      }, 0);
+      const fitsOnLine = currentLineWidth + newSize.width < mainTextSize.width;
+
+      // console.info(
+      //   "fitsOnLine",
+      //   fitsOnLine,
+      //   currentLineWidth + size.width,
+      //   mainTextSize.width
+      // );
+
+      if (fitsOnLine) {
+        const nextLocation = {
+          page: insertLocation.page,
+          line: insertLocation.line,
+          lineIndex: insertLocation.lineIndex + 1,
+        };
+
+        return nextLocation;
+      } else {
+        const nextLocation = {
+          page: insertLocation.page,
+          line: insertLocation.line + 1,
+          lineIndex: 0,
+        };
+
+        return nextLocation;
+      }
     }
+  };
+
+  const getCapHeightPx = (fontSize: number) => {
+    if (!fontDataRef.current) {
+      return 0;
+    }
+
+    return (
+      ((fontDataRef.current.capHeight +
+        fontDataRef.current.ascent +
+        fontDataRef.current.descent) /
+        fontDataRef.current.unitsPerEm) *
+      fontSize
+    );
   };
 
   const calculateNextPosition = (
@@ -208,12 +240,7 @@ export const useCanvasRTE = (
     const nextX = isNewLine
       ? 0
       : insertCharacter.position.x + insertCharacter.size.width + letterSpacing;
-    const capHeightPx =
-      ((fontDataRef.current.capHeight +
-        fontDataRef.current.ascent +
-        fontDataRef.current.descent) /
-        fontDataRef.current.unitsPerEm) *
-      insertCharacter.style.fontSize;
+    const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
     const nextY = isNewLine
       ? insertCharacter.position.y + capHeightPx
       : insertCharacter.position.y;
@@ -256,7 +283,6 @@ export const useCanvasRTE = (
         return;
       }
 
-      const character = e.key;
       const characterId = uuidv4();
 
       const defaultStyle = {
@@ -268,115 +294,211 @@ export const useCanvasRTE = (
         underline: false,
       };
 
-      const boundingBox = getCharacterBoundingBox(
-        fontDataRef.current,
-        character,
-        defaultStyle
-      );
+      switch (e.key) {
+        case "Enter":
+          {
+            const character = "";
 
-      if (!boundingBox) {
-        return;
-      }
-
-      const newSize = {
-        width: boundingBox?.width,
-        height: boundingBox?.height,
-      };
-
-      //   console.info("newSize", newSize);
-
-      if (insertCharacterIdRef.current === null) {
-        const newLocation = {
-          page: 0,
-          line: 0,
-          lineIndex: 0,
-        };
-
-        const newPosition = {
-          x: 0,
-          y: 0,
-        };
-
-        const newCharacter: Character = {
-          characterId,
-          character,
-          location: newLocation,
-          position: newPosition,
-          size: newSize,
-          style: defaultStyle,
-        };
-
-        // add the new character to the master json
-        const next = [...masterJsonRef.current, newCharacter];
-
-        setMasterJson(next);
-
-        setInsertCharcterId(characterId);
-        // return characterId;
-        // window.__canvasRTEInsertCharacterId = characterId;
-      } else {
-        const insertCharacter = masterJsonRef.current.find(
-          (char) => char.characterId === insertCharacterIdRef.current
-        );
-
-        if (!insertCharacter) {
-          return;
-        }
-
-        const newLocation = calculateNextLocation(
-          insertCharacter.location,
-          newSize
-        );
-        const newPosition = calculateNextPosition(insertCharacter, newLocation);
-
-        const newCharacter: Character = {
-          characterId,
-          character,
-          location: newLocation,
-          position: newPosition,
-          size: newSize,
-          style: defaultStyle,
-        };
-
-        // add the new character to the master json
-        // then calculate the next location and position for all characters after the insert
-        const next = [...masterJsonRef.current, newCharacter];
-        const afterInsert = getAllCharactersAfterInsert(insertCharacter);
-
-        // console.info("afterInsert", afterInsert);
-
-        if (afterInsert.length > 0) {
-          const updated = next.map((char) => {
-            const afterInsertIndex = afterInsert.findIndex(
-              (c) => c.characterId === char.characterId
+            const insertCharacter = masterJsonRef.current.find(
+              (char) => char.characterId === insertCharacterIdRef.current
             );
 
-            // if the character is after the insert, calculate new location and position
-            if (afterInsertIndex > -1) {
-              const newLocation = calculateNextLocation(char.location, newSize);
-              const newPosition = {
-                x: char.position.x + newSize.width + letterSpacing,
-                y: char.position.y,
-              };
-
-              return {
-                ...char,
-                location: newLocation,
-                position: newPosition,
-              };
+            if (!insertCharacter) {
+              return;
             }
 
-            return char;
-          });
+            const newlineLocation: Location = {
+              page: insertCharacter.location.page,
+              line: insertCharacter.location.line + 1,
+              lineIndex: 0,
+            };
 
-          // return updated;
-          setMasterJson(updated);
-        } else {
-          // return next;
-          setMasterJson(next);
-        }
+            const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
 
-        setInsertCharcterId(characterId);
+            const newlineSize: Size = {
+              width: 0,
+              height: capHeightPx,
+            };
+
+            const newlinePosition = calculateNextPosition(
+              insertCharacter,
+              newlineLocation
+            );
+
+            const newCharacter: Character = {
+              characterId,
+              character,
+              location: newlineLocation,
+              position: newlinePosition,
+              size: newlineSize,
+              style: defaultStyle,
+              type: "newline",
+            };
+
+            // add the new character to the master json
+            const next = [...masterJsonRef.current, newCharacter];
+
+            setMasterJson(next);
+
+            setInsertCharcterId(characterId);
+          }
+          break;
+        case "Backspace":
+          {
+          }
+          break;
+        case "Delete":
+          {
+          }
+          break;
+        case "ArrowLeft":
+          {
+          }
+          break;
+        case "ArrowRight":
+          {
+          }
+          break;
+        case "ArrowUp":
+          {
+          }
+          break;
+        case "ArrowDown":
+          {
+          }
+          break;
+        case "Tab":
+          {
+          }
+          break;
+        default:
+          {
+            // any other character
+            const type = "character";
+            const character = e.key;
+
+            const boundingBox = getCharacterBoundingBox(
+              fontDataRef.current,
+              character,
+              defaultStyle
+            );
+
+            if (!boundingBox) {
+              return;
+            }
+
+            const newSize = {
+              width: boundingBox?.width,
+              height: boundingBox?.height,
+            };
+
+            //   console.info("newSize", newSize);
+
+            if (insertCharacterIdRef.current === null) {
+              const newLocation = {
+                page: 0,
+                line: 0,
+                lineIndex: 0,
+              };
+
+              const newPosition = {
+                x: 0,
+                y: 0,
+              };
+
+              const newCharacter: Character = {
+                characterId,
+                character,
+                location: newLocation,
+                position: newPosition,
+                size: newSize,
+                style: defaultStyle,
+                type,
+              };
+
+              // add the new character to the master json
+              const next = [...masterJsonRef.current, newCharacter];
+
+              setMasterJson(next);
+
+              setInsertCharcterId(characterId);
+              // return characterId;
+              // window.__canvasRTEInsertCharacterId = characterId;
+            } else {
+              const insertCharacter = masterJsonRef.current.find(
+                (char) => char.characterId === insertCharacterIdRef.current
+              );
+
+              if (!insertCharacter) {
+                return;
+              }
+
+              const newLocation = calculateNextLocation(
+                insertCharacter.location,
+                newSize,
+                type
+              );
+              const newPosition = calculateNextPosition(
+                insertCharacter,
+                newLocation
+              );
+
+              const newCharacter: Character = {
+                characterId,
+                character,
+                location: newLocation,
+                position: newPosition,
+                size: newSize,
+                style: defaultStyle,
+                type,
+              };
+
+              // add the new character to the master json
+              // then calculate the next location and position for all characters after the insert
+              const next = [...masterJsonRef.current, newCharacter];
+              const afterInsert = getAllCharactersAfterInsert(insertCharacter);
+
+              // console.info("afterInsert", afterInsert);
+
+              if (afterInsert.length > 0) {
+                const updated = next.map((char) => {
+                  const afterInsertIndex = afterInsert.findIndex(
+                    (c) => c.characterId === char.characterId
+                  );
+
+                  // if the character is after the insert, calculate new location and position
+                  if (afterInsertIndex > -1) {
+                    const newLocation = calculateNextLocation(
+                      char.location,
+                      newSize,
+                      char.type
+                    );
+                    const newPosition: Position = {
+                      x: char.position.x + newSize.width + letterSpacing,
+                      y: char.position.y,
+                    };
+
+                    return {
+                      ...char,
+                      location: newLocation,
+                      position: newPosition,
+                    };
+                  }
+
+                  return char;
+                });
+
+                // return updated;
+                setMasterJson(updated);
+              } else {
+                // return next;
+                setMasterJson(next);
+              }
+
+              setInsertCharcterId(characterId);
+            }
+          }
+          break;
       }
     }
   };

@@ -84,8 +84,8 @@ export default function MultiPageRTE() {
                   <Text
                     key={`${charText.characterId}-${i}`}
                     id={charText.characterId}
-                    x={charText.position.x}
-                    y={charText.position.y}
+                    x={charText?.position?.x}
+                    y={charText?.position?.y}
                     text={charText.character}
                     fontSize={charText.style.fontSize}
                     fontFamily={charText.style.fontFamily}
