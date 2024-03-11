@@ -3,8 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 
 import * as fontkit from "fontkit";
 import { KonvaEventObject } from "konva/lib/Node";
-console.info("fontkit", fontkit);
-// const font = fontkit.create("fonts/Inter-Regular.ttf");
 
 const blobToBuffer = async (blob: Blob) => {
   const arrayBuffer = await blob.arrayBuffer();
@@ -17,7 +15,6 @@ const loadFont = async (setFont: (font: fontkit.Font) => void) => {
     const buffer = await blobToBuffer(blob);
 
     let font = fontkit.create(buffer);
-    console.info(font);
     setFont(font as fontkit.Font);
   };
 
@@ -51,7 +48,7 @@ export type Style = {
   underline: boolean;
 };
 
-export type CharacterType = "newline" | "character";
+export type CharacterType = "newline" | "character" | "tab";
 
 export type Character = {
   characterId: string;
@@ -131,13 +128,13 @@ export const useCanvasRTE = (
     const unitsPerEm = fontDataRef.current?.unitsPerEm;
     const { xAdvance, xOffset } = glyph.positions[0];
 
-    console.info(
-      "advance",
-      xAdvance,
-      xOffset,
-      glyph.advanceWidth,
-      boundingBox.width
-    );
+    // console.info(
+    //   "advance",
+    //   xAdvance,
+    //   xOffset,
+    //   glyph.advanceWidth,
+    //   boundingBox.width
+    // );
 
     if (
       !boundingBox ||
@@ -272,7 +269,116 @@ export const useCanvasRTE = (
     });
   };
 
-  const handleKeypress = (e: KeyboardEvent) => {
+  const insertCharacter = (
+    characterId: string,
+    character: string,
+    type: CharacterType,
+    defaultStyle: Style,
+    newSize: Size
+  ) => {
+    if (insertCharacterIdRef.current === null) {
+      const newLocation = {
+        page: 0,
+        line: 0,
+        lineIndex: 0,
+      };
+
+      const newPosition = {
+        x: 0,
+        y: 0,
+      };
+
+      const newCharacter: Character = {
+        characterId,
+        character,
+        location: newLocation,
+        position: newPosition,
+        size: newSize,
+        style: defaultStyle,
+        type,
+      };
+
+      // add the new character to the master json
+      const next = [...masterJsonRef.current, newCharacter];
+
+      setMasterJson(next);
+
+      setInsertCharcterId(characterId);
+      // return characterId;
+      // window.__canvasRTEInsertCharacterId = characterId;
+    } else {
+      const insertCharacter = masterJsonRef.current.find(
+        (char) => char.characterId === insertCharacterIdRef.current
+      );
+
+      if (!insertCharacter) {
+        return;
+      }
+
+      const newLocation = calculateNextLocation(
+        insertCharacter.location,
+        newSize,
+        type
+      );
+      const newPosition = calculateNextPosition(insertCharacter, newLocation);
+
+      const newCharacter: Character = {
+        characterId,
+        character,
+        location: newLocation,
+        position: newPosition,
+        size: newSize,
+        style: defaultStyle,
+        type,
+      };
+
+      // add the new character to the master json
+      // then calculate the next location and position for all characters after the insert
+      const next = [...masterJsonRef.current, newCharacter];
+      const afterInsert = getAllCharactersAfterInsert(insertCharacter);
+
+      // console.info("afterInsert", afterInsert);
+
+      if (afterInsert.length > 0) {
+        const updated = next.map((char) => {
+          const afterInsertIndex = afterInsert.findIndex(
+            (c) => c.characterId === char.characterId
+          );
+
+          // if the character is after the insert, calculate new location and position
+          if (afterInsertIndex > -1) {
+            const newLocation = calculateNextLocation(
+              char.location,
+              newSize,
+              char.type
+            );
+            const newPosition: Position = {
+              x: char.position.x + newSize.width + letterSpacing,
+              y: char.position.y,
+            };
+
+            return {
+              ...char,
+              location: newLocation,
+              position: newPosition,
+            };
+          }
+
+          return char;
+        });
+
+        // return updated;
+        setMasterJson(updated);
+      } else {
+        // return next;
+        setMasterJson(next);
+      }
+
+      setInsertCharcterId(characterId);
+    }
+  };
+
+  const handleKeydown = (e: KeyboardEvent) => {
     e.preventDefault();
     console.info("keypress", e.key, editorActiveRef.current);
 
@@ -304,6 +410,7 @@ export const useCanvasRTE = (
             );
 
             if (!insertCharacter) {
+              // TODO: enter in empty document?
               return;
             }
 
@@ -313,7 +420,7 @@ export const useCanvasRTE = (
               lineIndex: 0,
             };
 
-            const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
+            const capHeightPx = getCapHeightPx(defaultStyle.fontSize);
 
             const newlineSize: Size = {
               width: 0,
@@ -367,8 +474,40 @@ export const useCanvasRTE = (
           {
           }
           break;
+        case "Escape":
+          {
+            setEditorActive(false);
+            // window.__canvasRTEEditorActive = false;
+          }
+          break;
+        case "Shift":
+          {
+          }
+          break;
+        case "Meta":
+          {
+          }
+          break;
         case "Tab":
           {
+            console.info("tab");
+            const type = "tab";
+            const character = "    ";
+
+            const capHeightPx = getCapHeightPx(defaultStyle.fontSize);
+
+            const tabSize: Size = {
+              width: 20,
+              height: capHeightPx,
+            };
+
+            insertCharacter(
+              characterId,
+              character,
+              type,
+              defaultStyle,
+              tabSize
+            );
           }
           break;
         default:
@@ -392,111 +531,13 @@ export const useCanvasRTE = (
               height: boundingBox?.height,
             };
 
-            //   console.info("newSize", newSize);
-
-            if (insertCharacterIdRef.current === null) {
-              const newLocation = {
-                page: 0,
-                line: 0,
-                lineIndex: 0,
-              };
-
-              const newPosition = {
-                x: 0,
-                y: 0,
-              };
-
-              const newCharacter: Character = {
-                characterId,
-                character,
-                location: newLocation,
-                position: newPosition,
-                size: newSize,
-                style: defaultStyle,
-                type,
-              };
-
-              // add the new character to the master json
-              const next = [...masterJsonRef.current, newCharacter];
-
-              setMasterJson(next);
-
-              setInsertCharcterId(characterId);
-              // return characterId;
-              // window.__canvasRTEInsertCharacterId = characterId;
-            } else {
-              const insertCharacter = masterJsonRef.current.find(
-                (char) => char.characterId === insertCharacterIdRef.current
-              );
-
-              if (!insertCharacter) {
-                return;
-              }
-
-              const newLocation = calculateNextLocation(
-                insertCharacter.location,
-                newSize,
-                type
-              );
-              const newPosition = calculateNextPosition(
-                insertCharacter,
-                newLocation
-              );
-
-              const newCharacter: Character = {
-                characterId,
-                character,
-                location: newLocation,
-                position: newPosition,
-                size: newSize,
-                style: defaultStyle,
-                type,
-              };
-
-              // add the new character to the master json
-              // then calculate the next location and position for all characters after the insert
-              const next = [...masterJsonRef.current, newCharacter];
-              const afterInsert = getAllCharactersAfterInsert(insertCharacter);
-
-              // console.info("afterInsert", afterInsert);
-
-              if (afterInsert.length > 0) {
-                const updated = next.map((char) => {
-                  const afterInsertIndex = afterInsert.findIndex(
-                    (c) => c.characterId === char.characterId
-                  );
-
-                  // if the character is after the insert, calculate new location and position
-                  if (afterInsertIndex > -1) {
-                    const newLocation = calculateNextLocation(
-                      char.location,
-                      newSize,
-                      char.type
-                    );
-                    const newPosition: Position = {
-                      x: char.position.x + newSize.width + letterSpacing,
-                      y: char.position.y,
-                    };
-
-                    return {
-                      ...char,
-                      location: newLocation,
-                      position: newPosition,
-                    };
-                  }
-
-                  return char;
-                });
-
-                // return updated;
-                setMasterJson(updated);
-              } else {
-                // return next;
-                setMasterJson(next);
-              }
-
-              setInsertCharcterId(characterId);
-            }
+            insertCharacter(
+              characterId,
+              character,
+              type,
+              defaultStyle,
+              newSize
+            );
           }
           break;
       }
@@ -518,10 +559,10 @@ export const useCanvasRTE = (
     if (fontData) {
       console.info("welcome!");
 
-      window.addEventListener("keypress", handleKeypress);
+      window.addEventListener("keydown", handleKeydown);
 
       return () => {
-        window.removeEventListener("keypress", handleKeypress);
+        window.removeEventListener("keydown", handleKeydown);
       };
     }
   }, [fontData]);
