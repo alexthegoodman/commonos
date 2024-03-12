@@ -191,7 +191,7 @@ export const useCanvasRTE = (
 
     if (newType === "newline") {
       return {
-        shouldContinue: false,
+        shouldContinue: true, // would be false if working
         nextLocation: getNewlineLocation(insertLocation),
       };
     } else {
@@ -227,7 +227,7 @@ export const useCanvasRTE = (
         return { shouldContinue: !stopCalculating, nextLocation };
       } else {
         return {
-          shouldContinue: false,
+          shouldContinue: true,
           nextLocation: getNewlineLocation(insertLocation),
         };
       }
@@ -250,7 +250,8 @@ export const useCanvasRTE = (
 
   const calculateNextPosition = (
     insertCharacter: Character, // equals previous location in afterInsert
-    newLocation: Location
+    newLocation: Location,
+    newSize: Size
   ) => {
     if (!fontDataRef.current) {
       return insertCharacter.position;
@@ -262,9 +263,7 @@ export const useCanvasRTE = (
     const nextX =
       isNewLine || isNewPage
         ? 0
-        : insertCharacter.position.x +
-          insertCharacter.size.width +
-          letterSpacing;
+        : insertCharacter.position.x + newSize.width + letterSpacing;
     const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
     let nextY = isNewLine
       ? insertCharacter.position.y + capHeightPx
@@ -387,7 +386,8 @@ export const useCanvasRTE = (
       );
       const newPosition = calculateNextPosition(
         insertCharacter,
-        newLocation.nextLocation
+        newLocation.nextLocation,
+        insertCharacter.size
       );
 
       //   console.info("insertCharacter", insertCharacter);
@@ -439,13 +439,13 @@ export const useCanvasRTE = (
             if (useCalculation) {
               let { shouldContinue, nextLocation } = calculateNextLocation(
                 char.location,
-                char.size,
+                newSize,
                 char.type
               );
               useCalculation = shouldContinue;
               newLocation = nextLocation;
 
-              newPosition = calculateNextPosition(char, newLocation);
+              newPosition = calculateNextPosition(char, newLocation, newSize);
             } else {
               newLocation = char.location;
               newPosition = char.position;
@@ -518,7 +518,8 @@ export const useCanvasRTE = (
 
             const newlinePosition = calculateNextPosition(
               insertCharacter,
-              newlineLocation
+              newlineLocation,
+              insertCharacter.size
             );
 
             const newCharacter: Character = {
