@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import * as fontkit from "fontkit";
@@ -124,7 +124,7 @@ export const useCanvasRTE = (
     _setFontData(font);
   };
 
-  console.info("masterJson", masterJson);
+  //   console.info("masterJson", masterJson);
 
   const getCharacterBoundingBox = (
     fontData: fontkit.Font,
@@ -135,14 +135,6 @@ export const useCanvasRTE = (
     const boundingBox = glyph?.bbox;
     const unitsPerEm = fontDataRef.current?.unitsPerEm;
     const { xAdvance, xOffset } = glyph.positions[0];
-
-    // console.info(
-    //   "advance",
-    //   xAdvance,
-    //   xOffset,
-    //   glyph.advanceWidth,
-    //   boundingBox.width
-    // );
 
     if (
       !boundingBox ||
@@ -162,6 +154,32 @@ export const useCanvasRTE = (
     };
   };
 
+  const getNewlineLocation = (insertLocation: Location) => {
+    const proposedLine = insertLocation.line + 1;
+    const linesPerPage = Math.floor(
+      mainTextSize.height / getCapHeightPx(defaultStyle.fontSize)
+    );
+    const isNewPage = proposedLine >= linesPerPage;
+
+    if (isNewPage) {
+      const nextLocation = {
+        page: insertLocation.page + 1,
+        line: 0,
+        lineIndex: 0,
+      };
+
+      return nextLocation;
+    } else {
+      const nextLocation = {
+        page: insertLocation.page,
+        line: proposedLine,
+        lineIndex: 0,
+      };
+
+      return nextLocation;
+    }
+  };
+
   const calculateNextLocation = (
     insertLocation: Location,
     newSize: Size,
@@ -171,23 +189,23 @@ export const useCanvasRTE = (
     // will need to calculate width of current line and compare to page width
 
     if (newType === "newline") {
-      const nextLocation = {
-        page: insertLocation.page,
-        line: insertLocation.line + 1,
-        lineIndex: 0,
-      };
-
-      return nextLocation;
+      return getNewlineLocation(insertLocation);
     } else {
       const currentLine = masterJsonRef.current.filter(
         (char) =>
           char.location.page === insertLocation.page &&
           char.location.line === insertLocation.line
       );
-      const currentLineWidth = currentLine.reduce((acc, char) => {
-        return char.size ? acc + char.size.width + letterSpacing : acc;
+      //   const currentLineWidth = currentLine.reduce((acc, char) => {
+      //     return char.size ? acc + char.size.width + letterSpacing : acc;
+      //   }, 0);
+      const currentLinePrecedingWidth = currentLine.reduce((acc, char) => {
+        return char.location.lineIndex < insertLocation.lineIndex && char.size
+          ? acc + char.size.width + letterSpacing
+          : acc;
       }, 0);
-      const fitsOnLine = currentLineWidth + newSize.width < mainTextSize.width;
+      const fitsOnLine =
+        currentLinePrecedingWidth + newSize.width < mainTextSize.width;
 
       if (fitsOnLine) {
         const nextLocation = {
@@ -198,13 +216,7 @@ export const useCanvasRTE = (
 
         return nextLocation;
       } else {
-        const nextLocation = {
-          page: insertLocation.page,
-          line: insertLocation.line + 1,
-          lineIndex: 0,
-        };
-
-        return nextLocation;
+        return getNewlineLocation(insertLocation);
       }
     }
   };
@@ -224,24 +236,27 @@ export const useCanvasRTE = (
   };
 
   const calculateNextPosition = (
-    insertCharacter: Character,
+    insertCharacter: Character, // equals previous location in afterInsert
     newLocation: Location
   ) => {
-    // TODO: calculate positioning based on bounding box or other factors
-
     if (!fontDataRef.current) {
       return insertCharacter.position;
     }
 
     const isNewLine = newLocation.line > insertCharacter.location.line;
+    const isNewPage = newLocation.page > insertCharacter.location.page;
 
-    const nextX = isNewLine
-      ? 0
-      : insertCharacter.position.x + insertCharacter.size.width + letterSpacing;
+    const nextX =
+      isNewLine || isNewPage
+        ? 0
+        : insertCharacter.position.x +
+          insertCharacter.size.width +
+          letterSpacing;
     const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
-    const nextY = isNewLine
+    let nextY = isNewLine
       ? insertCharacter.position.y + capHeightPx
       : insertCharacter.position.y;
+    nextY = isNewPage ? 0 : nextY;
 
     const nextPosition = {
       x: nextX,
@@ -316,12 +331,16 @@ export const useCanvasRTE = (
         return;
       }
 
+      //   let passSize = insertCharacter.location.page ===
+
       const newLocation = calculateNextLocation(
         insertCharacter.location,
-        newSize,
+        newSize, // pass in 0,0 when newline?
         type
       );
       const newPosition = calculateNextPosition(insertCharacter, newLocation);
+
+      //   console.info("insertCharacter", insertCharacter);
 
       const newCharacter: Character = {
         characterId,
@@ -338,9 +357,10 @@ export const useCanvasRTE = (
       const next = [...masterJsonRef.current, newCharacter];
       const afterInsert = getAllCharactersAfterInsert(insertCharacter);
 
-      // console.info("afterInsert", afterInsert);
+      //   console.info("afterInsert", afterInsert);
 
       if (afterInsert.length > 0) {
+        let precedingChar: any;
         const updated = next.map((char) => {
           const afterInsertIndex = afterInsert.findIndex(
             (c) => c.characterId === char.characterId
@@ -348,21 +368,56 @@ export const useCanvasRTE = (
 
           // if the character is after the insert, calculate new location and position
           if (afterInsertIndex > -1) {
-            const newLocation = calculateNextLocation(
-              char.location,
-              newSize,
-              char.type
-            );
-            const newPosition: Position = {
-              x: char.position.x + newSize.width + letterSpacing,
-              y: char.position.y,
-            };
+            // const charactersOfInsertLine = afterInsert.filter(
+            //   (c) =>
+            //     c.location.page === insertCharacter.location.page &&
+            //     c.location.line === insertCharacter.location.line
+            // );
+            // const isCharacterOfInsertLine = charactersOfInsertLine.find(
+            //   (c) => c.characterId === char.characterId
+            // );
+            // const sizeAdjustment = isCharacterOfInsertLine
+            //   ? newSize
+            //   : { width: 30, height: 0 };
 
-            return {
+            // console.info(
+            //   "isCharacterOfInsertLine",
+            //   isCharacterOfInsertLine,
+            //   sizeAdjustment
+            // );
+
+            // const precedingCharacter = afterInsert[afterInsertIndex - 1];
+
+            const newLocation = precedingChar
+              ? calculateNextLocation(
+                  precedingChar.location,
+                  //   sizeAdjustment,
+                  newSize,
+                  char.type
+                )
+              : calculateNextLocation(
+                  insertCharacter.location,
+                  //   sizeAdjustment,
+                  newSize,
+                  char.type
+                );
+            // const newPosition: Position = {
+            //   x: char.position.x + newSize.width + letterSpacing,
+            //   y: char.position.y,
+            // };
+            const newPosition = precedingChar
+              ? calculateNextPosition(precedingChar, newLocation)
+              : calculateNextPosition(char, newLocation);
+
+            const newChar = {
               ...char,
               location: newLocation,
               position: newPosition,
             };
+
+            precedingChar = newChar;
+
+            return newChar;
           }
 
           return char;
@@ -630,5 +685,23 @@ export const useCanvasRTE = (
     // window.__canvasRTEEditorActive = true;
   };
 
-  return { masterJson, handleCanvasClick, handleTextClick };
+  // TODO: check performance of this
+  const jsonByPage = useMemo(() => {
+    const pages = masterJson.reduce(
+      (acc, char) => {
+        if (!acc[char.location.page]) {
+          acc[char.location.page] = [];
+        }
+
+        acc[char.location.page].push(char);
+
+        return acc;
+      },
+      {} as { [key: number]: Character[] }
+    );
+
+    return pages;
+  }, [masterJson]);
+
+  return { masterJson, jsonByPage, handleCanvasClick, handleTextClick };
 };

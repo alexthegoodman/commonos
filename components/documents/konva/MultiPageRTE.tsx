@@ -29,75 +29,90 @@ export default function MultiPageRTE({ markdown = "" }) {
     height: (documentSizeIn.height - marginSizeIn.y * 2) * pxPerIn,
   };
 
-  const { masterJson, handleCanvasClick, handleTextClick } = useCanvasRTE(
+  const { jsonByPage, handleCanvasClick, handleTextClick } = useCanvasRTE(
     markdown,
     mainTextSize
   );
+
+  console.info("jsonByPage", jsonByPage);
 
   return (
     <>
       <Stage
         ref={stageRef}
         width={documentSize.width}
-        height={documentSize.height}
+        height={documentSize.height * Object.keys(jsonByPage).length}
         // onMouseDown={handleMouseDown}
         // onMousemove={handleMouseMove}
         // onMouseup={handleMouseUp}
         // onMouseDown={handleCanvasClick}
       >
-        <Layer>
-          <Rect
-            x={0}
-            y={0}
-            width={documentSize.width}
-            height={documentSize.height}
-            fill="#e5e5e5"
-          />
-        </Layer>
-        <Layer>
-          <Rect
-            x={marginSize.x}
-            y={marginSize.y}
-            width={mainTextSize.width}
-            height={mainTextSize.height}
-            fill="#fff"
-            onMouseDown={handleCanvasClick}
-          />
-        </Layer>
-        <Layer>
-          <Group x={marginSize.x} y={marginSize.y}>
-            {masterJson.map((charText, i) => {
-              const randomColor = `#${Math.floor(
-                Math.random() * 16777215
-              ).toString(16)}`;
+        {Object.keys(jsonByPage).map((key, i) => {
+          const masterJson = jsonByPage[key];
 
-              return (
-                <>
-                  {/* <Rect
-                  key={`${charText.characterId}-${i}`}
-                  x={charText.position.x}
-                  y={charText.position.y}
-                  width={charText.size.width}
-                  height={charText.size.height}
-                  fill={randomColor}
-                /> */}
-                  <Text
-                    key={`${charText.characterId}-${i}`}
-                    id={charText.characterId}
-                    x={charText?.position?.x}
-                    y={charText?.position?.y}
-                    text={charText.character}
-                    fontSize={charText.style.fontSize}
-                    fontFamily={charText.style.fontFamily}
-                    fontStyle={charText.style.italic ? "italic" : "normal"}
-                    fill={charText.style.color}
-                    onClick={handleTextClick}
-                  />
-                </>
-              );
-            })}
-          </Group>
-        </Layer>
+          return (
+            <>
+              <Layer>
+                <Rect
+                  x={0}
+                  y={documentSize.height * i}
+                  width={documentSize.width}
+                  height={documentSize.height}
+                  fill="#e5e5e5"
+                />
+              </Layer>
+              <Layer>
+                <Rect
+                  x={marginSize.x}
+                  y={documentSize.height * i + marginSize.y}
+                  width={mainTextSize.width}
+                  height={mainTextSize.height}
+                  fill="#fff"
+                  onMouseDown={handleCanvasClick}
+                />
+              </Layer>
+              <Layer>
+                <Group
+                  x={marginSize.x}
+                  y={documentSize.height * i + marginSize.y}
+                >
+                  {masterJson.map((charText, i) => {
+                    const randomColor = `#${Math.floor(
+                      Math.random() * 16777215
+                    ).toString(16)}`;
+
+                    return (
+                      <>
+                        {/* <Rect
+                        key={`${charText.characterId}-${i}`}
+                        x={charText.position.x}
+                        y={charText.position.y}
+                        width={charText.size.width}
+                        height={charText.size.height}
+                        fill={randomColor}
+                      /> */}
+                        <Text
+                          key={`${charText.characterId}-${i}`}
+                          id={charText.characterId}
+                          x={charText?.position?.x}
+                          y={charText?.position?.y}
+                          text={charText.character}
+                          fontSize={charText.style.fontSize}
+                          fontFamily={charText.style.fontFamily}
+                          fontStyle={
+                            charText.style.italic ? "italic" : "normal"
+                          }
+                          fill={charText.style.color}
+                          onClick={handleTextClick}
+                        />
+                      </>
+                    );
+                  })}
+                </Group>
+              </Layer>
+            </>
+          );
+        })}
       </Stage>
       <style jsx>{`
         @font-face {
