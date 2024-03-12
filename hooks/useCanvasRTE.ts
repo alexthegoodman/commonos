@@ -322,7 +322,8 @@ export const useCanvasRTE = (
       if (
         char.type === "newline" &&
         char.location.page === insertCharacter.location.page &&
-        char.location.line >= insertCharacter.location.line
+        char.location.line > insertCharacter.location.line &&
+        char.location.lineIndex === 0
       ) {
         break;
       }
