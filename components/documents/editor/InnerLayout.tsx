@@ -16,7 +16,7 @@ export default function InnerLayout({
   refetch,
 }) {
   const { markdown, plaintext } = context;
-  const initialMarkdwn = plaintext && !markdown ? plaintext : markdown;
+  const initialMarkdown = plaintext && !markdown ? plaintext : markdown;
 
   return (
     <DocumentsContext.Provider
@@ -29,7 +29,7 @@ export default function InnerLayout({
           refetch={refetch}
         /> */}
         {/* <DynamicInner /> */}
-        <MultiPageRTE />
+        <MultiPageRTE markdown={initialMarkdown} />
         <AutoSidebar documentId={documentId} documentData={documentData} />
       </Box>
     </DocumentsContext.Provider>

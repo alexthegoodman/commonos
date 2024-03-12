@@ -4,7 +4,7 @@ import { useCanvasRTE } from "@/hooks/useCanvasRTE";
 import { useRef } from "react";
 import { Group, Layer, Rect, Stage, Text } from "react-konva";
 
-export default function MultiPageRTE() {
+export default function MultiPageRTE({ markdown = "" }) {
   const stageRef = useRef(null);
 
   const pxPerIn = 96;
@@ -30,7 +30,7 @@ export default function MultiPageRTE() {
   };
 
   const { masterJson, handleCanvasClick, handleTextClick } = useCanvasRTE(
-    "Hello World!",
+    markdown,
     mainTextSize
   );
 
@@ -107,6 +107,9 @@ export default function MultiPageRTE() {
           font-style: normal;
         }
       `}</style>
+      <div className="preloadFont" style={{ fontFamily: "Inter" }}>
+        .
+      </div>
     </>
   );
 }

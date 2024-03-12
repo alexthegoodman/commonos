@@ -84,6 +84,14 @@ export const useCanvasRTE = (
 ) => {
   const letterSpacing = 1;
   const defaultSpacing = 5;
+  const defaultStyle = {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "normal",
+    fontFamily: "Inter",
+    italic: false,
+    underline: false,
+  };
 
   const [editorActive, _setEditorActive] = useState(false);
   // use ref to get up-to-date values in event listener
@@ -180,13 +188,6 @@ export const useCanvasRTE = (
         return char.size ? acc + char.size.width + letterSpacing : acc;
       }, 0);
       const fitsOnLine = currentLineWidth + newSize.width < mainTextSize.width;
-
-      // console.info(
-      //   "fitsOnLine",
-      //   fitsOnLine,
-      //   currentLineWidth + size.width,
-      //   mainTextSize.width
-      // );
 
       if (fitsOnLine) {
         const nextLocation = {
@@ -391,15 +392,6 @@ export const useCanvasRTE = (
 
       const characterId = uuidv4();
 
-      const defaultStyle = {
-        color: "black",
-        fontSize: 12,
-        fontWeight: "normal",
-        fontFamily: "Inter",
-        italic: false,
-        underline: false,
-      };
-
       switch (e.key) {
         case "Enter":
           {
@@ -566,6 +558,54 @@ export const useCanvasRTE = (
       };
     }
   }, [fontData]);
+
+  useEffect(() => {
+    if (initialMarkdown && fontDataRef.current) {
+      initialMarkdown.split("").forEach((character) => {
+        if (!fontDataRef.current) {
+          return;
+        }
+
+        // TODO: handle newlines in markdown
+
+        if (character === "\n") {
+          const characterId = uuidv4();
+          const type = "newline";
+          const character = "";
+
+          const capHeightPx = getCapHeightPx(defaultStyle.fontSize);
+
+          const newSize: Size = {
+            width: 0,
+            height: capHeightPx,
+          };
+
+          insertCharacter(characterId, character, type, defaultStyle, newSize);
+          return;
+        } else {
+          const characterId = uuidv4();
+          const type = "character";
+
+          const boundingBox = getCharacterBoundingBox(
+            fontDataRef.current,
+            character,
+            defaultStyle
+          );
+
+          if (!boundingBox) {
+            return;
+          }
+
+          const newSize = {
+            width: boundingBox?.width,
+            height: boundingBox?.height,
+          };
+
+          insertCharacter(characterId, character, type, defaultStyle, newSize);
+        }
+      });
+    }
+  }, [initialMarkdown, fontData]);
 
   // when no text exists, will calculate at first character
   const handleCanvasClick = (e: KonvaEventObject<MouseEvent>) => {
