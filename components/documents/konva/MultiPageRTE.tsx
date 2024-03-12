@@ -29,12 +29,10 @@ export default function MultiPageRTE({ markdown = "" }) {
     height: (documentSizeIn.height - marginSizeIn.y * 2) * pxPerIn,
   };
 
-  const { jsonByPage, handleCanvasClick, handleTextClick } = useCanvasRTE(
-    markdown,
-    mainTextSize
-  );
+  const { masterJson, jsonByPage, handleCanvasClick, handleTextClick } =
+    useCanvasRTE(markdown, mainTextSize);
 
-  console.info("jsonByPage", jsonByPage);
+  console.info("jsonByPage", masterJson);
 
   return (
     <>
@@ -42,17 +40,18 @@ export default function MultiPageRTE({ markdown = "" }) {
         ref={stageRef}
         width={documentSize.width}
         height={documentSize.height * Object.keys(jsonByPage).length}
+        // height={documentSize.height}
         // onMouseDown={handleMouseDown}
         // onMousemove={handleMouseMove}
         // onMouseup={handleMouseUp}
         // onMouseDown={handleCanvasClick}
       >
-        {Object.keys(jsonByPage).map((key, i) => {
-          const masterJson = jsonByPage[key];
+        <Layer>
+          {Object.keys(jsonByPage).map((key, i) => {
+            const masterJson = jsonByPage[key];
 
-          return (
-            <>
-              <Layer>
+            return (
+              <>
                 <Rect
                   x={0}
                   y={documentSize.height * i}
@@ -60,8 +59,6 @@ export default function MultiPageRTE({ markdown = "" }) {
                   height={documentSize.height}
                   fill="#e5e5e5"
                 />
-              </Layer>
-              <Layer>
                 <Rect
                   x={marginSize.x}
                   y={documentSize.height * i + marginSize.y}
@@ -70,8 +67,6 @@ export default function MultiPageRTE({ markdown = "" }) {
                   fill="#fff"
                   onMouseDown={handleCanvasClick}
                 />
-              </Layer>
-              <Layer>
                 <Group
                   x={marginSize.x}
                   y={documentSize.height * i + marginSize.y}
@@ -83,14 +78,6 @@ export default function MultiPageRTE({ markdown = "" }) {
 
                     return (
                       <>
-                        {/* <Rect
-                        key={`${charText.characterId}-${i}`}
-                        x={charText.position.x}
-                        y={charText.position.y}
-                        width={charText.size.width}
-                        height={charText.size.height}
-                        fill={randomColor}
-                      /> */}
                         <Text
                           key={`${charText.characterId}-${i}`}
                           id={charText.characterId}
@@ -109,10 +96,45 @@ export default function MultiPageRTE({ markdown = "" }) {
                     );
                   })}
                 </Group>
-              </Layer>
-            </>
-          );
-        })}
+              </>
+            );
+          })}
+        </Layer>
+        {/* <Layer>
+          <Rect
+            x={0}
+            y={0}
+            width={documentSize.width}
+            height={documentSize.height}
+            fill="#e5e5e5"
+          />
+          <Rect
+            x={marginSize.x}
+            y={0}
+            width={mainTextSize.width}
+            height={mainTextSize.height}
+            fill="#fff"
+            onMouseDown={handleCanvasClick}
+          />
+          {masterJson.map((charText, i) => {
+            return (
+              <>
+                <Text
+                  key={`${charText.characterId}-${i}`}
+                  id={charText.characterId}
+                  x={charText?.position?.x}
+                  y={charText?.position?.y}
+                  text={charText.character}
+                  fontSize={charText.style.fontSize}
+                  fontFamily={charText.style.fontFamily}
+                  fontStyle={charText.style.italic ? "italic" : "normal"}
+                  fill={charText.style.color}
+                  onClick={handleTextClick}
+                />
+              </>
+            );
+          })}
+        </Layer> */}
       </Stage>
       <style jsx>{`
         @font-face {
