@@ -32,7 +32,7 @@ export default function MultiPageRTE({ markdown = "" }) {
   const { masterJson, jsonByPage, handleCanvasClick, handleTextClick } =
     useCanvasRTE(markdown, mainTextSize);
 
-  console.info("jsonByPage", masterJson);
+  console.info("masterJson", masterJson);
 
   return (
     <>
