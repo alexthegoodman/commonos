@@ -64,7 +64,9 @@ export default function PostForm({
   const onSubmit = async (data: any) => {
     onFormSubmit({ ...data, markdown });
     reset();
-    setClearEffect(Date.now());
+    if (!isUpdate) {
+      setClearEffect(Date.now());
+    }
     setFormInfoMessage("Saved successfully!");
   };
 

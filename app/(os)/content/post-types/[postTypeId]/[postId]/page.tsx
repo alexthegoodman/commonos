@@ -1,7 +1,12 @@
 "use client";
 
 import PostForm from "@/components/content/forms/PostForm";
-import { createPost, getPost, getPostType } from "@/fetchers/content";
+import {
+  createPost,
+  getPost,
+  getPostType,
+  updatePost,
+} from "@/fetchers/content";
 import { Box, Typography } from "@mui/material";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
@@ -36,7 +41,7 @@ export default function AddPost({ params }) {
     setIsLoading(true);
     console.info("onFormSubmit", values);
     const { title, markdown, ...fieldValues } = values;
-    await createPost(token, postTypeId, title, markdown, fieldValues);
+    await updatePost(token, postId, title, markdown, fieldValues);
     mutate("postType" + postTypeId, () => getPostType(token, postTypeId));
     setIsLoading(false);
   };
