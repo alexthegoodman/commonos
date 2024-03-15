@@ -149,7 +149,7 @@ function QuestionItem({ type, fileId = null, question, state, dispatch }) {
         width="fit-content"
         flexWrap="wrap"
       >
-        {question.possibleAnswers.map((answer, j) => {
+        {question?.possibleAnswers?.map((answer, j) => {
           const chosen = question.chosenAnswers.find((a) => a === answer)
             ? true
             : false;
@@ -961,6 +961,7 @@ export default function FlowEditor({ id, prompt }) {
               <Typography variant="overline">Background Information</Typography>
               <Typography variant="body2">
                 Please provide some background information about this file.
+                Adding original details increases your effectiveness.
               </Typography>
               <TextareaAutosize
                 style={{
