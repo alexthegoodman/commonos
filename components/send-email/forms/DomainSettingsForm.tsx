@@ -1,11 +1,24 @@
 "use client";
 
+import { DeleteButton } from "@/components/content/main/ContentTable";
 import FormInput from "@/components/core/fields/FormInput";
 import FormMessage from "@/components/core/fields/FormMessage";
 import FormSelect from "@/components/core/fields/FormSelect";
 import EmptyNotice from "@/components/core/layout/EmptyNotice";
-import { myDomainSettings, putDomainSettings } from "@/fetchers/send-email";
-import { Box, Button, Grid, Typography, styled } from "@mui/material";
+import {
+  deleteDomainSettings,
+  myDomainSettings,
+  putDomainSettings,
+} from "@/fetchers/send-email";
+import { Delete } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Grid,
+  IconButton,
+  Typography,
+  styled,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCookies } from "react-cookie";
@@ -69,6 +82,13 @@ export default function DomainSettingsForm() {
 
   const onError = (error: any) => console.error(error);
 
+  const handleDelete = async () => {
+    setFormLoading(true);
+    await deleteDomainSettings(token);
+    mutate("domainSettingsKey", () => myDomainSettings(token));
+    setFormLoading(false);
+  };
+
   console.info("dkimdata", dkimData);
 
   return (
@@ -79,13 +99,13 @@ export default function DomainSettingsForm() {
           display: "flex",
           flexDirection: "column",
           gap: "10px",
-          marginBottom: "10px",
+          marginBottom: "25px",
           maxWidth: "450px",
         }}
       >
         <FormMessage type="error" message={formErrorMessage} />
 
-        <Box>
+        <Box display="flex" flexDirection="row">
           <FormInput
             placeholder="Domain Name (ex. commonos.cloud)"
             type="text"
@@ -100,8 +120,19 @@ export default function DomainSettingsForm() {
                 /^(?!:\/\/)([a-zA-Z0-9]+\.)?[a-zA-Z0-9][a-zA-Z0-9-]+\.[a-zA-Z]{2,6}?$/i,
             }}
             fullWidth
+            style={{ minWidth: "400px" }}
           />
+          {domainName && (
+            <DeleteButton
+              style={{ minWidth: "70px", marginLeft: "5px" }}
+              id=""
+              onDelete={handleDelete}
+              disabled={isLoading}
+              message="Are you sure you'd like to delete this domain? This action cannot be undone. It will also remove all associated email addresses, threads, and messages."
+            />
+          )}
         </Box>
+
         {!domainName && (
           <Button
             variant="contained"
@@ -121,11 +152,13 @@ export default function DomainSettingsForm() {
           </Typography>
           <Typography variant="body2" mb={2}>
             Add the following DNS records to your domain to verify it with
-            CommonOS.
+            CommonOS. It is recommended to lower your TTL for faster DNS
+            propagation.
           </Typography>
-          <MiniTable>
+          <MiniTable style={{ marginBottom: "10px" }}>
             <thead>
               <tr>
+                <th>Type</th>
                 <th>Host</th>
                 <th>Value</th>
               </tr>
@@ -134,6 +167,7 @@ export default function DomainSettingsForm() {
               {dkimData.map((token: string) => {
                 return (
                   <tr key={token}>
+                    <td>CNAME</td>
                     <td>
                       {token}._domainkey.{domainName}
                     </td>
@@ -141,6 +175,24 @@ export default function DomainSettingsForm() {
                   </tr>
                 );
               })}
+            </tbody>
+          </MiniTable>
+          <MiniTable>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Host</th>
+                <th>Priority</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>MX</td>
+                <td>{domainName}</td>
+                <td>10</td>
+                <td>{"inbound-smtp.us-east-2.amazonaws.com"}</td>
+              </tr>
             </tbody>
           </MiniTable>
         </>

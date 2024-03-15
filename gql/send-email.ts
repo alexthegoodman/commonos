@@ -23,3 +23,9 @@ export const putDomainSettingsMutation = gql`
     }
   }
 `;
+
+export const deleteDomainSettingsMutation = gql`
+  mutation DeleteDomainSettingsMutation {
+    deleteDomainSettings
+  }
+`;

@@ -1,4 +1,5 @@
 import {
+  deleteDomainSettingsMutation,
   myDomainSettingsQuery,
   putDomainSettingsMutation,
 } from "@/gql/send-email";
@@ -23,4 +24,14 @@ export const putDomainSettings = async (token: string, domainName: string) => {
   )) as any;
 
   return putDomainSettings;
+};
+
+export const deleteDomainSettings = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { deleteDomainSettings } = (await graphClient.client?.request(
+    deleteDomainSettingsMutation
+  )) as any;
+
+  return deleteDomainSettings;
 };
