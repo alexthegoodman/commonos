@@ -197,6 +197,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 export const DeleteButton = ({
   style,
   id,
+  message,
   onDelete,
   disabled,
   ...buttonProps
@@ -225,7 +226,7 @@ export const DeleteButton = ({
         <DialogTitle>{"Are you sure?"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this item?
+            {message ? message : "Are you sure you want to delete this item?"}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
