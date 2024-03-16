@@ -15,5 +15,5 @@ export const fullDomainPort =
 
 export const graphqlUrl =
   env === "production"
-    ? "https://commonos-server-bf2a40953d4d.herokuapp.com/graphql"
+    ? "https://api.commonos.cloud/graphql"
     : `http://localhost:4000/graphql`;
