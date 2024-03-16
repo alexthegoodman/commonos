@@ -32,7 +32,7 @@ const EditorHeader = ({
   const [hasMounted, setHasMounted] = React.useState(false);
 
   const updateDocument = async (args: any) => {
-    const { updateDocument } = await graphClient.client?.request(
+    const { updateDocument } = await graphClient?.request(
       updateDocumentMutation,
       {
         documentId,

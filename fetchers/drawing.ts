@@ -10,7 +10,7 @@ import graphClient from "../helpers/GQLClient";
 export const getDrawingData = async (token: string, drawingId: string) => {
   graphClient.setupClient(token);
 
-  const { drawing } = (await graphClient.client?.request(drawingQuery, {
+  const { drawing } = (await graphClient?.request(drawingQuery, {
     drawingId,
   })) as any;
 
@@ -20,9 +20,7 @@ export const getDrawingData = async (token: string, drawingId: string) => {
 export const getDrawingsData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myDrawings } = (await graphClient.client?.request(
-    myDrawingsQuery
-  )) as any;
+  const { myDrawings } = (await graphClient?.request(myDrawingsQuery)) as any;
 
   return myDrawings;
 };
@@ -30,7 +28,7 @@ export const getDrawingsData = async (token: string) => {
 export const newDrawing = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { newDrawing } = (await graphClient.client?.request(
+  const { newDrawing } = (await graphClient?.request(
     newDrawingMutation
   )) as any;
 
@@ -45,14 +43,11 @@ export const updateDrawing = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateDrawing } = (await graphClient.client?.request(
-    updateDrawingMutation,
-    {
-      drawingId,
-      title,
-      context,
-    }
-  )) as any;
+  const { updateDrawing } = (await graphClient?.request(updateDrawingMutation, {
+    drawingId,
+    title,
+    context,
+  })) as any;
 
   return updateDrawing;
 };
@@ -66,15 +61,12 @@ export const simpleUpload = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { simpleUpload } = (await graphClient.client?.request(
-    simpleUploadMutation,
-    {
-      fileName,
-      fileSize,
-      fileType,
-      fileData,
-    }
-  )) as any;
+  const { simpleUpload } = (await graphClient?.request(simpleUploadMutation, {
+    fileName,
+    fileSize,
+    fileType,
+    fileData,
+  })) as any;
 
   return simpleUpload;
 };

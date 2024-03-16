@@ -14,9 +14,7 @@ import graphClient from "../helpers/GQLClient";
 export const myPostTypes = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myPostTypes } = (await graphClient.client?.request(
-    myPostTypesQuery
-  )) as any;
+  const { myPostTypes } = (await graphClient?.request(myPostTypesQuery)) as any;
 
   return myPostTypes;
 };
@@ -28,7 +26,7 @@ export const createPostType = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { createPostType } = (await graphClient.client?.request(
+  const { createPostType } = (await graphClient?.request(
     createPostTypeMutation,
     {
       name,
@@ -47,10 +45,11 @@ export const updatePostType = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updatePostType } = (await graphClient.client?.request(
-    updatePostMutation,
-    { postTypeId, name, fields }
-  )) as any;
+  const { updatePostType } = (await graphClient?.request(updatePostMutation, {
+    postTypeId,
+    name,
+    fields,
+  })) as any;
 
   return updatePostType;
 };
@@ -58,7 +57,7 @@ export const updatePostType = async (
 export const getPostType = async (token: string, postTypeId: string) => {
   graphClient.setupClient(token);
 
-  const { postType } = (await graphClient.client?.request(postTypeQuery, {
+  const { postType } = (await graphClient?.request(postTypeQuery, {
     postTypeId,
   })) as any;
 
@@ -74,15 +73,12 @@ export const createPost = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { createPost } = (await graphClient.client?.request(
-    createPostMutation,
-    {
-      postTypeId,
-      title,
-      markdown,
-      fields: JSON.stringify(fields),
-    }
-  )) as any;
+  const { createPost } = (await graphClient?.request(createPostMutation, {
+    postTypeId,
+    title,
+    markdown,
+    fields: JSON.stringify(fields),
+  })) as any;
 
   return createPost;
 };
@@ -96,15 +92,12 @@ export const updatePost = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updatePost } = (await graphClient.client?.request(
-    updatePostMutation,
-    {
-      postId,
-      title,
-      markdown,
-      fields: JSON.stringify(fields),
-    }
-  )) as any;
+  const { updatePost } = (await graphClient?.request(updatePostMutation, {
+    postId,
+    title,
+    markdown,
+    fields: JSON.stringify(fields),
+  })) as any;
 
   return updatePost;
 };
@@ -112,7 +105,7 @@ export const updatePost = async (
 export const myPosts = async (token: string, postTypeId: string) => {
   graphClient.setupClient(token);
 
-  const { myPosts } = (await graphClient.client?.request(myPostsQuery, {
+  const { myPosts } = (await graphClient?.request(myPostsQuery, {
     postTypeId,
   })) as any;
 
@@ -122,7 +115,7 @@ export const myPosts = async (token: string, postTypeId: string) => {
 export const getPost = async (token: string, postId: string) => {
   graphClient.setupClient(token);
 
-  const { post } = (await graphClient.client?.request(postQuery, {
+  const { post } = (await graphClient?.request(postQuery, {
     postId,
   })) as any;
 
@@ -132,7 +125,7 @@ export const getPost = async (token: string, postId: string) => {
 export const togglePublished = async (token: string, postId: string) => {
   graphClient.setupClient(token);
 
-  const { togglePublished } = (await graphClient.client?.request(
+  const { togglePublished } = (await graphClient?.request(
     togglePublishedMutation,
     {
       postId,
@@ -145,12 +138,9 @@ export const togglePublished = async (token: string, postId: string) => {
 export const deletePost = async (token: string, postId: string) => {
   graphClient.setupClient(token);
 
-  const { deletePost } = (await graphClient.client?.request(
-    deletePostMutation,
-    {
-      postId,
-    }
-  )) as any;
+  const { deletePost } = (await graphClient?.request(deletePostMutation, {
+    postId,
+  })) as any;
 
   return deletePost;
 };

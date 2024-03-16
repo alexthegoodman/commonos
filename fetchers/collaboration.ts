@@ -8,7 +8,7 @@ import graphClient from "../helpers/GQLClient";
 export const getOrganizationsData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myOrganizations } = (await graphClient.client?.request(
+  const { myOrganizations } = (await graphClient?.request(
     myOrganiationsQuery
   )) as any;
 
@@ -18,7 +18,7 @@ export const getOrganizationsData = async (token: string) => {
 export const createOrganization = async (token: string, name: string) => {
   graphClient.setupClient(token);
 
-  const { createOrganization } = (await graphClient.client?.request(
+  const { createOrganization } = (await graphClient?.request(
     createOrganizationMutation,
     { name }
   )) as any;
@@ -33,10 +33,10 @@ export const createProject = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { createProject } = (await graphClient.client?.request(
-    createProjectMutation,
-    { organizationId, title }
-  )) as any;
+  const { createProject } = (await graphClient?.request(createProjectMutation, {
+    organizationId,
+    title,
+  })) as any;
 
   return createProject;
 };

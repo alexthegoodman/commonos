@@ -8,7 +8,7 @@ import graphClient from "@/helpers/GQLClient";
 export const myDomainSettings = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myDomainSettings } = (await graphClient.client?.request(
+  const { myDomainSettings } = (await graphClient?.request(
     myDomainSettingsQuery
   )) as any;
 
@@ -18,7 +18,7 @@ export const myDomainSettings = async (token: string) => {
 export const putDomainSettings = async (token: string, domainName: string) => {
   graphClient.setupClient(token);
 
-  const { putDomainSettings } = (await graphClient.client?.request(
+  const { putDomainSettings } = (await graphClient?.request(
     putDomainSettingsMutation,
     { domainName }
   )) as any;
@@ -29,7 +29,7 @@ export const putDomainSettings = async (token: string, domainName: string) => {
 export const deleteDomainSettings = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { deleteDomainSettings } = (await graphClient.client?.request(
+  const { deleteDomainSettings } = (await graphClient?.request(
     deleteDomainSettingsMutation
   )) as any;
 

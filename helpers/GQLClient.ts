@@ -22,6 +22,26 @@ export class GQLClient {
 
     return self;
   }
+
+  async request(query: string, variables?: any) {
+    if (!this.client) {
+      throw new Error("Client not setup");
+    }
+
+    let data = null;
+    try {
+      data = await this.client.request(query, variables);
+    } catch (error) {
+      console.error("getUserData error", error);
+      if (error.message.includes("JWT EXPIRED")) {
+        window.location.href = "/login";
+      } else if (error.message.includes("JWT MALFORMED")) {
+        window.location.href = "/login";
+      }
+    }
+
+    return data;
+  }
 }
 
 const graphClient = new GQLClient(graphqlUrl);
