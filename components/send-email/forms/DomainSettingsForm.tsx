@@ -127,7 +127,7 @@ export default function DomainSettingsForm() {
               style={{ minWidth: "70px", marginLeft: "5px" }}
               id=""
               onDelete={handleDelete}
-              disabled={isLoading}
+              disabled={formLoading || isLoading}
               message="Are you sure you'd like to delete this domain? This action cannot be undone. It will also remove all associated email addresses, threads, and messages."
             />
           )}
@@ -139,7 +139,7 @@ export default function DomainSettingsForm() {
             color="success"
             type="submit"
             style={{ marginTop: "5px" }}
-            disabled={isLoading}
+            disabled={formLoading || isLoading}
           >
             Save Domain
           </Button>
