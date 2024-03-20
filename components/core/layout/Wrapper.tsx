@@ -19,6 +19,8 @@ export const TabsWrapper = styled("div")(({ theme }) => ({
 }));
 
 export const Tab = styled(Button)(({ theme }) => ({
+  // display: "flex",
+  // flexDirection: "row",
   textTransform: "none",
   fontSize: "0.9rem",
   fontWeight: "semibold",
@@ -39,11 +41,14 @@ export const Tab = styled(Button)(({ theme }) => ({
 }));
 
 export const LiveTab = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
   textTransform: "none",
   fontSize: "0.9rem",
   fontWeight: "semibold",
   minHeight: "40px",
   height: "40px",
+  whiteSpace: "pre",
   borderRadius: "15px !important",
   marginRight: "10px",
   "&:last-of-type": {

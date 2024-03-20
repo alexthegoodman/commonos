@@ -37,6 +37,8 @@ import { LiveTab, Tab, TabsWrapper } from "../layout/Wrapper";
 import { v4 as uuidv4 } from "uuid";
 
 const Ctrls = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "row",
   background: "#c8cc7c",
   borderRadius: "25px",
   padding: "10px",
@@ -44,6 +46,7 @@ const Ctrls = styled(Box)(({ theme }) => ({
     color: "white",
     borderColor: "white",
     backgroundColor: "rgba(0, 0, 0, 0.1) !important",
+    whiteSpace: "pre",
   },
 }));
 
