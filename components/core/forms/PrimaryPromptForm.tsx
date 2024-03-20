@@ -166,7 +166,15 @@ const PrimaryPromptForm = ({
 
   return (
     <Box>
-      <Alert severity="info" sx={{ borderRadius: "25px", padding: "15px" }}>
+      <Alert
+        severity="info"
+        sx={{
+          borderRadius: "25px",
+          padding: "15px",
+          position: "relative",
+          zIndex: "10",
+        }}
+      >
         <Typography variant="body1" mb={1}>
           The magic of CommonOS is in the Flow experience.
           <br />
