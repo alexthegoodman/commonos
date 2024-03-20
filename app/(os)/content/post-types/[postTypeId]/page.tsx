@@ -45,7 +45,7 @@ export default function PostType({ params }) {
               </Button>
             </Box>
           }
-          //   total={companiesData?.count}
+          total={postTypeData?.postCount}
           rows={postTypeData?.posts}
           onDelete={handleRowDelete}
         />

@@ -57,11 +57,11 @@ export const updatePostType = async (
 export const getPostType = async (token: string, postTypeId: string) => {
   graphClient.setupClient(token);
 
-  const { postType } = (await graphClient?.request(postTypeQuery, {
+  const { postType, postCount } = (await graphClient?.request(postTypeQuery, {
     postTypeId,
   })) as any;
 
-  return postType;
+  return { ...postType, postCount };
 };
 
 export const createPost = async (
@@ -105,11 +105,11 @@ export const updatePost = async (
 export const myPosts = async (token: string, postTypeId: string) => {
   graphClient.setupClient(token);
 
-  const { myPosts } = (await graphClient?.request(myPostsQuery, {
+  const { rows, count } = (await graphClient?.request(myPostsQuery, {
     postTypeId,
   })) as any;
 
-  return myPosts;
+  return { rows, count };
 };
 
 export const getPost = async (token: string, postId: string) => {
