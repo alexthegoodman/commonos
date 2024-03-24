@@ -11,16 +11,16 @@ const blobToBuffer = async (blob: Blob) => {
 };
 
 const loadFont = async (setFont: (font: fontkit.Font) => void) => {
-  const loadBlob = async (blob: Blob) => {
+  try {
+    const response = await fetch("/fonts/Inter-Regular.ttf");
+    const blob = await response.blob();
     const buffer = await blobToBuffer(blob);
-
-    let font = fontkit.create(buffer);
+    const font = fontkit.create(buffer);
     setFont(font as fontkit.Font);
-  };
-
-  fetch("/fonts/Inter-Regular.ttf")
-    .then((res) => res.blob())
-    .then(loadBlob, console.error);
+  } catch (error) {
+    console.error("Error loading font", error);
+    // TODO: show snackbar, disable loading of initial text, possibly try loading other font
+  }
 };
 
 export type Location = {
@@ -72,15 +72,17 @@ export type DocumentSize = {
 };
 
 // extend window type
-// declare global {
-//   interface Window {
-//     __canvasRTEEditorActive: boolean;
-//     __canvasRTEInsertCharacterId: string | null;
-//   }
-// }
+declare global {
+  interface Window {
+    // __canvasRTEEditorActive: boolean;
+    __canvasRTEInsertCharacterId: string | null;
+    __canvasRTEInsertCharacterIndex: number;
+  }
+}
 
 // window.__canvasRTEEditorActive = false;
-// window.__canvasRTEInsertCharacterId = null;
+window.__canvasRTEInsertCharacterId = null;
+window.__canvasRTEInsertCharacterIndex = 0;
 
 export const useCanvasRTE = (
   initialMarkdown: string,
@@ -199,9 +201,12 @@ export const useCanvasRTE = (
     }
   };
 
-  const getCurrentLine = (insertLocation: Location) => {
+  const getCurrentLine = (
+    insertLocation: Location,
+    characters: Character[]
+  ) => {
     // PERF: check
-    const currentLine = masterJsonRef.current.filter(
+    const currentLine = characters.filter(
       (char) =>
         char?.location?.page === insertLocation.page &&
         char?.location?.line === insertLocation.line
@@ -210,8 +215,11 @@ export const useCanvasRTE = (
     return currentLine;
   };
 
-  const getCurrentLinePrecedingWidth = (insertLocation: Location) => {
-    const currentLine = getCurrentLine(insertLocation);
+  const getCurrentLinePrecedingWidth = (
+    insertLocation: Location,
+    characters: Character[]
+  ) => {
+    const currentLine = getCurrentLine(insertLocation, characters);
     const currentLinePrecedingWidth = currentLine.reduce((acc, char) => {
       if (!char.location) return acc;
       return char.location?.lineIndex < insertLocation.lineIndex && char.size
@@ -269,8 +277,7 @@ export const useCanvasRTE = (
   const calculateNextPosition = (
     insertCharacter: Character,
     newLocation: Location,
-    newSize: Size,
-    replace: boolean = false
+    updated: Character[]
   ) => {
     if (!insertCharacter) {
       return {
@@ -296,7 +303,7 @@ export const useCanvasRTE = (
     let nextX =
       isNewLine || isNewPage
         ? 0
-        : getCurrentLinePrecedingWidth(insertCharacter.location);
+        : getCurrentLinePrecedingWidth(insertCharacter.location, updated);
 
     const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
 
@@ -335,81 +342,102 @@ export const useCanvasRTE = (
 
   // const getEndOfParagraphLocation = (insertCharacter: Character) => {};
 
+  // const getCharactersBetweenInsertAndParagraphEnd = (
+  //   insertCharacter: Character
+  // ) => {
+  //   let returnArray = [] as Character[];
+  //   // TODO: need to address traversing whole object
+
+  //   let stoppingNewlines: Character[] = [];
+  //   // PERF: check
+  //   for (let i = 0; i < masterJsonRef.current.length; i++) {
+  //     const char = masterJsonRef.current[i];
+
+  //     if (char.location && insertCharacter.location) {
+  //       if (
+  //         char.type === "newline" &&
+  //         char.location.page === insertCharacter.location.page &&
+  //         char.location.line > insertCharacter.location.line &&
+  //         char.location.lineIndex === 0
+  //       ) {
+  //         stoppingNewlines.push(char);
+
+  //         break;
+  //       }
+  //     }
+  //   }
+
+  //   const closestNewline = stoppingNewlines.reduce((acc, newline) => {
+  //     return newline.location &&
+  //       acc.location &&
+  //       newline.location.line < acc.location.line
+  //       ? newline
+  //       : acc;
+  //   }, stoppingNewlines[0]);
+
+  //   // console.info("stoppingNewlines", closestNewline, stoppingNewlines);
+
+  //   if (!closestNewline) {
+  //     return [];
+  //   }
+
+  //   // PERF: check
+  //   for (let i = 0; i < masterJsonRef.current.length; i++) {
+  //     const char = masterJsonRef.current[i];
+
+  //     if (
+  //       char.location &&
+  //       insertCharacter.location &&
+  //       closestNewline.location
+  //     ) {
+  //       if (
+  //         char.location.page > insertCharacter.location.page &&
+  //         char.location.page <= closestNewline?.location.page
+  //       ) {
+  //         returnArray.push(char);
+  //       } else if (
+  //         char.location.page === insertCharacter.location.page &&
+  //         char.location.page <= closestNewline?.location.page
+  //       ) {
+  //         if (
+  //           char.location.line > insertCharacter.location.line &&
+  //           char.location.line <= closestNewline?.location.line
+  //         ) {
+  //           returnArray.push(char);
+  //         } else if (
+  //           char.location.line === insertCharacter.location.line &&
+  //           char.location.line <= closestNewline?.location.line
+  //         ) {
+  //           if (char.location.lineIndex > insertCharacter.location.lineIndex) {
+  //             returnArray.push(char);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   return returnArray;
+  // };
+
   const getCharactersBetweenInsertAndParagraphEnd = (
     insertCharacter: Character
   ) => {
-    let returnArray = [] as Character[];
-    // TODO: need to address traversing whole object
+    const characters = masterJsonRef.current.filter((char) => {
+      if (!char.location) return false;
+      if (!insertCharacter.location) return false;
+      if (insertCharacter.paragraphIndex === null) return false;
 
-    let stoppingNewlines: Character[] = [];
-    // PERF: check
-    for (let i = 0; i < masterJsonRef.current.length; i++) {
-      const char = masterJsonRef.current[i];
+      return (
+        char.paragraphIndex === insertCharacter.paragraphIndex &&
+        (char.location?.line > insertCharacter.location?.line ||
+          (char.location?.line === insertCharacter.location?.line &&
+            char.location?.lineIndex > insertCharacter.location?.lineIndex))
+      );
+    });
 
-      if (char.location && insertCharacter.location) {
-        if (
-          char.type === "newline" &&
-          char.location.page === insertCharacter.location.page &&
-          char.location.line > insertCharacter.location.line &&
-          char.location.lineIndex === 0
-        ) {
-          stoppingNewlines.push(char);
+    console.info("characters", characters);
 
-          break;
-        }
-      }
-    }
-
-    const closestNewline = stoppingNewlines.reduce((acc, newline) => {
-      return newline.location &&
-        acc.location &&
-        newline.location.line < acc.location.line
-        ? newline
-        : acc;
-    }, stoppingNewlines[0]);
-
-    // console.info("stoppingNewlines", closestNewline, stoppingNewlines);
-
-    if (!closestNewline) {
-      return [];
-    }
-
-    // PERF: check
-    for (let i = 0; i < masterJsonRef.current.length; i++) {
-      const char = masterJsonRef.current[i];
-
-      if (
-        char.location &&
-        insertCharacter.location &&
-        closestNewline.location
-      ) {
-        if (
-          char.location.page > insertCharacter.location.page &&
-          char.location.page <= closestNewline?.location.page
-        ) {
-          returnArray.push(char);
-        } else if (
-          char.location.page === insertCharacter.location.page &&
-          char.location.page <= closestNewline?.location.page
-        ) {
-          if (
-            char.location.line > insertCharacter.location.line &&
-            char.location.line <= closestNewline?.location.line
-          ) {
-            returnArray.push(char);
-          } else if (
-            char.location.line === insertCharacter.location.line &&
-            char.location.line <= closestNewline?.location.line
-          ) {
-            if (char.location.lineIndex > insertCharacter.location.lineIndex) {
-              returnArray.push(char);
-            }
-          }
-        }
-      }
-    }
-
-    return returnArray;
+    return [];
   };
 
   const spliceMasterJson = (
@@ -563,12 +591,37 @@ export const useCanvasRTE = (
       console.info("!previousChar");
     }
     if (previousChar) {
-      position = calculateNextPosition(
-        previousChar,
-        char.location,
-        char.size,
-        true
-      );
+      position = calculateNextPosition(previousChar, char.location, updated);
+    }
+
+    const postChar = {
+      ...char,
+      lastLineCharacter,
+      wordIndex,
+      paragraphIndex,
+      position,
+    };
+
+    return postChar;
+  };
+
+  const initializePostProcessChar = (
+    updated: Character[],
+    char: Character,
+    prevChar: Character
+  ) => {
+    if (!char.location) return char;
+
+    const lastLineCharacter = calculateIsCharacterLast(updated, char.location);
+    const wordIndex = calculateWordIndex(updated, char);
+    const paragraphIndex = calculateParagraphIndex(updated, char);
+
+    let position: Position | null = {
+      x: 0,
+      y: 0,
+    };
+    if (prevChar) {
+      position = calculateNextPosition(prevChar, char.location, updated);
     }
 
     const postChar = {
@@ -611,6 +664,17 @@ export const useCanvasRTE = (
       });
     }
 
+    return postProcessed;
+  };
+
+  const initializePostProcessMasterJson = (updated: Character[]) => {
+    console.info("post processing...");
+    let postProcessed = [] as Character[];
+    updated.forEach((char, i) => {
+      const previousChar = updated[i - 1]; // in order during initialization
+      const postChar = initializePostProcessChar(updated, char, previousChar);
+      postProcessed.push(postChar);
+    });
     return postProcessed;
   };
 
@@ -679,7 +743,8 @@ export const useCanvasRTE = (
 
       // PERF: setting as static value does not help perf
       const currentLinePrecedingWidth = getCurrentLinePrecedingWidth(
-        insertCharacter.location
+        insertCharacter.location,
+        masterJsonRef.current
       );
       const fitsOnLine =
         currentLinePrecedingWidth + newSize.width < mainTextSize.width;
@@ -691,13 +756,6 @@ export const useCanvasRTE = (
         false,
         fitsOnLine
       );
-      // const newPosition = calculateNextPosition(
-      //   insertCharacter,
-      //   newLocation.nextLocation,
-      //   insertCharacter.size // TODO: should be newSize? but newSize doesnt do it
-      // );
-
-      //   console.info("insertCharacter", insertCharacter);
 
       const newCharacter: Character = {
         characterId,
@@ -722,6 +780,7 @@ export const useCanvasRTE = (
       );
 
       //   const afterInsert = getAllCharactersAfterInsert(insertCharacter);
+      // TODO: possible to run once rather on each insertCharacter, especially at beginning? will require postprocess step
       const afterInsert =
         getCharactersBetweenInsertAndParagraphEnd(insertCharacter);
       //   const afterInsert = [];
@@ -764,16 +823,11 @@ export const useCanvasRTE = (
 
             // little perf benefit with running this once per line?
             const currentLinePrecedingWidth = getCurrentLinePrecedingWidth(
-              char.location
+              char.location,
+              next
             );
             const fitsOnLine =
               currentLinePrecedingWidth + char.size.width < mainTextSize.width;
-
-            // if (char.lastLineCharacter && fitsOnLine) {
-            //   lineIndexShift = 0;
-            // } else if (char.lastLineCharacter && !fitsOnLine) {
-            //   lineIndexShift = 1;
-            // }
 
             let nextLocation = calculateNextLocation(
               char.location,
@@ -783,27 +837,11 @@ export const useCanvasRTE = (
               fitsOnLine,
               1
             );
-            // useCalculation = shouldContinue;
             newLocation = nextLocation;
-
-            // let setSize = newSize;
-            // if (!fitsOnLine) {
-            //   nextLineShift = char.size;
-            // } else if (isSameLine) {
-            //   nextLineShift = newSize;
-            // }
-
-            // newPosition = calculateNextPosition(
-            //   char,
-            //   newLocation,
-            //   nextLineShift,
-            //   true
-            // );
 
             const newChar = {
               ...char,
               location: newLocation,
-              // position: newPosition,
             };
 
             updated.push(newChar);
@@ -835,6 +873,127 @@ export const useCanvasRTE = (
 
       setInsertCharcterId(characterId);
       setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+    }
+  };
+
+  const initializeCharacter = (
+    characters: Character[],
+    characterId: string,
+    character: string,
+    type: CharacterType,
+    defaultStyle: Style,
+    newSize: Size,
+    previousCharacter: Character | null | undefined // safe because characters are in order during initialization
+  ) => {
+    if (window.__canvasRTEInsertCharacterId === null) {
+      const newLocation = {
+        page: 0,
+        line: 0,
+        lineIndex: 0,
+      };
+
+      // const newPosition = {
+      //   x: 0,
+      //   y: 0,
+      // };
+
+      const newCharacter: Character = {
+        characterId,
+        character,
+        location: newLocation,
+        position: null,
+        size: newSize,
+        style: defaultStyle,
+        type,
+        lastLineCharacter: null,
+        wordIndex: 0,
+        paragraphIndex: 0,
+      };
+
+      // add the new character to the master json
+      //   const next = [...masterJsonRef.current, newCharacter];
+      // splice into logical array position
+
+      // want to set only once
+      // const next = spliceMasterJson(newCharacter, 0);
+      // setMasterJson(next);
+
+      // setInsertCharcterId(characterId);
+      // setInsertCharacterIndex(0);
+      // return characterId;
+      window.__canvasRTEInsertCharacterId = characterId;
+      window.__canvasRTEInsertCharacterIndex = 0;
+
+      return newCharacter;
+    } else {
+      // PERF: check
+      // this character is in order because it is via initializeCharacter
+      // console.info(
+      //   "window.__canvasRTEInsertCharacterId",
+      //   window.__canvasRTEInsertCharacterId
+      // );
+      // bad to use find on whole array but also not updating masterJson each character so cannot find this way
+      // const previousCharacter = masterJsonRef.current.find(
+      //   (char) => char.characterId === window.__canvasRTEInsertCharacterId
+      // );
+      //   const insertCharacterIndex = masterJsonRef.current.findIndex(
+      //     (char) => char.characterId === insertCharacterIdRef.current
+      //   );
+      // if (insertCharacterIndexRef.current === null) {
+      //   return;
+      // }
+
+      //   const insertCharacter =
+      //     masterJsonRef.current[insertCharacterIndexRef.current];
+
+      if (!previousCharacter || !previousCharacter.location) {
+        return;
+      }
+
+      // PERF: setting as static value does not help perf
+      const currentLinePrecedingWidth = getCurrentLinePrecedingWidth(
+        previousCharacter.location,
+        characters
+      );
+      const fitsOnLine =
+        currentLinePrecedingWidth + newSize.width < mainTextSize.width;
+
+      const newLocation = calculateNextLocation(
+        previousCharacter.location,
+        newSize, // pass in 0,0 when newline?
+        type,
+        false,
+        fitsOnLine
+      );
+
+      const newCharacter: Character = {
+        characterId,
+        character,
+        location: newLocation,
+        position: null,
+        size: newSize,
+        style: defaultStyle,
+        type,
+        lastLineCharacter: null,
+        wordIndex: null,
+        paragraphIndex: null,
+      };
+
+      // const next = spliceMasterJson(
+      //   newCharacter,
+      //   window.__canvasRTEInsertCharacterIndex
+      // );
+
+      // setMasterJson(next);
+
+      // too slow for initialization for sure, maybe for typing
+      // setInsertCharcterId(characterId);
+      // setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+      window.__canvasRTEInsertCharacterId = characterId;
+      window.__canvasRTEInsertCharacterIndex =
+        window.__canvasRTEInsertCharacterIndex + 1;
+
+      return newCharacter;
     }
   };
 
@@ -881,12 +1040,6 @@ export const useCanvasRTE = (
               width: 0,
               height: capHeightPx,
             };
-
-            // const newlinePosition = calculateNextPosition(
-            //   insertCharacter,
-            //   newlineLocation,
-            //   insertCharacter.size
-            // );
 
             const newCharacter: Character = {
               characterId,
@@ -1032,6 +1185,8 @@ export const useCanvasRTE = (
   useEffect(() => {
     if (initialMarkdown && fontDataRef.current) {
       const initialCharacters = initialMarkdown.split("");
+      const newChars: Character[] = [];
+      let previousChar: Character | null | undefined = null;
       initialCharacters.forEach((character, i) => {
         // console.info("character", character);
         if (!fontDataRef.current) {
@@ -1052,14 +1207,20 @@ export const useCanvasRTE = (
             height: capHeightPx,
           };
 
-          insertCharacter(
+          previousChar = initializeCharacter(
+            newChars,
             characterId,
             character,
             type,
             defaultStyle,
             newSize,
-            false
+            previousChar
           );
+
+          if (!previousChar) return;
+
+          newChars.push(previousChar);
+
           return;
         } else {
           const characterId = uuidv4();
@@ -1080,19 +1241,30 @@ export const useCanvasRTE = (
             height: boundingBox?.height,
           };
 
-          insertCharacter(
+          previousChar = initializeCharacter(
+            newChars,
             characterId,
             character,
             type,
             defaultStyle,
             newSize,
-            false
+            previousChar
           );
+
+          // console.info("newChar", newChar);
+
+          if (!previousChar) return;
+
+          newChars.push(previousChar);
+
+          return;
         }
       });
 
+      console.info("newChars", newChars);
+
       // postprocess after all initial characters added
-      const postProcessed = postProcessMasterJson(masterJsonRef.current, null);
+      const postProcessed = initializePostProcessMasterJson(newChars);
       setMasterJson(postProcessed);
     }
   }, [initialMarkdown, fontData]);
