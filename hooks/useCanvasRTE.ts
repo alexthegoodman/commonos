@@ -58,6 +58,10 @@ export type Character = {
   size: Size;
   style: Style;
   type: CharacterType;
+  // testing
+  lastLineCharacter: boolean | null;
+  wordIndex: number | null;
+  paragraphIndex: number | null;
 };
 
 export type MasterJson = Character[];
@@ -222,7 +226,8 @@ export const useCanvasRTE = (
     newSize: Size,
     newType: CharacterType,
     replace: boolean,
-    fitsOnLine: boolean
+    fitsOnLine: boolean,
+    lineIndexShift: number = 1
   ) => {
     // calculate newlines and pages as needed
     // will need to calculate width of current line and compare to page width
@@ -247,7 +252,7 @@ export const useCanvasRTE = (
         const nextLocation = {
           page: insertLocation.page,
           line: insertLocation.line,
-          lineIndex: insertLocation.lineIndex + 1,
+          lineIndex: insertLocation.lineIndex + lineIndexShift,
         };
 
         return { shouldContinue: !stopCalculating, nextLocation };
@@ -429,12 +434,137 @@ export const useCanvasRTE = (
     return next;
   };
 
+  // best ran as post-processing step, after everything is loaded?
+  const calculateIsCharacterLast = (
+    updated: Character[],
+    location: Location
+  ) => {
+    // character after next location and on same line
+    // const characterAfterNextLocation = masterJsonRef.current.find((char) => char.location.page === nextLocation.page && char.location.line === nextLocation.line && char.location.lineIndex === nextLocation.lineIndex + 1)
+    // return characterAfterNextLocation ? false : true;
+
+    const maxLineIndexOfLine = Math.max(
+      ...updated.map((char) =>
+        char.location.page === location.page &&
+        char.location.line === location.line
+          ? char.location.lineIndex
+          : 0
+      )
+    );
+    return location.lineIndex === maxLineIndexOfLine;
+  };
+
+  const getSpaceCharsBeforeChar = (updated: Character[], char: Character) => {
+    let spaceCount = 0;
+    updated.filter((checkChar) => {
+      if (checkChar.character === " ") {
+        if (
+          checkChar.location.page < char.location.page ||
+          (checkChar.location.page === char.location.page &&
+            checkChar.location.line < char.location.line) ||
+          (checkChar.location.page === char.location.page &&
+            checkChar.location.line === char.location.line &&
+            checkChar.location.lineIndex < char.location.lineIndex)
+        ) {
+          spaceCount++;
+        }
+      }
+    });
+    return spaceCount;
+  };
+
+  const calculateWordIndex = (updated: Character[], char: Character) => {
+    let wordCount = 0;
+    updated.forEach((checkChar) => {
+      if (checkChar.character === " " || checkChar.type === "newline") {
+        if (
+          checkChar.location.page < char.location.page ||
+          (checkChar.location.page === char.location.page &&
+            checkChar.location.line < char.location.line) ||
+          (checkChar.location.page === char.location.page &&
+            checkChar.location.line === char.location.line &&
+            checkChar.location.lineIndex < char.location.lineIndex)
+        ) {
+          wordCount++;
+        }
+      }
+    });
+    return wordCount;
+  };
+
+  const calculateParagraphIndex = (updated: Character[], char: Character) => {
+    let paragraphCount = 0;
+    updated.forEach((checkChar) => {
+      if (checkChar.type === "newline") {
+        if (
+          checkChar.location.page < char.location.page ||
+          (checkChar.location.page === char.location.page &&
+            checkChar.location.line < char.location.line) ||
+          (checkChar.location.page === char.location.page &&
+            checkChar.location.line === char.location.line &&
+            checkChar.location.lineIndex < char.location.lineIndex)
+        ) {
+          paragraphCount++;
+        }
+      }
+    });
+    return paragraphCount;
+  };
+
+  const postProcessChar = (updated: Character[], char: Character) => {
+    const lastLineCharacter = calculateIsCharacterLast(updated, char.location);
+    const wordIndex = calculateWordIndex(updated, char);
+    const paragraphIndex = calculateParagraphIndex(updated, char);
+
+    const postChar = {
+      ...char,
+      lastLineCharacter,
+      wordIndex,
+      paragraphIndex,
+    };
+
+    return postChar;
+  };
+
+  const postProcessMasterJson = (
+    updated: Character[],
+    limitArray: Character[] | null
+  ) => {
+    console.info("post processing...");
+    let postProcessed = [] as Character[];
+
+    if (!limitArray) {
+      updated.forEach((char) => {
+        const postChar = postProcessChar(updated, char);
+        postProcessed.push(postChar);
+      });
+    } else {
+      updated.forEach((char) => {
+        const afterInsertIndex = limitArray.findIndex(
+          (c) => c.characterId === char.characterId
+        );
+
+        // if the character is after the insert, calculate new location and position
+        if (afterInsertIndex > -1) {
+          const postChar = postProcessChar(updated, char);
+          postProcessed.push(postChar);
+        } else {
+          // TODO: update only updated portion, rather than pushing every char every time
+          postProcessed.push(char);
+        }
+      });
+    }
+
+    return postProcessed;
+  };
+
   const insertCharacter = (
     characterId: string,
     character: string,
     type: CharacterType,
     defaultStyle: Style,
-    newSize: Size
+    newSize: Size,
+    postprocess: boolean
   ) => {
     if (insertCharacterIdRef.current === null) {
       const newLocation = {
@@ -456,6 +586,9 @@ export const useCanvasRTE = (
         size: newSize,
         style: defaultStyle,
         type,
+        lastLineCharacter: null,
+        wordIndex: 0,
+        paragraphIndex: 0,
       };
 
       // add the new character to the master json
@@ -493,8 +626,7 @@ export const useCanvasRTE = (
         insertCharacter.location
       );
       const fitsOnLine =
-        currentLinePrecedingWidth + insertCharacter.size.width <
-        mainTextSize.width;
+        currentLinePrecedingWidth + newSize.width < mainTextSize.width;
 
       const newLocation = calculateNextLocation(
         insertCharacter.location,
@@ -519,6 +651,9 @@ export const useCanvasRTE = (
         size: newSize,
         style: defaultStyle,
         type,
+        lastLineCharacter: null,
+        wordIndex: null,
+        paragraphIndex: null,
       };
 
       // add the new character to the master json
@@ -535,7 +670,7 @@ export const useCanvasRTE = (
         getCharactersBetweenInsertAndParagraphEnd(insertCharacter);
       //   const afterInsert = [];
 
-      console.info("afterInsert", afterInsert);
+      // console.info("afterInsert", afterInsert);
 
       if (afterInsert.length > 0) {
         let useCalculation = true;
@@ -545,6 +680,7 @@ export const useCanvasRTE = (
           width: 0,
           height: 0,
         };
+        let lineIndexShift = 0;
         // PERF: check
         next.forEach((char) => {
           const afterInsertIndex = afterInsert.findIndex(
@@ -570,14 +706,22 @@ export const useCanvasRTE = (
               char.location
             );
             const fitsOnLine =
-              currentLinePrecedingWidth + newSize.width < mainTextSize.width;
+              currentLinePrecedingWidth + nextLineShift.width <
+              mainTextSize.width;
+
+            if (char.lastLineCharacter && fitsOnLine) {
+              lineIndexShift = 0;
+            } else if (char.lastLineCharacter && !fitsOnLine) {
+              lineIndexShift = 1;
+            }
 
             let { shouldContinue, nextLocation } = calculateNextLocation(
               char.location,
               newSize, // should be 0,0 for newline
               char.type,
               true,
-              fitsOnLine
+              fitsOnLine,
+              lineIndexShift
             );
             useCalculation = shouldContinue;
             newLocation = nextLocation;
@@ -604,12 +748,18 @@ export const useCanvasRTE = (
 
             updated.push(newChar);
           } else {
+            // TODO: update only updated portion, rather than pushing every char every time
             updated.push(char);
           }
         });
 
-        // return updated;
-        setMasterJson(updated);
+        if (postprocess) {
+          const postProcessed = postProcessMasterJson(updated, afterInsert);
+          setMasterJson(postProcessed);
+        } else {
+          // return updated;
+          setMasterJson(updated);
+        }
       } else {
         // return next;
         setMasterJson(next);
@@ -678,6 +828,9 @@ export const useCanvasRTE = (
               size: newlineSize,
               style: defaultStyle,
               type: "newline",
+              lastLineCharacter: null,
+              wordIndex: null,
+              paragraphIndex: null,
             };
 
             // add the new character to the master json
@@ -745,7 +898,8 @@ export const useCanvasRTE = (
               character,
               type,
               defaultStyle,
-              tabSize
+              tabSize,
+              true
             );
           }
           break;
@@ -775,7 +929,8 @@ export const useCanvasRTE = (
               character,
               type,
               defaultStyle,
-              newSize
+              newSize,
+              true
             );
           }
           break;
@@ -808,7 +963,8 @@ export const useCanvasRTE = (
 
   useEffect(() => {
     if (initialMarkdown && fontDataRef.current) {
-      initialMarkdown.split("").forEach((character, i) => {
+      const initialCharacters = initialMarkdown.split("");
+      initialCharacters.forEach((character, i) => {
         // console.info("character", character);
         if (!fontDataRef.current) {
           return;
@@ -828,7 +984,14 @@ export const useCanvasRTE = (
             height: capHeightPx,
           };
 
-          insertCharacter(characterId, character, type, defaultStyle, newSize);
+          insertCharacter(
+            characterId,
+            character,
+            type,
+            defaultStyle,
+            newSize,
+            false
+          );
           return;
         } else {
           const characterId = uuidv4();
@@ -849,9 +1012,20 @@ export const useCanvasRTE = (
             height: boundingBox?.height,
           };
 
-          insertCharacter(characterId, character, type, defaultStyle, newSize);
+          insertCharacter(
+            characterId,
+            character,
+            type,
+            defaultStyle,
+            newSize,
+            false
+          );
         }
       });
+
+      // postprocess after all initial characters added
+      const postProcessed = postProcessMasterJson(masterJsonRef.current, null);
+      setMasterJson(postProcessed);
     }
   }, [initialMarkdown, fontData]);
 
