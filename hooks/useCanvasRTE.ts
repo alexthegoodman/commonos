@@ -274,40 +274,44 @@ export const useCanvasRTE = (
     );
   };
 
-  const calculateNextPosition = (
-    insertCharacter: Character,
-    newLocation: Location,
-    updated: Character[]
+  const calculatePosition = (
+    previousCharacter: Character,
+    characterLocation: Location,
+    characterSection: Character[]
   ) => {
-    if (!insertCharacter) {
+    if (!previousCharacter) {
       return {
         x: 0,
         y: 0,
       };
     }
 
-    if (!fontDataRef.current || !insertCharacter.location) {
-      return insertCharacter.position;
+    if (!fontDataRef.current || !previousCharacter.location) {
+      return previousCharacter.position;
     }
 
     const isNewLine =
-      newLocation.line > insertCharacter.location.line &&
-      newLocation.lineIndex === 0;
+      characterLocation.line > previousCharacter.location.line &&
+      characterLocation.lineIndex === 0;
     const isNewPage =
-      newLocation.page > insertCharacter.location.page &&
-      newLocation.lineIndex === 0;
+      characterLocation.page > previousCharacter.location.page &&
+      characterLocation.lineIndex === 0;
 
-    const insertX = insertCharacter.position ? insertCharacter.position.x : 0;
-    const insertY = insertCharacter.position ? insertCharacter.position.y : 0;
+    const insertX = previousCharacter.position
+      ? previousCharacter.position.x
+      : 0;
+    const insertY = previousCharacter.position
+      ? previousCharacter.position.y
+      : 0;
 
     let nextX =
       isNewLine || isNewPage
         ? 0
-        : getCurrentLinePrecedingWidth(insertCharacter.location, updated);
+        : getCurrentLinePrecedingWidth(characterLocation, characterSection);
 
-    const capHeightPx = getCapHeightPx(insertCharacter.style.fontSize);
+    const capHeightPx = getCapHeightPx(previousCharacter.style.fontSize);
 
-    const insertLine = insertCharacter.location.line;
+    const insertLine = previousCharacter.location.line;
     const relativeHeight = insertLine * capHeightPx;
 
     let nextY = isNewLine ? relativeHeight + capHeightPx : relativeHeight;
@@ -591,7 +595,7 @@ export const useCanvasRTE = (
       console.info("!previousChar");
     }
     if (previousChar) {
-      position = calculateNextPosition(previousChar, char.location, updated);
+      position = calculatePosition(previousChar, char.location, updated);
     }
 
     const postChar = {
@@ -621,7 +625,7 @@ export const useCanvasRTE = (
       y: 0,
     };
     if (prevChar) {
-      position = calculateNextPosition(prevChar, char.location, updated);
+      position = calculatePosition(prevChar, char.location, updated);
     }
 
     const postChar = {
