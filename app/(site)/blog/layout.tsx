@@ -10,7 +10,7 @@ export default function BlogLayout({ children }) {
       <InnerWrapper>
         <Box display="flex" flexDirection="row">
           <BlogSidebar />
-          <Box>{children}</Box>
+          <Box sx={{ maxWidth: "1050px" }}>{children}</Box>
         </Box>
       </InnerWrapper>
     </>

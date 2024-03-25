@@ -26,32 +26,29 @@ export const BlogAuthors = [
 export const BlogItems = [
   {
     id: 1,
-    title: "Test Title Here",
-    slug: "test-title-here",
-    dateCreated: "03-21-2024",
+    title: "How the Apple 2 Changed the Business World",
+    slug: "how-apple-2-changed-business-world",
+    dateCreated: "03-25-2024",
     author: 1,
-    description:
-      "This is a test description about a post which goes into detail on things such as this and that.",
+    description: "...",
     tags: [1, 2],
   },
   {
     id: 2,
-    title: "Another Title",
-    slug: "another-title",
-    dateCreated: "03-21-2024",
+    title: "How to Approach a Sales-Oriented Go-to-Market Plan",
+    slug: "sales-oriented-go-to-market-plan",
+    dateCreated: "03-25-2024",
     author: 1,
-    description:
-      "This is a test description about a post which goes into detail and says other things.",
+    description: "...",
     tags: [3],
   },
   {
     id: 3,
-    title: "Test Title Here 2",
-    slug: "test-title-here-2",
-    dateCreated: "03-22-2024",
+    title: "Starting a New Business with Zero Budget using AI",
+    slug: "new-business-zero-budget-ai",
+    dateCreated: "03-25-2024",
     author: 1,
-    description:
-      "This is a test description about a post which goes into detail on things such as this and the other thing.",
+    description: "...",
     tags: [2, 3],
   },
 ];
