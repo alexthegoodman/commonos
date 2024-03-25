@@ -25,6 +25,7 @@ export default function UpgradeButton() {
         variant="contained"
         endIcon={<Star />}
         href="/pricing"
+        size="small"
       >
         Upgrade
       </Button>
