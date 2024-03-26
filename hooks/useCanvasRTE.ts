@@ -172,7 +172,8 @@ export const useCanvasRTE = (
 
   const getNewlineLocation = (
     insertLocation: Location,
-    replace: boolean = false
+    replace: boolean = false,
+    initialIndex: number = 0
   ) => {
     const proposedLine = replace
       ? insertLocation.line
@@ -230,6 +231,21 @@ export const useCanvasRTE = (
     return currentLinePrecedingWidth;
   };
 
+  const getCurrentLineRemainingWidth = (
+    insertLocation: Location,
+    characters: Character[]
+  ) => {
+    const currentLine = getCurrentLine(insertLocation, characters);
+    const currentLinePrecedingWidth = currentLine.reduce((acc, char) => {
+      if (!char.location) return acc;
+      return char.location?.lineIndex > insertLocation.lineIndex && char.size
+        ? acc + char.size.width + letterSpacing
+        : acc;
+    }, 0);
+
+    return currentLinePrecedingWidth;
+  };
+
   const getCurrentLinePrecedingHeight = (insertLocation: Location) => {};
 
   // calculate the initial location of this char
@@ -268,7 +284,8 @@ export const useCanvasRTE = (
     newType: CharacterType,
     replace: boolean,
     fitsOnLine: boolean,
-    lineIndexShift: number = 1
+    lineIndexShift: number = 1,
+    initialIndex: number = 0
   ) => {
     if (newType === "newline") {
       return getNewlineLocation(currentCharLocation, replace);
@@ -283,7 +300,7 @@ export const useCanvasRTE = (
 
         return nextLocation;
       } else {
-        return getNewlineLocation(currentCharLocation);
+        return getNewlineLocation(currentCharLocation, false, initialIndex);
       }
     }
   };
@@ -666,7 +683,7 @@ export const useCanvasRTE = (
 
   const postProcessChar = (
     updated: Character[],
-    limitArray: Character[],
+    limitArray: Character[] | null,
     char: Character,
     newCharacter: Character
   ) => {
@@ -797,6 +814,8 @@ export const useCanvasRTE = (
     });
     return postProcessed;
   };
+
+  const getOverflowChars = (line: Character[], overflowWidth: number) => {};
 
   const insertCharacter = (
     characterId: string,
@@ -943,22 +962,66 @@ export const useCanvasRTE = (
             // let newPosition: Position;
 
             // little perf benefit with running this once per line?
+            // const currentLine = getCurrentLine(char.location, next);
             const currentLinePrecedingWidth = getCurrentLinePrecedingWidth(
               char.location,
               next
             );
-            const fitsOnLine = isSameLine
-              ? currentLinePrecedingWidth + newSize.width + char.size.width <
-                mainTextSize.width
-              : currentLinePrecedingWidth + char.size.width <
-                mainTextSize.width;
+
+            // maybe need to use newSize width to see how many chars are cut off for line
+            // diff of (precedingWidth +char.size+newSize+ remainingWidth) and editorWidth shows width of overflow
+            // then use that to grab all the affected chars
+            // then use affected chars to determine correct location of char
+
+            const currentLineRemainingWidth = getCurrentLineRemainingWidth(
+              char.location,
+              next
+            );
+            // const potentialLineWidth =
+            //   currentLinePrecedingWidth +
+            //   char.size.width +
+            //   newSize.width +
+            //   currentLineRemainingWidth;
+            // const overflowWidth = Math.abs(
+            //   mainTextSize.width - potentialLineWidth
+            // );
+
+            // const currentLine = getCurrentLine(char.location, next);
+            // const overflowChars = getOverflowChars(currentLine, overflowWidth);
+
+            // const fitsOnLine = isSameLine
+            //   ? currentLinePrecedingWidth + newSize.width + char.size.width <
+            //     mainTextSize.width
+            //   : currentLinePrecedingWidth + char.size.width <
+            //     mainTextSize.width;
+
+            // was trying to use distance from edge to influence location
+            // but it doesn't have a bearing on the relevant char
+            // const maxLineIndexOfLine = Math.max(
+            //   ...next.map((c) =>
+            //     c.location?.page === char.location.page &&
+            //     c.location?.line === char.location.line
+            //       ? c.location.lineIndex
+            //       : 0
+            //   )
+            // );
+            // const distanceFromEndOfLine = Math.abs(
+            //   maxLineIndexOfLine - char.location.lineIndex
+            // );
+
+            // if (!fitsOnLine) {
+            //   console.info(
+            //     "!fitsOnLine distanceFromEndOfLine",
+            //     distanceFromEndOfLine
+            //   );
+            // }
 
             let nextLocation = calculateNextLocation(
               char.location,
-              newSize, // should be 0,0 for newline
+              newSize,
               char.type,
               true,
-              fitsOnLine,
+              fitsOnLine, // what if it needs to move to newline but also increment index?
               1
             );
             newLocation = nextLocation;
