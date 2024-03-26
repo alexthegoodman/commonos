@@ -1,18 +1,18 @@
 export const BlogTags = [
   {
     id: 1,
-    tagName: "Tag 1",
-    slug: "tag-1",
+    tagName: "Startups",
+    slug: "startups",
   },
   {
     id: 2,
-    tagName: "Tag 2",
-    slug: "tag-2",
+    tagName: "Business History",
+    slug: "business-history",
   },
   {
     id: 3,
-    tagName: "Tag 3",
-    slug: "tag-3",
+    tagName: "AI",
+    slug: "ai",
   },
 ];
 
@@ -30,7 +30,8 @@ export const BlogItems = [
     slug: "how-apple-2-changed-business-world",
     dateCreated: "03-25-2024",
     author: 1,
-    description: "...",
+    description:
+      "The Apple 2 revolutionized the business world largely thanks to its software offerings.",
     tags: [1, 2],
   },
   {
@@ -39,8 +40,9 @@ export const BlogItems = [
     slug: "sales-oriented-go-to-market-plan",
     dateCreated: "03-25-2024",
     author: 1,
-    description: "...",
-    tags: [3],
+    description:
+      "It's important to have a thorough sales strategy in such a go-to-market plan.",
+    tags: [1],
   },
   {
     id: 3,
@@ -48,7 +50,8 @@ export const BlogItems = [
     slug: "new-business-zero-budget-ai",
     dateCreated: "03-25-2024",
     author: 1,
-    description: "...",
-    tags: [2, 3],
+    description:
+      "Anybody can start a business and make profits just by leveraging the power of AI.",
+    tags: [1, 3],
   },
 ];

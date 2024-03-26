@@ -8,7 +8,10 @@ const Sidebar = styled("aside")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "10px",
-  marginBottom: "100px",
+  marginBottom: "50px",
+  "@media screen and (max-width: 1400px)": {
+    paddingLeft: "15px",
+  },
 }));
 
 export default function BlogSidebar() {
@@ -16,7 +19,7 @@ export default function BlogSidebar() {
     <Sidebar>
       <Typography variant="h4">CommonOS Blog</Typography>
       <TextField type="search" name="search" placeholder="Search blog..." />
-      <Box mt={3}>
+      <Box mt={3} mb={1}>
         {BlogTags.map((tag) => {
           return (
             <Link key={`tag-${tag.id}`} href={`/blog/tag/${tag.slug}`}>

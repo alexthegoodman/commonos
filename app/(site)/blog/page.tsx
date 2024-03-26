@@ -1,5 +1,6 @@
 "use client";
 
+import ArticleItem from "@/components/core/blog/ArticleItem";
 import { BlogItems } from "@/fixtures/blog";
 import { Box, Button, Grid, Link, Typography } from "@mui/material";
 
@@ -15,9 +16,11 @@ export default function BlogPage() {
         <Typography variant="overline">
           {mostRecentArticle.dateCreated}
         </Typography>
-        <Typography variant="h4" mb={1}>
-          {mostRecentArticle.title}
-        </Typography>
+        <Link href={`/blog/${mostRecentArticle.slug}`}>
+          <Typography variant="h4" mb={1}>
+            {mostRecentArticle.title}
+          </Typography>
+        </Link>
         <Typography variant="body1" mb={2}>
           {mostRecentArticle.description}
         </Typography>
@@ -34,11 +37,15 @@ export default function BlogPage() {
       <Grid container mb="100px">
         {otherArticlesInOrder.map((article) => {
           return (
-            <Grid key={`article-${article.id}`} item md={6} xs={12}>
-              <Typography variant="overline">{article.dateCreated}</Typography>
-              <Typography variant="h4">{article.title}</Typography>
-              <Typography variant="body1">{article.description}</Typography>
-              <Link href={`/blog/${article.slug}`}>Read Article</Link>
+            <Grid
+              key={`article-${article.id}`}
+              item
+              md={6}
+              xs={12}
+              paddingRight="50px"
+              mb={2}
+            >
+              <ArticleItem article={article} />
             </Grid>
           );
         })}

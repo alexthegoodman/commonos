@@ -8,9 +8,14 @@ export default function BlogLayout({ children }) {
   return (
     <>
       <InnerWrapper>
-        <Box display="flex" flexDirection="row">
+        <Box
+          display="flex"
+          sx={{ flexDirection: { sm: "row", xs: "column-reverse" } }}
+        >
           <BlogSidebar />
-          <Box sx={{ maxWidth: "1050px" }}>{children}</Box>
+          <Box sx={{ width: { md: "100%", lg: "1050px" }, my: "20px" }}>
+            {children}
+          </Box>
         </Box>
       </InnerWrapper>
     </>
