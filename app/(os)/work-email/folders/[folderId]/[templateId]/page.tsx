@@ -1,5 +1,6 @@
 "use client";
 
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 import EmailThread from "@/components/work-email/editor/EmailThread";
 import { getWorkEmailTemplate, myThreadEmails } from "@/fetchers/work-email";
 import { useCookies } from "react-cookie";
@@ -23,6 +24,10 @@ export default function EditTemplate({ params }) {
       revalidateOnMount: true,
     }
   );
+
+  console.info("templteData", templateData);
+
+  if (isLoading) return <PrimaryLoader />;
 
   return (
     <>

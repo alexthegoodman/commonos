@@ -101,6 +101,7 @@ export default function EmailThread({
           variant="outlined"
           sx={{ width: "400px", marginBottom: 3 }}
           onChange={(e) => setSubject(e.target.value)}
+          defaultValue={templateData?.subject}
         />
       </Box>
       {/* {folderId && templateData && (
@@ -123,7 +124,11 @@ export default function EmailThread({
         <ComposeEmail
           handleChange={handleBodyChange}
           clearEffect={clearEffect}
-          initialMarkdown={templateData?.initialMarkdown || ""}
+          initialMarkdown={
+            templateData?.body
+              ? templateData?.body
+              : templateData?.initialMarkdown
+          }
         />
       </Box>
       <Box mt={2}>

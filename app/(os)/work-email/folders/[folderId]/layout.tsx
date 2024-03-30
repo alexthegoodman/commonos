@@ -117,7 +117,7 @@ export default function Layout({ params, children = null }) {
                 <ThreadItem
                   key={template.id}
                   active={lastSlug === template.id}
-                  href={`/work-email/inboxes/${folderId}/${template.id}`}
+                  href={`/work-email/folders/${folderId}/${template.id}`}
                 >
                   <Typography variant="body1">{template.subject}</Typography>
                   <Typography
