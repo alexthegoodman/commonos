@@ -28,6 +28,7 @@ export default function SiteFooter() {
           </Typography>
         </Box>
         <Box>
+          <Button href="/blog">Blog</Button>
           <Button href="/terms">Terms</Button>
           <Button href="/privacy-policy">Privacy Policy</Button>
         </Box>

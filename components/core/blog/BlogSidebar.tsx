@@ -11,6 +11,7 @@ const Sidebar = styled("aside")(({ theme }) => ({
   marginBottom: "50px",
   "@media screen and (max-width: 1400px)": {
     paddingLeft: "15px",
+    width: "100%",
   },
 }));
 
@@ -18,8 +19,11 @@ export default function BlogSidebar() {
   return (
     <Sidebar>
       <Typography variant="h4">CommonOS Blog</Typography>
-      <TextField type="search" name="search" placeholder="Search blog..." />
-      <Box mt={3} mb={1}>
+      {/* <TextField type="search" name="search" placeholder="Search blog..." /> */}
+      <Typography variant="overline" mt={1}>
+        Browse by Tag
+      </Typography>
+      <Box mb={1}>
         {BlogTags.map((tag) => {
           return (
             <Link key={`tag-${tag.id}`} href={`/blog/tag/${tag.slug}`}>

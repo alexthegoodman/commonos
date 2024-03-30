@@ -52,6 +52,15 @@ export const getThemeOptions = (mode: string) => {
     spacing: 8,
 
     components: {
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            background: "white",
+            color: "#333333",
+            boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+          },
+        },
+      },
       MuiButton: {
         styleOverrides: {
           root: {
