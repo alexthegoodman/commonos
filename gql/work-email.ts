@@ -124,6 +124,19 @@ export const myWorkEmailFolderTemplatesQuery = gql`
   }
 `;
 
+export const workEmailTemplateQuery = gql`
+  query WorkEmailTemplateQuery($templateId: String!) {
+    workEmailTemplate(templateId: $templateId) {
+      id
+      subject
+      body
+      initialMarkdown
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
 export const createWorkEmailTemplateMutation = gql`
   mutation CreateWorkEmailTemplateMutation(
     $folderId: String!

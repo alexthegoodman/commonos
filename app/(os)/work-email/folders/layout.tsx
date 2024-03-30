@@ -19,7 +19,7 @@ export default function Layout({ children }) {
         variant="contained"
         color="secondary"
       >
-        Browse Inboxes
+        Browse Folders
       </MobileSideButton>
       <CmSidebar mobileOpen={mobileOpen}>
         <InboxList />

@@ -9,6 +9,7 @@ import {
   myWorkEmailFoldersQuery,
   sendWorkEmailMutation,
   updateWorkEmailTemplateMutation,
+  workEmailTemplateQuery,
 } from "@/gql/work-email";
 import graphClient from "@/helpers/GQLClient";
 
@@ -95,6 +96,22 @@ export const myWorkEmailFolderTemplates = async (
   )) as any;
 
   return myWorkEmailFolderTemplates;
+};
+
+export const getWorkEmailTemplate = async (
+  token: string,
+  templateId: string
+) => {
+  graphClient.setupClient(token);
+
+  const { workEmailTemplate } = (await graphClient?.request(
+    workEmailTemplateQuery,
+    {
+      templateId,
+    }
+  )) as any;
+
+  return workEmailTemplate;
 };
 
 export const createWorkEmailTemplate = async (
