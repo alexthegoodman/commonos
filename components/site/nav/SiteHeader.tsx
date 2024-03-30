@@ -77,7 +77,7 @@ export default function DrawerAppBar(props: Props) {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Link href="/">
-        <Typography variant="h6" sx={{ my: 2 }}>
+        <Typography variant="h6" sx={{ my: 2, fontWeight: "600" }}>
           CommonOS
         </Typography>
       </Link>
@@ -112,10 +112,7 @@ export default function DrawerAppBar(props: Props) {
         <Toolbar>
           <InnerWrappper>
             <Link href="/">
-              <Typography
-                variant="h6"
-                // sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-              >
+              <Typography variant="h6" sx={{ fontWeight: "600" }}>
                 CommonOS
               </Typography>
             </Link>

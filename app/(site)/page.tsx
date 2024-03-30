@@ -161,7 +161,7 @@ export default function Home() {
             <Grid
               item
               xs={12}
-              md={4}
+              md={5}
               position="relative"
               sx={{
                 padding: {
@@ -216,7 +216,7 @@ export default function Home() {
             <Grid
               item
               xs={12}
-              md={8}
+              md={7}
               position="relative"
               // sx={{
               //   padding: {
