@@ -153,6 +153,7 @@ export default function DrawerAppBar(props: Props) {
       </AppBar>
       <nav>
         <Drawer
+          anchor="right"
           container={container}
           variant="temporary"
           open={mobileOpen}
