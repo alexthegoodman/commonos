@@ -24,7 +24,7 @@ export default function InnerLayout({
           documentData={documentData}
           refetch={refetch}
         />
-        <AutoSidebar documentId={documentId} documentData={documentData} />
+        {/* <AutoSidebar documentId={documentId} documentData={documentData} /> */}
       </Box>
     </DocumentsContext.Provider>
   );

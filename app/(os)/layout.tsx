@@ -52,7 +52,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // use regex to check if pathname includes /slides/ or /sheets/ and a id
-  let hasSidebar = /\/(slides|documents)\/[a-zA-Z0-9]+/.test(pathname);
+  // let hasSidebar = /\/(slides|documents)\/[a-zA-Z0-9]+/.test(pathname);
+  let hasSidebar = false;
 
   console.info("LauncherContext state", state);
 

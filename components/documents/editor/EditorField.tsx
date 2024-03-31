@@ -41,7 +41,7 @@ const EditorField = ({
               Quill={Quill}
               ReactQuill={ReactQuill}
             />
-            <AutoSidebar documentId={documentId} documentData={documentData} />
+            {/* <AutoSidebar documentId={documentId} documentData={documentData} /> */}
           </>
         ) : (
           <PrimaryLoader />
