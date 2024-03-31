@@ -341,7 +341,7 @@ export default function Home() {
                 <HelpChip label="Dashboards" />
               </Box>
 
-              <Typography
+              {/* <Typography
                 variant="overline"
                 sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
               >
@@ -359,6 +359,39 @@ export default function Home() {
               >
                 CommonOS integrates the powerful AI behind ChatGPT with a suite
                 of apps that are designed to be automated.
+              </Typography> */}
+              <Typography
+                variant="overline"
+                sx={{ display: "block", marginTop: 3, fontSize: "1rem" }}
+              >
+                It Is Different
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontSize: {
+                    xs: "1.2rem",
+                    md: "1.4rem",
+                  },
+                  lineHeight: "1.7",
+                }}
+              >
+                By generating files directly, CommonOS is much faster than an AI
+                agent, which performs steps sequentially.
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontSize: {
+                    xs: "1.2rem",
+                    md: "1.4rem",
+                  },
+                  lineHeight: "1.7",
+                }}
+              >
+                CommonOS also generates tailored, original files by asking you
+                intelligent questions regarding your prompt. No flying in the
+                dark!
               </Typography>
             </Grid>
 
