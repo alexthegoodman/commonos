@@ -19,6 +19,10 @@ export default function BlogSidebar() {
   return (
     <Sidebar>
       <Typography variant="h4">CommonOS Blog</Typography>
+      <Typography variant="body1">
+        CommonOS helps anybody generate all kinds files including documents,
+        presentations, sheets, images, posts, drafts, and more.
+      </Typography>
       {/* <TextField type="search" name="search" placeholder="Search blog..." /> */}
       <Typography variant="overline" mt={1}>
         Browse by Tag
