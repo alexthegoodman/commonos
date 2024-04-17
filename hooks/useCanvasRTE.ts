@@ -1,8 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import CharactersShader from "../compute/shaders/characters.wgsl?raw";
+
 import * as fontkit from "fontkit";
 import { KonvaEventObject } from "konva/lib/Node";
+import {
+  createBindGroup,
+  createBindGroupLayout,
+  createBuffer,
+  createComputePipeline,
+  dispatchCompute,
+  initializeWebGPU,
+  readFromBuffer,
+} from "@/compute/init";
 
 const blobToBuffer = async (blob: Blob) => {
   const arrayBuffer = await blob.arrayBuffer();
@@ -84,6 +95,28 @@ declare global {
 window.__canvasRTEInsertCharacterId = null;
 window.__canvasRTEInsertCharacterIndex = 0;
 
+let gpuDevice: GPUDevice | null = null;
+let gpuQueue: GPUQueue | null = null;
+let gpuPipeline: GPUComputePipeline | null = null;
+
+const startupCompute = async () => {
+  const { device, queue } = await initializeWebGPU();
+  const bindGroupLayout = createBindGroupLayout(device);
+  const pipeline = await createComputePipeline(
+    device,
+    bindGroupLayout,
+    CharactersShader
+  );
+
+  console.info("setting global vars", device);
+
+  gpuDevice = device;
+  gpuQueue = queue;
+  gpuPipeline = pipeline;
+};
+
+startupCompute();
+
 export const useCanvasRTE = (
   initialMarkdown: string,
   mainTextSize: DocumentSize
@@ -140,7 +173,66 @@ export const useCanvasRTE = (
     _setFontData(font);
   };
 
+  // compute
+  const [wgpuDevice, _setWgpuDevice] = useState<GPUDevice | null>(null);
+  const wgpuDeviceRef = useRef(wgpuDevice);
+  const setWgpuDevice = (index: GPUDevice | null) => {
+    wgpuDeviceRef.current = index;
+    _setWgpuDevice(index);
+  };
+
+  const [wgpuQueue, _setWgpuQueue] = useState<GPUQueue | null>(null);
+  const wgpuQueueRef = useRef(wgpuQueue);
+  const setWgpuQueue = (index: GPUQueue | null) => {
+    wgpuQueueRef.current = index;
+    _setWgpuQueue(index);
+  };
+
+  const [wgpuPipeline, _setWgpuPipeline] = useState<GPUComputePipeline | null>(
+    null
+  );
+  const wgpuPipelineRef = useRef(wgpuPipeline);
+  const setWgpuPipeline = (index: GPUComputePipeline | null) => {
+    wgpuPipelineRef.current = index;
+    _setWgpuPipeline(index);
+  };
+
+  const [wgpuBuffer, _setWgpuBuffer] = useState<GPUBuffer | null>(null); // Buffer(s)?
+  const wgpuBufferRef = useRef(wgpuBuffer);
+  const setWgpuBuffer = (index: GPUBuffer | null) => {
+    wgpuBufferRef.current = index;
+    _setWgpuBuffer(index);
+  };
+
+  const [wgpuBindGroup, _setWgpuBindGroup] = useState<GPUBindGroup | null>(
+    null
+  );
+  const wgpuBindGroupRef = useRef(wgpuBindGroup);
+  const setWgpuBindGroup = (index: GPUBindGroup | null) => {
+    wgpuBindGroupRef.current = index;
+    _setWgpuBindGroup(index);
+  };
+
   //   console.info("masterJson", masterJson);
+
+  const flattenForCompute = (subsection: Character[]) => {
+    const flattened = [] as number[];
+    subsection.forEach((char) => {
+      flattened.push(char.position?.x);
+      flattened.push(char.position?.y);
+      flattened.push(char.size.width);
+      flattened.push(char.size.height);
+      flattened.push(char.location?.page);
+      flattened.push(char.location?.line);
+      flattened.push(char.location?.lineIndex);
+    });
+
+    const floatArray = new Float32Array(flattened);
+
+    console.info("flattenForCompute floatArray", floatArray);
+
+    return floatArray;
+  };
 
   const getCharacterBoundingBox = (
     fontData: fontkit.Font,
@@ -925,137 +1017,161 @@ export const useCanvasRTE = (
         getCharactersBetweenInsertAndParagraphEnd(insertCharacter);
       //   const afterInsert = [];
 
-      console.info("afterInsert", afterInsert.length);
-
-      if (afterInsert.length > 0) {
-        let useCalculation = true;
-        // let precedingChar: any;
-        let updated = [] as Character[];
-        // these shift values cannot work because they assume `next` is in order
-        // let nextLineShift = {
-        //   width: 0,
-        //   height: 0,
-        // };
-        // let lineIndexShift = 0;
-        // PERF: check
-        next.forEach((char) => {
-          const afterInsertIndex = afterInsert.findIndex(
-            (c) => c.characterId === char.characterId
-          );
-
-          // if the character is after the insert, calculate new location and position
-          if (
-            afterInsertIndex > -1 &&
-            char.location &&
-            insertCharacter.location
-          ) {
-            // const precedingCharacter = afterInsert[afterInsertIndex - 1];
-            // const hasPrecedingCharacter =
-            //   typeof precedingCharacter !== "undefined";
-            // const precedingCharIsPreviousLine =
-            //   precedingChar?.location.line === char.location.line - 1;
-            const isSameLine =
-              char.location.line === insertCharacter.location.line &&
-              char.location.page === insertCharacter.location.page;
-
-            let newLocation: Location;
-            // let newPosition: Position;
-
-            // little perf benefit with running this once per line?
-            // const currentLine = getCurrentLine(char.location, next);
-            const currentLinePrecedingWidth = getCurrentLinePrecedingWidth(
-              char.location,
-              next
-            );
-
-            // maybe need to use newSize width to see how many chars are cut off for line
-            // diff of (precedingWidth +char.size+newSize+ remainingWidth) and editorWidth shows width of overflow
-            // then use that to grab all the affected chars
-            // then use affected chars to determine correct location of char
-
-            const currentLineRemainingWidth = getCurrentLineRemainingWidth(
-              char.location,
-              next
-            );
-            // const potentialLineWidth =
-            //   currentLinePrecedingWidth +
-            //   char.size.width +
-            //   newSize.width +
-            //   currentLineRemainingWidth;
-            // const overflowWidth = Math.abs(
-            //   mainTextSize.width - potentialLineWidth
-            // );
-
-            // const currentLine = getCurrentLine(char.location, next);
-            // const overflowChars = getOverflowChars(currentLine, overflowWidth);
-
-            // const fitsOnLine = isSameLine
-            //   ? currentLinePrecedingWidth + newSize.width + char.size.width <
-            //     mainTextSize.width
-            //   : currentLinePrecedingWidth + char.size.width <
-            //     mainTextSize.width;
-
-            // was trying to use distance from edge to influence location
-            // but it doesn't have a bearing on the relevant char
-            // const maxLineIndexOfLine = Math.max(
-            //   ...next.map((c) =>
-            //     c.location?.page === char.location.page &&
-            //     c.location?.line === char.location.line
-            //       ? c.location.lineIndex
-            //       : 0
-            //   )
-            // );
-            // const distanceFromEndOfLine = Math.abs(
-            //   maxLineIndexOfLine - char.location.lineIndex
-            // );
-
-            // if (!fitsOnLine) {
-            //   console.info(
-            //     "!fitsOnLine distanceFromEndOfLine",
-            //     distanceFromEndOfLine
-            //   );
-            // }
-
-            let nextLocation = calculateNextLocation(
-              char.location,
-              newSize,
-              char.type,
-              true,
-              fitsOnLine, // what if it needs to move to newline but also increment index?
-              1
-            );
-            newLocation = nextLocation;
-
-            const newChar = {
-              ...char,
-              location: newLocation,
-            };
-
-            updated.push(newChar);
-          } else {
-            // TODO: update only updated portion, rather than pushing every char every time
-            updated.push(char);
-          }
-        });
-
-        console.info("time to postprocess");
-
-        if (postprocess) {
-          const postProcessed = postProcessMasterJson(
-            updated,
-            afterInsert,
-            newCharacter
-          );
-
-          setMasterJson(postProcessed);
-        } else {
-          // return updated;
-          setMasterJson(updated);
-        }
-      } else {
-        // return next;
-        setMasterJson(next);
+      if (!gpuDevice || !gpuQueue || !gpuPipeline) {
+        console.info("no gpuDevice");
+        return;
       }
+
+      console.info("afterInsert", afterInsert.length, afterInsert);
+
+      const flatAfterInsert = flattenForCompute(afterInsert);
+      const computeBuffer = createBuffer(gpuDevice, flatAfterInsert);
+      const bindGroup = createBindGroup(gpuDevice, gpuPipeline, computeBuffer);
+
+      console.info("dispatching compute...");
+
+      dispatchCompute(
+        gpuDevice,
+        gpuQueue,
+        gpuPipeline,
+        bindGroup,
+        flatAfterInsert.length
+      );
+
+      setTimeout(() => {
+        console.info("reading from buffer...");
+        readFromBuffer(gpuDevice, computeBuffer);
+      }, 500);
+
+      // if (afterInsert.length > 0) {
+      //   let useCalculation = true;
+      //   // let precedingChar: any;
+      //   let updated = [] as Character[];
+      //   // these shift values cannot work because they assume `next` is in order
+      //   // let nextLineShift = {
+      //   //   width: 0,
+      //   //   height: 0,
+      //   // };
+      //   // let lineIndexShift = 0;
+      //   // PERF: check
+      //   next.forEach((char) => {
+      //     const afterInsertIndex = afterInsert.findIndex(
+      //       (c) => c.characterId === char.characterId
+      //     );
+
+      //     // if the character is after the insert, calculate new location and position
+      //     if (
+      //       afterInsertIndex > -1 &&
+      //       char.location &&
+      //       insertCharacter.location
+      //     ) {
+      //       // const precedingCharacter = afterInsert[afterInsertIndex - 1];
+      //       // const hasPrecedingCharacter =
+      //       //   typeof precedingCharacter !== "undefined";
+      //       // const precedingCharIsPreviousLine =
+      //       //   precedingChar?.location.line === char.location.line - 1;
+      //       const isSameLine =
+      //         char.location.line === insertCharacter.location.line &&
+      //         char.location.page === insertCharacter.location.page;
+
+      //       let newLocation: Location;
+      //       // let newPosition: Position;
+
+      //       // little perf benefit with running this once per line?
+      //       // const currentLine = getCurrentLine(char.location, next);
+      //       const currentLinePrecedingWidth = getCurrentLinePrecedingWidth(
+      //         char.location,
+      //         next
+      //       );
+
+      //       // maybe need to use newSize width to see how many chars are cut off for line
+      //       // diff of (precedingWidth +char.size+newSize+ remainingWidth) and editorWidth shows width of overflow
+      //       // then use that to grab all the affected chars
+      //       // then use affected chars to determine correct location of char
+
+      //       const currentLineRemainingWidth = getCurrentLineRemainingWidth(
+      //         char.location,
+      //         next
+      //       );
+      //       // const potentialLineWidth =
+      //       //   currentLinePrecedingWidth +
+      //       //   char.size.width +
+      //       //   newSize.width +
+      //       //   currentLineRemainingWidth;
+      //       // const overflowWidth = Math.abs(
+      //       //   mainTextSize.width - potentialLineWidth
+      //       // );
+
+      //       // const currentLine = getCurrentLine(char.location, next);
+      //       // const overflowChars = getOverflowChars(currentLine, overflowWidth);
+
+      //       // const fitsOnLine = isSameLine
+      //       //   ? currentLinePrecedingWidth + newSize.width + char.size.width <
+      //       //     mainTextSize.width
+      //       //   : currentLinePrecedingWidth + char.size.width <
+      //       //     mainTextSize.width;
+
+      //       // was trying to use distance from edge to influence location
+      //       // but it doesn't have a bearing on the relevant char
+      //       // const maxLineIndexOfLine = Math.max(
+      //       //   ...next.map((c) =>
+      //       //     c.location?.page === char.location.page &&
+      //       //     c.location?.line === char.location.line
+      //       //       ? c.location.lineIndex
+      //       //       : 0
+      //       //   )
+      //       // );
+      //       // const distanceFromEndOfLine = Math.abs(
+      //       //   maxLineIndexOfLine - char.location.lineIndex
+      //       // );
+
+      //       // if (!fitsOnLine) {
+      //       //   console.info(
+      //       //     "!fitsOnLine distanceFromEndOfLine",
+      //       //     distanceFromEndOfLine
+      //       //   );
+      //       // }
+
+      //       let nextLocation = calculateNextLocation(
+      //         char.location,
+      //         newSize,
+      //         char.type,
+      //         true,
+      //         fitsOnLine, // what if it needs to move to newline but also increment index?
+      //         1
+      //       );
+      //       newLocation = nextLocation;
+
+      //       const newChar = {
+      //         ...char,
+      //         location: newLocation,
+      //       };
+
+      //       updated.push(newChar);
+      //     } else {
+      //       // TODO: update only updated portion, rather than pushing every char every time
+      //       updated.push(char);
+      //     }
+      //   });
+
+      //   console.info("time to postprocess");
+
+      //   if (postprocess) {
+      //     const postProcessed = postProcessMasterJson(
+      //       updated,
+      //       afterInsert,
+      //       newCharacter
+      //     );
+
+      //     setMasterJson(postProcessed);
+      //   } else {
+      //     // return updated;
+      //     setMasterJson(updated);
+      //   }
+      // } else {
+      //   // return next;
+      //   setMasterJson(next);
+      // }
 
       // if (postprocess) {
       //   const postProcessed = postProcessMasterJson(next, afterInsert);

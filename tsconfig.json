@@ -27,7 +27,8 @@
         "./*"
       ]
     },
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": ["@webgpu/types"]
   },
   "include": [
     "next-env.d.ts",
