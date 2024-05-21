@@ -73,6 +73,7 @@ export type Character = {
   lastLineCharacter: boolean | null;
   wordIndex: number | null;
   paragraphIndex: number | null;
+  // precedingLineWidth ? store this in the character?
 };
 
 export type MasterJson = Character[];

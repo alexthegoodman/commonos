@@ -94,7 +94,7 @@ export function dispatchCompute(
   passEncoder.setPipeline(pipeline);
   passEncoder.setBindGroup(0, bindGroup);
 
-  const maxThreadsPerGroup = 256; // This is an example; use device limits or optimal sizes based on testing.
+  const maxThreadsPerGroup = 7; // This is an example; use device limits or optimal sizes based on testing.
   const workgroups = Math.ceil(elementCount / maxThreadsPerGroup);
 
   passEncoder.dispatchWorkgroups(workgroups, 1, 1);
