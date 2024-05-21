@@ -14,7 +14,8 @@ export const BlockImage = styled("img")(({ theme }) => ({
   height: "100%",
   display: "block",
   borderRadius: "25px",
-  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  // boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  border: "1px rgba(0, 0, 0, 0.12) solid",
 }));
 
 export const BlockContent = styled(Box)(({ theme }) => ({

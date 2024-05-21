@@ -77,7 +77,7 @@ export default function SalesResources() {
               }}
             >
               <YouTube
-                videoId={"OMVw3QPSYSg"} // defaults -> ''
+                videoId={"wbGsOd60qkY"} // defaults -> ''
                 opts={opts} // defaults -> {}
               />
             </Box>

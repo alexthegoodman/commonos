@@ -17,24 +17,24 @@ export const howToUseSteps = [
     label: "Start with a prompt",
     description:
       "Include any unique or important information so we can tailor your file plan.",
-    image: "/img/process/prompt.png",
+    image: "/img/process/new/prompt.png",
   },
   {
     label: "Answer intelligent questions",
     description: "This is how you achieve custom, personalized results.",
-    image: "/img/process/questions.png",
+    image: "/img/process/new/questions.png",
   },
   {
     label: "Review your file plan",
     description:
       "Review and change your file plan as desired before generating your files.",
-    image: "/img/process/review.png",
+    image: "/img/process/new/fileplan.png",
   },
   {
     label: "Refine your new files",
     description:
       "Use the built-in editors to refine, store, or transfer your files.",
-    image: "/img/process/refine2.png",
+    image: "/img/process/new/file.png",
   },
 ];
 
@@ -45,7 +45,7 @@ export default function HowToUse() {
         How To Use CommonOS
       </Typography>
       {howToUseSteps.map((step, index) => (
-        <Grid container mb={index !== howToUseSteps.length ? 3 : 0} key={index}>
+        <Grid container mb={index !== howToUseSteps.length ? 5 : 0} key={index}>
           <Grid item xs={12} md={6}>
             <Box
               display="flex"

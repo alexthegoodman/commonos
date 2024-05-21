@@ -82,7 +82,7 @@ export default function Founders() {
               }}
             >
               <YouTube
-                videoId={"OMVw3QPSYSg"} // defaults -> ''
+                videoId={"wbGsOd60qkY"} // defaults -> ''
                 opts={opts} // defaults -> {}
               />
             </Box>
