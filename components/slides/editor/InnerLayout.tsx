@@ -8,7 +8,7 @@ import {
   SlidesContextReducer,
   SlidesContextState,
 } from "@/context/SlidesContext";
-import { Button, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import { useReducer, useState } from "react";
 import EditorHeader from "./EditorHeader";
 import AutoSidebar from "./AutoSidebar";
@@ -24,12 +24,13 @@ export default function InnerLayout({ presentationId, slideData }) {
       value={useReducer(SlidesContextReducer, slideData.context)}
     >
       <Autosaver id={presentationId} title={title} />
-      <EditorHeader title={title} setTitle={setTitle} />
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={2}>
+
+      <Box sx={{ display: "flex", flexDirection: "row" }}>
+        <Box sx={{ width: "calc(100% - 1000px)", paddingRight: "50px" }}>
+          <EditorHeader title={title} setTitle={setTitle} />
           <SlideList exporting={exporting} />
-        </Grid>
-        <Grid item xs={12} md={10}>
+        </Box>
+        <Box>
           <EditorWrapper
             presentationId={presentationId}
             title={title}
@@ -40,8 +41,8 @@ export default function InnerLayout({ presentationId, slideData }) {
             slidesExported={slidesExported}
             setSlidesExported={setSlidesExported}
           />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
       {/* <AutoSidebar title={title} /> */}
     </SlidesContext.Provider>
   );

@@ -238,7 +238,7 @@ export const getThemeOptions = (mode: string) => {
           paper: "#333333",
         },
         success: {
-          main: "#38ef7d",
+          main: "#38ef7d", // 56, 239, 125
           dark: "#38ef7d",
         },
       },

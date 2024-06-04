@@ -47,6 +47,14 @@ const ToolbarWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
+export const CanvasBox = styled(Box)(({ theme }) => ({
+  borderRadius: "25px",
+  boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+  width: "fit-content",
+  height: "fit-content",
+  background: "grey",
+}));
+
 export default function SlideEditor({
   presentationId,
   slide,
@@ -195,27 +203,106 @@ export default function SlideEditor({
         justifyContent="space-between"
         mb={2}
       >
-        <Box>
-          <TextField
-            // label="Slide Title"
-            value={slide?.title}
-            onChange={(e) => {
-              dispatch({
-                type: "slides",
-                payload: state.slides.map((s) => {
-                  if (s.id === state.currentSlideId) {
-                    s.title = e.target.value;
-                  }
-                  return s;
-                }),
-              });
-            }}
-            style={{
-              width: "400px",
-            }}
-          />
+        <Box display="flex" flexDirection="row" gap={1}>
+          <Box>
+            <TextField
+              // label="Slide Title"
+              value={slide?.title}
+              onChange={(e) => {
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((s) => {
+                    if (s.id === state.currentSlideId) {
+                      s.title = e.target.value;
+                    }
+                    return s;
+                  }),
+                });
+              }}
+              style={{
+                width: "400px",
+              }}
+            />
+          </Box>
+          <Box display="flex" flexDirection="row" gap={1} mb={1}>
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => {
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.texts.push({
+                        id: uuidv4(),
+                        content: "New Text",
+                        x: 50,
+                        y: 50,
+                        width: 200,
+                        fontSize: 24,
+                        fontStyle: "normal",
+                        fontFamily: "Arial",
+                        fontVariant: "normal",
+                        fill: "black",
+                        align: "left",
+                        lineHeight: 1.35,
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            >
+              Add Text
+            </Button>
+            <Select
+              label="Add Shape"
+              placeholder="Add Shape"
+              // style={{
+              //   height: "40px",
+              // }}
+              value={"init"}
+              onChange={(e) => {
+                const value = e.target.value;
+
+                if (value === "init") {
+                  return;
+                }
+
+                console.info("add shape", value);
+
+                dispatch({
+                  type: "slides",
+                  payload: state.slides.map((slide) => {
+                    if (slide.id === state.currentSlideId) {
+                      slide.shapes.push({
+                        id: uuidv4(),
+                        x: 50,
+                        y: 50,
+                        width: 100,
+                        height: 100,
+                        sides: value === "triangle" ? 3 : 4,
+                        radius: 100,
+                        fill: "black",
+                        kind: value,
+                      });
+                    }
+                    return slide;
+                  }),
+                });
+              }}
+            >
+              <MenuItem value={"init"}>Select Shape</MenuItem>
+              <MenuItem value={"star"}>Star</MenuItem>
+              <MenuItem value={"circle"}>Circle</MenuItem>
+              <MenuItem value={"ellipse"}>Ellipse</MenuItem>
+              <MenuItem value={"rectangle"}>Rectangle</MenuItem>
+              <MenuItem value={"triangle"}>Triangle</MenuItem>
+              <MenuItem value={"polygon"}>Polygon</MenuItem>
+            </Select>
+          </Box>
         </Box>
-        <Box>
+        <Box display="flex" flexDirection="row" gap={1}>
           {userData?.role === "ADMIN" && (
             <>
               {presentationTemplateMatch ? (
@@ -287,83 +374,7 @@ export default function SlideEditor({
           </Button>
         </Box>
       </Box>
-      <Box display="flex" flexDirection="row" mb={1}>
-        <Button
-          color="success"
-          variant="contained"
-          onClick={() => {
-            dispatch({
-              type: "slides",
-              payload: state.slides.map((slide) => {
-                if (slide.id === state.currentSlideId) {
-                  slide.texts.push({
-                    id: uuidv4(),
-                    content: "New Text",
-                    x: 50,
-                    y: 50,
-                    width: 200,
-                    fontSize: 24,
-                    fontStyle: "normal",
-                    fontFamily: "Arial",
-                    fontVariant: "normal",
-                    fill: "black",
-                    align: "left",
-                    lineHeight: 1.35,
-                  });
-                }
-                return slide;
-              }),
-            });
-          }}
-        >
-          Add Text
-        </Button>
-        <Select
-          label="Add Shape"
-          placeholder="Add Shape"
-          style={{
-            height: "40px",
-          }}
-          value={"init"}
-          onChange={(e) => {
-            const value = e.target.value;
 
-            if (value === "init") {
-              return;
-            }
-
-            console.info("add shape", value);
-
-            dispatch({
-              type: "slides",
-              payload: state.slides.map((slide) => {
-                if (slide.id === state.currentSlideId) {
-                  slide.shapes.push({
-                    id: uuidv4(),
-                    x: 50,
-                    y: 50,
-                    width: 100,
-                    height: 100,
-                    sides: value === "triangle" ? 3 : 4,
-                    radius: 100,
-                    fill: "black",
-                    kind: value,
-                  });
-                }
-                return slide;
-              }),
-            });
-          }}
-        >
-          <MenuItem value={"init"}>Select Shape</MenuItem>
-          <MenuItem value={"star"}>Star</MenuItem>
-          <MenuItem value={"circle"}>Circle</MenuItem>
-          <MenuItem value={"ellipse"}>Ellipse</MenuItem>
-          <MenuItem value={"rectangle"}>Rectangle</MenuItem>
-          <MenuItem value={"triangle"}>Triangle</MenuItem>
-          <MenuItem value={"polygon"}>Polygon</MenuItem>
-        </Select>
-      </Box>
       <Box>
         {selectedItemType === "texts" && (
           <ToolbarWrapper
@@ -741,192 +752,46 @@ export default function SlideEditor({
           </ToolbarWrapper>
         )}
       </Box>
-      <Stage ref={stageRef} width={stageWidth} height={stageHeight}>
-        <Layer>
-          <Rect
-            x={0}
-            y={0}
-            width={stageWidth}
-            height={stageHeight}
-            fill="white"
-          />
-        </Layer>
-        <Layer>
-          {slide?.texts?.map((text, i) => {
-            return (
-              <>
-                <Text
-                  key={text.id}
-                  ref={textNodeRefs.current[i]}
-                  text={text.content}
-                  fontSize={text.fontSize ?? 24}
-                  fontStyle={text?.fontStyle ?? "normal"}
-                  fontFamily={text?.fontFamily ?? "Arial"}
-                  fontVariant={text?.fontVariant ?? "normal"}
-                  textDecoration={text?.textDecoration ?? ""}
-                  fill={text?.fill ?? "black"}
-                  align={text?.align ?? "left"}
-                  lineHeight={text?.lineHeight ?? 1}
-                  x={text.x ?? 0}
-                  y={text.y ?? 0}
-                  width={text?.width ?? 200}
-                  draggable
-                  onDragEnd={(e) => {
-                    dispatch({
-                      type: "slides",
-                      payload: state.slides.map((slide) => {
-                        if (slide.id === state.currentSlideId) {
-                          slide.texts = slide.texts.map((t) => {
-                            if (t.id === text.id) {
-                              t.x = e.target.x();
-                              t.y = e.target.y();
-                            }
-                            return t;
-                          });
-                        }
-                        return slide;
-                      }),
-                    });
-                  }}
-                  onDblClick={(e) => {
-                    const textNodeRef = textNodeRefs.current[i].current;
-
-                    if (!textNodeRef) {
-                      console.error(
-                        "textNodeRefs.current[i] is null",
-                        textNodeRefs
-                      );
-                      return;
-                    }
-
-                    setSelectedItemIndex(i);
-                    setSelectedItemId(text.id);
-                    setSelectedItemType("texts");
-
-                    // hide text node and transformer:
-                    textNodeRef.hide();
-                    // tr.hide();
-
-                    // create textarea over canvas with absolute position
-                    // first we need to find position for textarea
-                    // how to find it?
-
-                    // at first lets find position of text node relative to the stage:
-                    var textPosition = textNodeRef.absolutePosition();
-
-                    // so position of textarea will be the sum of positions above:
-                    var areaPosition = {
-                      x:
-                        stageRef.current.container().offsetLeft +
-                        textPosition.x,
-                      y:
-                        stageRef.current.container().offsetTop + textPosition.y,
-                    };
-
-                    // create textarea and style it
-                    var textarea = document.createElement("textarea");
-                    document.body.appendChild(textarea);
-
-                    // apply many styles to match text on canvas as close as possible
-                    // remember that text rendering on canvas and on the textarea can be different
-                    // and sometimes it is hard to make it 100% the same. But we will try...
-                    textarea.id = "slidesTextBox";
-                    textarea.value = textNodeRef.text();
-                    textarea.style.position = "absolute";
-                    textarea.style.top = areaPosition.y + "px";
-                    textarea.style.left = areaPosition.x + "px";
-                    textarea.style.width =
-                      textNodeRef.width() - textNodeRef.padding() * 2 + "px";
-                    textarea.style.height =
-                      textNodeRef.height() -
-                      textNodeRef.padding() * 2 +
-                      5 +
-                      "px";
-                    textarea.style.fontSize = textNodeRef.fontSize() + "px";
-                    textarea.style.border = "none";
-                    textarea.style.padding = "0px";
-                    textarea.style.margin = "0px";
-                    textarea.style.overflow = "hidden";
-                    textarea.style.background = "none";
-                    textarea.style.outline = "none";
-                    textarea.style.resize = "none";
-                    textarea.style.lineHeight = textNodeRef.lineHeight();
-                    textarea.style.fontFamily = textNodeRef.fontFamily();
-                    textarea.style.transformOrigin = "left top";
-                    textarea.style.textAlign = textNodeRef.align();
-                    textarea.style.color = textNodeRef.fill();
-                    var rotation = textNodeRef.rotation();
-                    var transform = "";
-                    if (rotation) {
-                      transform += "rotateZ(" + rotation + "deg)";
-                    }
-
-                    var px = 0;
-                    // also we need to slightly move textarea on firefox
-                    // because it jumps a bit
-                    var isFirefox =
-                      navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
-                    if (isFirefox) {
-                      px += 2 + Math.round(textNodeRef.fontSize() / 20);
-                    }
-                    transform += "translateY(-" + px + "px)";
-
-                    textarea.style.transform = transform;
-
-                    // reset height
-                    textarea.style.height = "auto";
-                    // after browsers resized it we can set actual value
-                    textarea.style.height = textarea.scrollHeight + 3 + "px";
-
-                    textarea.focus();
-
-                    // move texttoolbar to this position
-                    setSelectedItemX(areaPosition.x);
-                    setSelectedItemY(areaPosition.y);
-
-                    function removeTextarea() {
-                      textarea.parentNode.removeChild(textarea);
-                      // window.removeEventListener("click", handleOutsideClick);
-                      textNodeRef.show();
-                      // tr.show();
-                      // tr.forceUpdate();
-                    }
-
-                    function setTextareaWidth(newWidth) {
-                      if (!newWidth) {
-                        // set width for placeholder
-                        newWidth =
-                          textNodeRef.placeholder.length *
-                          textNodeRef.fontSize();
-                      }
-                      // some extra fixes on different browsers
-                      var isSafari = /^((?!chrome|android).)*safari/i.test(
-                        navigator.userAgent
-                      );
-                      var isFirefox =
-                        navigator.userAgent.toLowerCase().indexOf("firefox") >
-                        -1;
-                      if (isSafari || isFirefox) {
-                        newWidth = Math.ceil(newWidth);
-                      }
-
-                      var isEdge =
-                        document.documentMode ||
-                        /Edge/.test(navigator.userAgent);
-                      if (isEdge) {
-                        newWidth += 1;
-                      }
-                      textarea.style.width = newWidth + "px";
-                    }
-
-                    function setNewValue() {
+      <CanvasBox>
+        <Stage ref={stageRef} width={stageWidth} height={stageHeight}>
+          <Layer>
+            <Rect
+              x={0}
+              y={0}
+              width={stageWidth}
+              height={stageHeight}
+              fill="white"
+            />
+          </Layer>
+          <Layer>
+            {slide?.texts?.map((text, i) => {
+              return (
+                <>
+                  <Text
+                    key={text.id}
+                    ref={textNodeRefs.current[i]}
+                    text={text.content}
+                    fontSize={text.fontSize ?? 24}
+                    fontStyle={text?.fontStyle ?? "normal"}
+                    fontFamily={text?.fontFamily ?? "Arial"}
+                    fontVariant={text?.fontVariant ?? "normal"}
+                    textDecoration={text?.textDecoration ?? ""}
+                    fill={text?.fill ?? "black"}
+                    align={text?.align ?? "left"}
+                    lineHeight={text?.lineHeight ?? 1}
+                    x={text.x ?? 0}
+                    y={text.y ?? 0}
+                    width={text?.width ?? 200}
+                    draggable
+                    onDragEnd={(e) => {
                       dispatch({
                         type: "slides",
                         payload: state.slides.map((slide) => {
                           if (slide.id === state.currentSlideId) {
                             slide.texts = slide.texts.map((t) => {
                               if (t.id === text.id) {
-                                t.content = textarea.value;
+                                t.x = e.target.x();
+                                t.y = e.target.y();
                               }
                               return t;
                             });
@@ -934,237 +799,388 @@ export default function SlideEditor({
                           return slide;
                         }),
                       });
+                    }}
+                    onDblClick={(e) => {
+                      const textNodeRef = textNodeRefs.current[i].current;
 
-                      setSelectedItemId(null);
-                      setSelectedItemType(null);
-                      removeTextarea();
-                    }
-
-                    textarea.addEventListener("keydown", function (e) {
-                      // hide on enter
-                      // but don't hide on shift + enter
-                      if (e.keyCode === 13 && !e.shiftKey) {
-                        setNewValue();
+                      if (!textNodeRef) {
+                        console.error(
+                          "textNodeRefs.current[i] is null",
+                          textNodeRefs
+                        );
+                        return;
                       }
-                      // on esc do not set value back to node
-                      if (e.keyCode === 27) {
+
+                      setSelectedItemIndex(i);
+                      setSelectedItemId(text.id);
+                      setSelectedItemType("texts");
+
+                      // hide text node and transformer:
+                      textNodeRef.hide();
+                      // tr.hide();
+
+                      // create textarea over canvas with absolute position
+                      // first we need to find position for textarea
+                      // how to find it?
+
+                      // at first lets find position of text node relative to the stage:
+                      var textPosition = textNodeRef.absolutePosition();
+
+                      // so position of textarea will be the sum of positions above:
+                      var areaPosition = {
+                        x:
+                          stageRef.current.container().offsetLeft +
+                          textPosition.x,
+                        y:
+                          stageRef.current.container().offsetTop +
+                          textPosition.y,
+                      };
+
+                      // create textarea and style it
+                      var textarea = document.createElement("textarea");
+                      document.body.appendChild(textarea);
+
+                      // apply many styles to match text on canvas as close as possible
+                      // remember that text rendering on canvas and on the textarea can be different
+                      // and sometimes it is hard to make it 100% the same. But we will try...
+                      textarea.id = "slidesTextBox";
+                      textarea.value = textNodeRef.text();
+                      textarea.style.position = "absolute";
+                      textarea.style.top = areaPosition.y + "px";
+                      textarea.style.left = areaPosition.x + "px";
+                      textarea.style.width =
+                        textNodeRef.width() - textNodeRef.padding() * 2 + "px";
+                      textarea.style.height =
+                        textNodeRef.height() -
+                        textNodeRef.padding() * 2 +
+                        5 +
+                        "px";
+                      textarea.style.fontSize = textNodeRef.fontSize() + "px";
+                      textarea.style.border = "none";
+                      textarea.style.padding = "0px";
+                      textarea.style.margin = "0px";
+                      textarea.style.overflow = "hidden";
+                      textarea.style.background = "none";
+                      textarea.style.outline = "none";
+                      textarea.style.resize = "none";
+                      textarea.style.lineHeight = textNodeRef.lineHeight();
+                      textarea.style.fontFamily = textNodeRef.fontFamily();
+                      textarea.style.transformOrigin = "left top";
+                      textarea.style.textAlign = textNodeRef.align();
+                      textarea.style.color = textNodeRef.fill();
+                      var rotation = textNodeRef.rotation();
+                      var transform = "";
+                      if (rotation) {
+                        transform += "rotateZ(" + rotation + "deg)";
+                      }
+
+                      var px = 0;
+                      // also we need to slightly move textarea on firefox
+                      // because it jumps a bit
+                      var isFirefox =
+                        navigator.userAgent.toLowerCase().indexOf("firefox") >
+                        -1;
+                      if (isFirefox) {
+                        px += 2 + Math.round(textNodeRef.fontSize() / 20);
+                      }
+                      transform += "translateY(-" + px + "px)";
+
+                      textarea.style.transform = transform;
+
+                      // reset height
+                      textarea.style.height = "auto";
+                      // after browsers resized it we can set actual value
+                      textarea.style.height = textarea.scrollHeight + 3 + "px";
+
+                      textarea.focus();
+
+                      // move texttoolbar to this position
+                      setSelectedItemX(areaPosition.x);
+                      setSelectedItemY(areaPosition.y);
+
+                      function removeTextarea() {
+                        textarea.parentNode.removeChild(textarea);
+                        // window.removeEventListener("click", handleOutsideClick);
+                        textNodeRef.show();
+                        // tr.show();
+                        // tr.forceUpdate();
+                      }
+
+                      function setTextareaWidth(newWidth) {
+                        if (!newWidth) {
+                          // set width for placeholder
+                          newWidth =
+                            textNodeRef.placeholder.length *
+                            textNodeRef.fontSize();
+                        }
+                        // some extra fixes on different browsers
+                        var isSafari = /^((?!chrome|android).)*safari/i.test(
+                          navigator.userAgent
+                        );
+                        var isFirefox =
+                          navigator.userAgent.toLowerCase().indexOf("firefox") >
+                          -1;
+                        if (isSafari || isFirefox) {
+                          newWidth = Math.ceil(newWidth);
+                        }
+
+                        var isEdge =
+                          document.documentMode ||
+                          /Edge/.test(navigator.userAgent);
+                        if (isEdge) {
+                          newWidth += 1;
+                        }
+                        textarea.style.width = newWidth + "px";
+                      }
+
+                      function setNewValue() {
+                        dispatch({
+                          type: "slides",
+                          payload: state.slides.map((slide) => {
+                            if (slide.id === state.currentSlideId) {
+                              slide.texts = slide.texts.map((t) => {
+                                if (t.id === text.id) {
+                                  t.content = textarea.value;
+                                }
+                                return t;
+                              });
+                            }
+                            return slide;
+                          }),
+                        });
+
+                        setSelectedItemId(null);
+                        setSelectedItemType(null);
                         removeTextarea();
                       }
-                    });
 
-                    textarea.addEventListener("keydown", function (e) {
-                      var scale = textNodeRef.getAbsoluteScale().x;
-                      setTextareaWidth(textNodeRef.width() * scale);
-                      textarea.style.height = "auto";
-                      textarea.style.height =
-                        textarea.scrollHeight + textNodeRef.fontSize() + "px";
-                    });
-
-                    // function handleOutsideClick(e) {
-                    //   console.info("handleOutsideClick", e.target, textToolbarRef.current);
-                    //   if (e.target !== textarea || e.target !== textToolbarRef.current) {
-                    //     // textNodeRef.current.text(textarea.value);
-                    //     setNewValue();
-                    //   }
-                    // }
-
-                    // setTimeout(() => {
-                    //   window.addEventListener("click", handleOutsideClick);
-                    // });
-                  }}
-                  onClick={(e) => {
-                    setActiveItemType("texts");
-                    setActiveItemId(text.id);
-                  }}
-                  onTransformEnd={(e) => {
-                    // transformer is changing scale of the node
-                    // and NOT its width or height
-                    // but in the store we have only width and height
-                    // to match the data better we will reset scale on transform end
-                    const node = textNodeRefs.current[i].current;
-                    const scaleX = node.scaleX();
-                    const scaleY = node.scaleY();
-
-                    // we will reset it back
-                    node.scaleX(1);
-                    node.scaleY(1);
-
-                    // TODO: consider rotation
-
-                    dispatch({
-                      type: "slides",
-                      payload: state.slides.map((slide) => {
-                        if (slide.id === state.currentSlideId) {
-                          slide.texts = slide.texts.map((t) => {
-                            if (t.id === text.id) {
-                              t.x = node.x();
-                              t.y = node.y();
-                              t.width = Math.max(5, node.width() * scaleX);
-                              t.height = Math.max(node.height() * scaleY);
-                            }
-                            return t;
-                          });
+                      textarea.addEventListener("keydown", function (e) {
+                        // hide on enter
+                        // but don't hide on shift + enter
+                        if (e.keyCode === 13 && !e.shiftKey) {
+                          setNewValue();
                         }
-                        return slide;
-                      }),
-                    });
-                  }}
-                />
-                {activeItemType === "texts" && activeItemId === text.id && (
-                  <Transformer
-                    ref={textNodeTransformerRefs.current[i]}
-                    rotateEnabled={false}
-                    flipEnabled={false}
-                    boundBoxFunc={(oldBox, newBox) => {
-                      // limit resize
-                      if (
-                        Math.abs(newBox.width) < 5 ||
-                        Math.abs(newBox.height) < 5
-                      ) {
-                        return oldBox;
-                      }
-                      return newBox;
+                        // on esc do not set value back to node
+                        if (e.keyCode === 27) {
+                          removeTextarea();
+                        }
+                      });
+
+                      textarea.addEventListener("keydown", function (e) {
+                        var scale = textNodeRef.getAbsoluteScale().x;
+                        setTextareaWidth(textNodeRef.width() * scale);
+                        textarea.style.height = "auto";
+                        textarea.style.height =
+                          textarea.scrollHeight + textNodeRef.fontSize() + "px";
+                      });
+
+                      // function handleOutsideClick(e) {
+                      //   console.info("handleOutsideClick", e.target, textToolbarRef.current);
+                      //   if (e.target !== textarea || e.target !== textToolbarRef.current) {
+                      //     // textNodeRef.current.text(textarea.value);
+                      //     setNewValue();
+                      //   }
+                      // }
+
+                      // setTimeout(() => {
+                      //   window.addEventListener("click", handleOutsideClick);
+                      // });
+                    }}
+                    onClick={(e) => {
+                      setActiveItemType("texts");
+                      setActiveItemId(text.id);
+                    }}
+                    onTransformEnd={(e) => {
+                      // transformer is changing scale of the node
+                      // and NOT its width or height
+                      // but in the store we have only width and height
+                      // to match the data better we will reset scale on transform end
+                      const node = textNodeRefs.current[i].current;
+                      const scaleX = node.scaleX();
+                      const scaleY = node.scaleY();
+
+                      // we will reset it back
+                      node.scaleX(1);
+                      node.scaleY(1);
+
+                      // TODO: consider rotation
+
+                      dispatch({
+                        type: "slides",
+                        payload: state.slides.map((slide) => {
+                          if (slide.id === state.currentSlideId) {
+                            slide.texts = slide.texts.map((t) => {
+                              if (t.id === text.id) {
+                                t.x = node.x();
+                                t.y = node.y();
+                                t.width = Math.max(5, node.width() * scaleX);
+                                t.height = Math.max(node.height() * scaleY);
+                              }
+                              return t;
+                            });
+                          }
+                          return slide;
+                        }),
+                      });
                     }}
                   />
-                )}
-              </>
-            );
-          })}
-          {slide?.shapes?.map((shape, i) => {
-            let ShapeComponent = Rect;
-            switch (shape.kind) {
-              case "star":
-                ShapeComponent = Star;
-                break;
-              case "circle":
-                ShapeComponent = Circle;
-                break;
-              case "ellipse":
-                ShapeComponent = Ellipse;
-                break;
-              case "rectangle":
-                ShapeComponent = Rect;
-                break;
-              case "triangle":
-                ShapeComponent = RegularPolygon;
-                break;
-              case "polygon":
-                ShapeComponent = RegularPolygon;
-                break;
-              default:
-                ShapeComponent = Rect;
-                break;
-            }
-
-            return (
-              <>
-                <ShapeComponent
-                  key={shape.id}
-                  ref={shapeNodeRefs.current[i]}
-                  x={shape.x ?? 0}
-                  y={shape.y ?? 0}
-                  width={shape.width ?? 100}
-                  height={shape.height ?? 100}
-                  sides={shape.sides ?? 4}
-                  radius={shape.radius ?? 100}
-                  fill={shape.fill ?? "black"}
-                  draggable
-                  onDragEnd={(e) => {
-                    dispatch({
-                      type: "slides",
-                      payload: state.slides.map((slide) => {
-                        if (slide.id === state.currentSlideId) {
-                          slide.shapes = slide.shapes.map((s) => {
-                            if (s.id === shape.id) {
-                              s.x = e.target.x();
-                              s.y = e.target.y();
-                            }
-                            return s;
-                          });
+                  {activeItemType === "texts" && activeItemId === text.id && (
+                    <Transformer
+                      ref={textNodeTransformerRefs.current[i]}
+                      rotateEnabled={false}
+                      flipEnabled={false}
+                      boundBoxFunc={(oldBox, newBox) => {
+                        // limit resize
+                        if (
+                          Math.abs(newBox.width) < 5 ||
+                          Math.abs(newBox.height) < 5
+                        ) {
+                          return oldBox;
                         }
-                        return slide;
-                      }),
-                    });
-                  }}
-                  onDblClick={(e) => {
-                    const textNodeRef = shapeNodeRefs.current[i].current;
+                        return newBox;
+                      }}
+                    />
+                  )}
+                </>
+              );
+            })}
+            {slide?.shapes?.map((shape, i) => {
+              let ShapeComponent = Rect;
+              switch (shape.kind) {
+                case "star":
+                  ShapeComponent = Star;
+                  break;
+                case "circle":
+                  ShapeComponent = Circle;
+                  break;
+                case "ellipse":
+                  ShapeComponent = Ellipse;
+                  break;
+                case "rectangle":
+                  ShapeComponent = Rect;
+                  break;
+                case "triangle":
+                  ShapeComponent = RegularPolygon;
+                  break;
+                case "polygon":
+                  ShapeComponent = RegularPolygon;
+                  break;
+                default:
+                  ShapeComponent = Rect;
+                  break;
+              }
 
-                    setSelectedItemIndex(i);
-                    setSelectedItemId(shape.id);
-                    setSelectedItemType("shapes");
+              return (
+                <>
+                  <ShapeComponent
+                    key={shape.id}
+                    ref={shapeNodeRefs.current[i]}
+                    x={shape.x ?? 0}
+                    y={shape.y ?? 0}
+                    width={shape.width ?? 100}
+                    height={shape.height ?? 100}
+                    sides={shape.sides ?? 4}
+                    radius={shape.radius ?? 100}
+                    fill={shape.fill ?? "black"}
+                    draggable
+                    onDragEnd={(e) => {
+                      dispatch({
+                        type: "slides",
+                        payload: state.slides.map((slide) => {
+                          if (slide.id === state.currentSlideId) {
+                            slide.shapes = slide.shapes.map((s) => {
+                              if (s.id === shape.id) {
+                                s.x = e.target.x();
+                                s.y = e.target.y();
+                              }
+                              return s;
+                            });
+                          }
+                          return slide;
+                        }),
+                      });
+                    }}
+                    onDblClick={(e) => {
+                      const textNodeRef = shapeNodeRefs.current[i].current;
 
-                    var textPosition = textNodeRef.absolutePosition();
-                    var areaPosition = {
-                      x:
-                        stageRef.current.container().offsetLeft +
-                        textPosition.x,
-                      y:
-                        stageRef.current.container().offsetTop + textPosition.y,
-                    };
+                      setSelectedItemIndex(i);
+                      setSelectedItemId(shape.id);
+                      setSelectedItemType("shapes");
 
-                    // move texttoolbar to this position
-                    setSelectedItemX(areaPosition.x);
-                    setSelectedItemY(areaPosition.y);
-                  }}
-                  onClick={(e) => {
-                    setActiveItemType("shapes");
-                    setActiveItemId(shape.id);
-                  }}
-                  onTransformEnd={(e) => {
-                    // transformer is changing scale of the node
-                    // and NOT its width or height
-                    // but in the store we have only width and height
-                    // to match the data better we will reset scale on transform end
-                    const node = e.target;
-                    const scaleX = node.scaleX();
-                    const scaleY = node.scaleY();
+                      var textPosition = textNodeRef.absolutePosition();
+                      var areaPosition = {
+                        x:
+                          stageRef.current.container().offsetLeft +
+                          textPosition.x,
+                        y:
+                          stageRef.current.container().offsetTop +
+                          textPosition.y,
+                      };
 
-                    // we will reset it back
-                    node.scaleX(1);
-                    node.scaleY(1);
+                      // move texttoolbar to this position
+                      setSelectedItemX(areaPosition.x);
+                      setSelectedItemY(areaPosition.y);
+                    }}
+                    onClick={(e) => {
+                      setActiveItemType("shapes");
+                      setActiveItemId(shape.id);
+                    }}
+                    onTransformEnd={(e) => {
+                      // transformer is changing scale of the node
+                      // and NOT its width or height
+                      // but in the store we have only width and height
+                      // to match the data better we will reset scale on transform end
+                      const node = e.target;
+                      const scaleX = node.scaleX();
+                      const scaleY = node.scaleY();
 
-                    dispatch({
-                      type: "slides",
-                      payload: state.slides.map((slide) => {
-                        if (slide.id === state.currentSlideId) {
-                          slide.shapes = slide.shapes.map((s) => {
-                            if (s.id === shape.id) {
-                              s.x = node.x();
-                              s.y = node.y();
-                              s.width = Math.max(5, node.width() * scaleX);
-                              s.height = Math.max(node.height() * scaleY);
-                              s.radius = Math.max(s.radius * scaleX);
-                            }
-                            return s;
-                          });
-                        }
-                        return slide;
-                      }),
-                    });
-                  }}
-                />
-                {activeItemType === "shapes" && activeItemId === shape.id && (
-                  <Transformer
-                    ref={shapeNodeTransformerRefs.current[i]}
-                    rotateEnabled={false}
-                    flipEnabled={false}
-                    boundBoxFunc={(oldBox, newBox) => {
-                      // limit resize
-                      if (
-                        Math.abs(newBox.width) < 5 ||
-                        Math.abs(newBox.height) < 5
-                      ) {
-                        return oldBox;
-                      }
-                      return newBox;
+                      // we will reset it back
+                      node.scaleX(1);
+                      node.scaleY(1);
+
+                      dispatch({
+                        type: "slides",
+                        payload: state.slides.map((slide) => {
+                          if (slide.id === state.currentSlideId) {
+                            slide.shapes = slide.shapes.map((s) => {
+                              if (s.id === shape.id) {
+                                s.x = node.x();
+                                s.y = node.y();
+                                s.width = Math.max(5, node.width() * scaleX);
+                                s.height = Math.max(node.height() * scaleY);
+                                s.radius = Math.max(s.radius * scaleX);
+                              }
+                              return s;
+                            });
+                          }
+                          return slide;
+                        }),
+                      });
                     }}
                   />
-                )}
-              </>
-            );
-          })}
-        </Layer>
-      </Stage>
+                  {activeItemType === "shapes" && activeItemId === shape.id && (
+                    <Transformer
+                      ref={shapeNodeTransformerRefs.current[i]}
+                      rotateEnabled={false}
+                      flipEnabled={false}
+                      boundBoxFunc={(oldBox, newBox) => {
+                        // limit resize
+                        if (
+                          Math.abs(newBox.width) < 5 ||
+                          Math.abs(newBox.height) < 5
+                        ) {
+                          return oldBox;
+                        }
+                        return newBox;
+                      }}
+                    />
+                  )}
+                </>
+              );
+            })}
+          </Layer>
+        </Stage>
+      </CanvasBox>
     </>
   );
 }
