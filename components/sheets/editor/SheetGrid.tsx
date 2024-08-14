@@ -12,17 +12,17 @@ import { useEffect, useState } from "react";
 const Cell = styled(Box)(({ theme, selected }) => ({
   userSelect: "none",
   overflow: "hidden",
-  backgroundColor: selected ? "#99c7a2" : "white",
+  backgroundColor: selected ? "rgba(153, 199, 162, 0.5)" : "white",
   transition: "all 0.2s",
   position: "relative",
   borderTop: "1px #E5E5E5 solid",
   borderRight: "1px #E5E5E5 solid",
-  borderColor: selected ? "#99c7a2" : "#E5E5E5",
+  borderColor: selected ? "rgba(153, 199, 162, 1.0)" : "#E5E5E5",
   "& svg": {
     opacity: "0",
   },
   "&:hover": {
-    backgroundColor: selected ? "#c8cc7c" : "#E5E5E5",
+    backgroundColor: selected ? "rgba(153, 199, 162, 0.75)" : "#E5E5E5",
     cursor: "text",
     transition: "all 0.2s",
     "& svg": {
@@ -145,6 +145,8 @@ export const SheetGrid = ({
                   (cel) => cel === cell.id
                 );
 
+                const cellStyles = { color: cell.color ? cell.color : "black" };
+
                 return (
                   <>
                     <ResizableCell
@@ -155,12 +157,12 @@ export const SheetGrid = ({
                     >
                       {cell.type === "header" && (
                         <InnerCell>
-                          <span>{cell.text}</span>
+                          <span style={cellStyles}>{cell.text}</span>
                         </InnerCell>
                       )}
                       {cell.type === "text" && (
                         <InnerCell>
-                          <span>{cell.text}</span>
+                          <span style={cellStyles}>{cell.text}</span>
                         </InnerCell>
                       )}
                     </ResizableCell>

@@ -69,11 +69,15 @@ const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export default function SheetEditor({
   selectedCells = null,
   setSelectedCells = () => {},
+  selectedSheet,
+  setSelectedSheet,
 }) {
   const [state, dispatch] = useSheetsContext();
 
   const hasAnySheets = state?.sheets?.length;
-  const currentSheet = hasAnySheets ? state.sheets[0] : state;
+  const currentSheet = hasAnySheets
+    ? state.sheets[selectedSheet ? selectedSheet : 0]
+    : state;
 
   const columns = currentSheet.columns;
   const rows = currentSheet.rows;

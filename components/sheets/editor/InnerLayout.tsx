@@ -13,6 +13,7 @@ import EditorHeader from "./EditorHeader";
 
 export default function InnerLayout({ sheetId, sheetData }) {
   const [title, setTitle] = useState(sheetData.title);
+  const [selectedSheet, setSelectedSheet] = useState(null);
   const [selectedCells, setSelectedCells] = useState(null);
 
   console.info("selectedCells", selectedCells);
@@ -22,11 +23,19 @@ export default function InnerLayout({ sheetId, sheetData }) {
       value={useReducer(SheetsContextReducer, sheetData.context)}
     >
       <Autosaver id={sheetId} title={title} />
-      <EditorHeader title={title} setTitle={setTitle} />
+      <EditorHeader
+        title={title}
+        setTitle={setTitle}
+        selectedCells={selectedCells}
+        selectedSheet={selectedSheet}
+        setSelectedSheet={setSelectedSheet}
+      />
       <Box>
         <SheetEditor
           selectedCells={selectedCells}
           setSelectedCells={setSelectedCells}
+          selectedSheet={selectedSheet}
+          setSelectedSheet={setSelectedSheet}
         />
       </Box>
     </SheetsContext.Provider>
