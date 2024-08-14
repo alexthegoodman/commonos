@@ -75,6 +75,13 @@ export const getThemeOptions = (mode: string) => {
               boxShadow: "none",
             },
           },
+          outlinedSecondary: {
+            color: "#515151",
+            borderColor: "#515151",
+            "&:hover": {
+              borderColor: "black",
+            },
+          },
           textPrimary: {
             color: "#515151",
             textAlign: "left",

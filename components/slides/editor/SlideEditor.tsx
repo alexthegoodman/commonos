@@ -42,6 +42,7 @@ import {
   newSlideTemplate,
   updateSlideTemplate,
 } from "@/fetchers/slide";
+import Dropdown from "@/components/core/fields/Dropdown";
 
 const ToolbarWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -53,6 +54,16 @@ export const CanvasBox = styled(Box)(({ theme }) => ({
   width: "fit-content",
   height: "fit-content",
   background: "grey",
+}));
+
+export const AdminBox = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  top: "60px",
+  right: "15px",
+  zIndex: "100",
+  display: "flex",
+  flexDirection: "row",
+  height: "40px",
 }));
 
 export default function SlideEditor({
@@ -105,6 +116,8 @@ export default function SlideEditor({
 
   const [activeItemType, setActiveItemType] = useState(null);
   const [activeItemId, setActiveItemId] = useState(null);
+
+  const [templateCategory, setTemplateCategory] = useState(null);
 
   // set up transformers useEffects for resizing nodes
   useEffect(() => {
@@ -194,6 +207,10 @@ export default function SlideEditor({
       captureNextSlide();
     }
   }, [exporting]);
+
+  const handleSetTemplateCategory = (option) => {
+    setTemplateCategory(option.value);
+  };
 
   return (
     <>
@@ -303,49 +320,6 @@ export default function SlideEditor({
           </Box>
         </Box>
         <Box display="flex" flexDirection="row" gap={1}>
-          {userData?.role === "ADMIN" && (
-            <>
-              {presentationTemplateMatch ? (
-                <Button
-                  color="success"
-                  variant="contained"
-                  onClick={async () => {
-                    await updateSlideTemplate(
-                      token,
-                      presentationTemplateMatch.id,
-                      JSON.stringify(state)
-                    );
-                    mutate("presentationTemplates", () =>
-                      getSlideTemplatesData(token)
-                    );
-                    console.info("updated template");
-                  }}
-                >
-                  Update Template
-                </Button>
-              ) : (
-                <Button
-                  color="success"
-                  variant="contained"
-                  onClick={async () => {
-                    await newSlideTemplate(
-                      token,
-                      presentationId,
-                      slide?.title,
-                      JSON.stringify(state)
-                    );
-                    mutate("presentationTemplates", () =>
-                      getSlideTemplatesData(token)
-                    );
-
-                    console.info("created template");
-                  }}
-                >
-                  Save as Template
-                </Button>
-              )}
-            </>
-          )}
           <Button
             color="success"
             variant="contained"
@@ -373,6 +347,61 @@ export default function SlideEditor({
             Export PDF
           </Button>
         </Box>
+        {userData?.role === "ADMIN" && (
+          <AdminBox>
+            <Dropdown
+              label={templateCategory ? "" : "Choose category..."}
+              options={[
+                {
+                  label: "Category",
+                  value: "123",
+                },
+              ]}
+              handleMenuItemClick={handleSetTemplateCategory}
+            />
+            {presentationTemplateMatch ? (
+              <Button
+                color="success"
+                variant="contained"
+                size="small"
+                onClick={async () => {
+                  await updateSlideTemplate(
+                    token,
+                    presentationTemplateMatch.id,
+                    JSON.stringify(state)
+                  );
+                  mutate("presentationTemplates", () =>
+                    getSlideTemplatesData(token)
+                  );
+                  console.info("updated template");
+                }}
+              >
+                Update Template
+              </Button>
+            ) : (
+              <Button
+                color="success"
+                variant="contained"
+                size="small"
+                onClick={async () => {
+                  await newSlideTemplate(
+                    token,
+                    presentationId,
+                    title,
+                    JSON.stringify(state)
+                  );
+                  mutate("presentationTemplates", () =>
+                    getSlideTemplatesData(token)
+                  );
+
+                  console.info("created template");
+                }}
+              >
+                Save as Template
+              </Button>
+            )}
+          </AdminBox>
+        )}
       </Box>
 
       <Box>
@@ -764,6 +793,140 @@ export default function SlideEditor({
             />
           </Layer>
           <Layer>
+            {slide?.shapes?.map((shape, i) => {
+              let ShapeComponent = Rect;
+              switch (shape.kind) {
+                case "star":
+                  ShapeComponent = Star;
+                  break;
+                case "circle":
+                  ShapeComponent = Circle;
+                  break;
+                case "ellipse":
+                  ShapeComponent = Ellipse;
+                  break;
+                case "rectangle":
+                  ShapeComponent = Rect;
+                  break;
+                case "triangle":
+                  ShapeComponent = RegularPolygon;
+                  break;
+                case "polygon":
+                  ShapeComponent = RegularPolygon;
+                  break;
+                default:
+                  ShapeComponent = Rect;
+                  break;
+              }
+
+              return (
+                <>
+                  <ShapeComponent
+                    key={shape.id}
+                    ref={shapeNodeRefs.current[i]}
+                    x={shape.x ?? 0}
+                    y={shape.y ?? 0}
+                    width={shape.width ?? 100}
+                    height={shape.height ?? 100}
+                    sides={shape.sides ?? 4}
+                    radius={shape.radius ?? 100}
+                    fill={shape.fill ?? "black"}
+                    draggable
+                    onDragEnd={(e) => {
+                      dispatch({
+                        type: "slides",
+                        payload: state.slides.map((slide) => {
+                          if (slide.id === state.currentSlideId) {
+                            slide.shapes = slide.shapes.map((s) => {
+                              if (s.id === shape.id) {
+                                s.x = e.target.x();
+                                s.y = e.target.y();
+                              }
+                              return s;
+                            });
+                          }
+                          return slide;
+                        }),
+                      });
+                    }}
+                    onDblClick={(e) => {
+                      const textNodeRef = shapeNodeRefs.current[i].current;
+
+                      setSelectedItemIndex(i);
+                      setSelectedItemId(shape.id);
+                      setSelectedItemType("shapes");
+
+                      var textPosition = textNodeRef.absolutePosition();
+                      var areaPosition = {
+                        x:
+                          stageRef.current.container().offsetLeft +
+                          textPosition.x,
+                        y:
+                          stageRef.current.container().offsetTop +
+                          textPosition.y,
+                      };
+
+                      // move texttoolbar to this position
+                      setSelectedItemX(areaPosition.x);
+                      setSelectedItemY(areaPosition.y);
+                    }}
+                    onClick={(e) => {
+                      setActiveItemType("shapes");
+                      setActiveItemId(shape.id);
+                    }}
+                    onTransformEnd={(e) => {
+                      // transformer is changing scale of the node
+                      // and NOT its width or height
+                      // but in the store we have only width and height
+                      // to match the data better we will reset scale on transform end
+                      const node = e.target;
+                      const scaleX = node.scaleX();
+                      const scaleY = node.scaleY();
+
+                      // we will reset it back
+                      node.scaleX(1);
+                      node.scaleY(1);
+
+                      dispatch({
+                        type: "slides",
+                        payload: state.slides.map((slide) => {
+                          if (slide.id === state.currentSlideId) {
+                            slide.shapes = slide.shapes.map((s) => {
+                              if (s.id === shape.id) {
+                                s.x = node.x();
+                                s.y = node.y();
+                                s.width = Math.max(5, node.width() * scaleX);
+                                s.height = Math.max(node.height() * scaleY);
+                                s.radius = Math.max(s.radius * scaleX);
+                              }
+                              return s;
+                            });
+                          }
+                          return slide;
+                        }),
+                      });
+                    }}
+                  />
+                  {activeItemType === "shapes" && activeItemId === shape.id && (
+                    <Transformer
+                      ref={shapeNodeTransformerRefs.current[i]}
+                      rotateEnabled={false}
+                      flipEnabled={false}
+                      boundBoxFunc={(oldBox, newBox) => {
+                        // limit resize
+                        if (
+                          Math.abs(newBox.width) < 5 ||
+                          Math.abs(newBox.height) < 5
+                        ) {
+                          return oldBox;
+                        }
+                        return newBox;
+                      }}
+                    />
+                  )}
+                </>
+              );
+            })}
             {slide?.texts?.map((text, i) => {
               return (
                 <>
@@ -1027,140 +1190,6 @@ export default function SlideEditor({
                   {activeItemType === "texts" && activeItemId === text.id && (
                     <Transformer
                       ref={textNodeTransformerRefs.current[i]}
-                      rotateEnabled={false}
-                      flipEnabled={false}
-                      boundBoxFunc={(oldBox, newBox) => {
-                        // limit resize
-                        if (
-                          Math.abs(newBox.width) < 5 ||
-                          Math.abs(newBox.height) < 5
-                        ) {
-                          return oldBox;
-                        }
-                        return newBox;
-                      }}
-                    />
-                  )}
-                </>
-              );
-            })}
-            {slide?.shapes?.map((shape, i) => {
-              let ShapeComponent = Rect;
-              switch (shape.kind) {
-                case "star":
-                  ShapeComponent = Star;
-                  break;
-                case "circle":
-                  ShapeComponent = Circle;
-                  break;
-                case "ellipse":
-                  ShapeComponent = Ellipse;
-                  break;
-                case "rectangle":
-                  ShapeComponent = Rect;
-                  break;
-                case "triangle":
-                  ShapeComponent = RegularPolygon;
-                  break;
-                case "polygon":
-                  ShapeComponent = RegularPolygon;
-                  break;
-                default:
-                  ShapeComponent = Rect;
-                  break;
-              }
-
-              return (
-                <>
-                  <ShapeComponent
-                    key={shape.id}
-                    ref={shapeNodeRefs.current[i]}
-                    x={shape.x ?? 0}
-                    y={shape.y ?? 0}
-                    width={shape.width ?? 100}
-                    height={shape.height ?? 100}
-                    sides={shape.sides ?? 4}
-                    radius={shape.radius ?? 100}
-                    fill={shape.fill ?? "black"}
-                    draggable
-                    onDragEnd={(e) => {
-                      dispatch({
-                        type: "slides",
-                        payload: state.slides.map((slide) => {
-                          if (slide.id === state.currentSlideId) {
-                            slide.shapes = slide.shapes.map((s) => {
-                              if (s.id === shape.id) {
-                                s.x = e.target.x();
-                                s.y = e.target.y();
-                              }
-                              return s;
-                            });
-                          }
-                          return slide;
-                        }),
-                      });
-                    }}
-                    onDblClick={(e) => {
-                      const textNodeRef = shapeNodeRefs.current[i].current;
-
-                      setSelectedItemIndex(i);
-                      setSelectedItemId(shape.id);
-                      setSelectedItemType("shapes");
-
-                      var textPosition = textNodeRef.absolutePosition();
-                      var areaPosition = {
-                        x:
-                          stageRef.current.container().offsetLeft +
-                          textPosition.x,
-                        y:
-                          stageRef.current.container().offsetTop +
-                          textPosition.y,
-                      };
-
-                      // move texttoolbar to this position
-                      setSelectedItemX(areaPosition.x);
-                      setSelectedItemY(areaPosition.y);
-                    }}
-                    onClick={(e) => {
-                      setActiveItemType("shapes");
-                      setActiveItemId(shape.id);
-                    }}
-                    onTransformEnd={(e) => {
-                      // transformer is changing scale of the node
-                      // and NOT its width or height
-                      // but in the store we have only width and height
-                      // to match the data better we will reset scale on transform end
-                      const node = e.target;
-                      const scaleX = node.scaleX();
-                      const scaleY = node.scaleY();
-
-                      // we will reset it back
-                      node.scaleX(1);
-                      node.scaleY(1);
-
-                      dispatch({
-                        type: "slides",
-                        payload: state.slides.map((slide) => {
-                          if (slide.id === state.currentSlideId) {
-                            slide.shapes = slide.shapes.map((s) => {
-                              if (s.id === shape.id) {
-                                s.x = node.x();
-                                s.y = node.y();
-                                s.width = Math.max(5, node.width() * scaleX);
-                                s.height = Math.max(node.height() * scaleY);
-                                s.radius = Math.max(s.radius * scaleX);
-                              }
-                              return s;
-                            });
-                          }
-                          return slide;
-                        }),
-                      });
-                    }}
-                  />
-                  {activeItemType === "shapes" && activeItemId === shape.id && (
-                    <Transformer
-                      ref={shapeNodeTransformerRefs.current[i]}
                       rotateEnabled={false}
                       flipEnabled={false}
                       boundBoxFunc={(oldBox, newBox) => {
