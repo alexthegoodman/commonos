@@ -1,5 +1,6 @@
 import { useSlidesContext } from "@/context/SlidesContext";
-import { Box, Button, Typography, styled } from "@mui/material";
+import { Close } from "@mui/icons-material";
+import { Box, Button, IconButton, Typography, styled } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 
 export const SlideButton = styled(Button)(({ theme, selected }) => ({
@@ -42,6 +43,26 @@ export const SlideButton = styled(Button)(({ theme, selected }) => ({
   },
 }));
 
+const SlideBox = styled(Box)(({ theme }) => ({
+  position: "relative",
+
+  "& .closeBtn": {
+    opacity: "0",
+    transition: "all 0.2s",
+
+    position: "absolute",
+    right: "0px",
+    top: "10px",
+    backgroundColor: "white",
+  },
+  "&:hover": {
+    "& .closeBtn": {
+      opacity: "1.0",
+      transition: "all 0.2s",
+    },
+  },
+}));
+
 export default function SlideList({ exporting }) {
   const [state, dispatch] = useSlidesContext();
 
@@ -52,22 +73,42 @@ export default function SlideList({ exporting }) {
     });
   };
 
+  const handleDeleteSlide = (slideId) => {
+    if (state.currentSlideId === slideId) {
+      return;
+    }
+
+    console.info("delete slide", state.slides, slideId);
+
+    dispatch({
+      type: "slides",
+      payload: state.slides.filter((slide) => slide.id !== slideId),
+    });
+  };
+
   return (
     <Box display="flex" flexDirection="column">
       <Typography variant="overline">Your Slides</Typography>
       {state.slides.map((slide) => {
         return (
-          <SlideButton
-            key={slide.id}
-            disabled={exporting}
-            selected={state.currentSlideId === slide.id}
-            onClick={() => {
-              // TODO: scroll sidebar to most recent message
-              selectSlide(slide.id);
-            }}
-          >
-            {slide.title}
-          </SlideButton>
+          <SlideBox key={slide.id}>
+            <SlideButton
+              disabled={exporting}
+              selected={state.currentSlideId === slide.id}
+              onClick={() => {
+                // TODO: scroll sidebar to most recent message
+                selectSlide(slide.id);
+              }}
+            >
+              {slide.title}
+            </SlideButton>
+            <IconButton
+              className="closeBtn"
+              onClick={() => handleDeleteSlide(slide.id)}
+            >
+              <Close />
+            </IconButton>
+          </SlideBox>
         );
       })}
       <Button
