@@ -18,7 +18,7 @@ export default function Autosaver({ id, title }) {
 
   useEffect(() => {
     if (
-      debouncedState.sheets.length > 0 ||
+      debouncedState?.sheets?.length > 0 ||
       (debouncedState.columns.length > 0 && debouncedState.rows.length > 0)
     ) {
       // save context to db
@@ -36,9 +36,11 @@ export default function Autosaver({ id, title }) {
     if (!stateChecked) {
       setStateChecked(true);
 
+      let sheets = state.sheets ? state.sheets : [];
+
       dispatch({
         type: "sheets",
-        payload: state.sheets.map((sheet) => {
+        payload: sheets.map((sheet) => {
           return {
             ...sheet,
             rows: sheet.rows.map((row) => {

@@ -1,6 +1,13 @@
 import * as React from "react";
 
-import { Box, Button, IconButton, styled, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Paper,
+  styled,
+  TextField,
+} from "@mui/material";
 import {
   CurrencyDollar,
   Function,
@@ -12,6 +19,7 @@ import { useSheetsContext } from "@/context/SheetsContext";
 import { realDefaultColumns, realDefaultRows } from "@/fixtures/sheets";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
+import { MuiColorInput } from "mui-color-input";
 const { DateTime } = require("luxon");
 
 const Header = styled("header")(({ theme }) => ({
@@ -31,6 +39,18 @@ const Tab = styled(Box)(({ theme }) => ({
   borderRadius: "15px",
 }));
 
+const PopoverWrapper = styled(Box)(({ theme }) => ({
+  position: "relative",
+}));
+
+const PopoverPaper = styled(Paper)(({ theme, visible }) => ({
+  display: visible ? "flex" : "none",
+  position: "absolute",
+  top: "50px",
+  padding: "15px",
+  zIndex: "10",
+}));
+
 const EditorHeader = ({
   title,
   setTitle,
@@ -39,6 +59,10 @@ const EditorHeader = ({
   setSelectedSheet,
 }) => {
   const [state, dispatch] = useSheetsContext();
+
+  const [formatVisible, setFormatVisible] = React.useState(false);
+  const [formulaVisible, setFormulaVisible] = React.useState(false);
+  const [colorVisible, setColorVisible] = React.useState(false);
 
   const hasAnySheets = state?.sheets?.length;
 
@@ -82,29 +106,29 @@ const EditorHeader = ({
     setSelectedSheet(sheetIndex);
   };
 
-  const handleColorClick = () => {
-    dispatch({
-      type: "sheets",
-      payload: state.sheets.map((sheet) => {
-        return {
-          ...sheet,
-          rows: sheet.rows.map((row) => {
-            return {
-              ...row,
-              cells: row.cells.map((cell) => {
-                const isSelected = selectedCells.find((id) => id === cell.id);
+  // const handleColorClick = () => {
+  //   dispatch({
+  //     type: "sheets",
+  //     payload: state.sheets.map((sheet) => {
+  //       return {
+  //         ...sheet,
+  //         rows: sheet.rows.map((row) => {
+  //           return {
+  //             ...row,
+  //             cells: row.cells.map((cell) => {
+  //               const isSelected = selectedCells.find((id) => id === cell.id);
 
-                return {
-                  ...cell,
-                  color: isSelected ? "red" : cell.color,
-                };
-              }),
-            };
-          }),
-        };
-      }),
-    });
-  };
+  //               return {
+  //                 ...cell,
+  //                 color: isSelected ? "red" : cell.color,
+  //               };
+  //             }),
+  //           };
+  //         }),
+  //       };
+  //     }),
+  //   });
+  // };
 
   return (
     <>
@@ -119,33 +143,98 @@ const EditorHeader = ({
           }}
         />
         {/** Format Box */}
-        <Button
-          color="secondary"
-          variant="outlined"
-          size="small"
-          endIcon={<CurrencyDollar size={20} />}
-        >
-          Format
-        </Button>
+        <PopoverWrapper>
+          <Button
+            color="secondary"
+            variant="outlined"
+            size="small"
+            endIcon={<CurrencyDollar size={20} />}
+          >
+            Format
+          </Button>
+          <PopoverPaper visible={formatVisible}></PopoverPaper>
+        </PopoverWrapper>
         {/** Formula Box */}
-        <Button
-          color="secondary"
-          variant="outlined"
-          size="small"
-          endIcon={<Function size={20} />}
-        >
-          Formula
-        </Button>
+        <PopoverWrapper>
+          <Button
+            color="secondary"
+            variant="outlined"
+            size="small"
+            endIcon={<Function size={20} />}
+          >
+            Formula
+          </Button>
+          <PopoverPaper visible={formulaVisible}></PopoverPaper>
+        </PopoverWrapper>
         {/** Color Box */}
-        <Button
-          color="secondary"
-          variant="outlined"
-          size="small"
-          endIcon={<Palette size={20} />}
-          onClick={handleColorClick}
-        >
-          Color
-        </Button>
+        <PopoverWrapper>
+          <Button
+            color="secondary"
+            variant="outlined"
+            size="small"
+            endIcon={<Palette size={20} />}
+            onClick={() => setColorVisible(!colorVisible)}
+          >
+            Color
+          </Button>
+          <PopoverPaper visible={colorVisible}>
+            <MuiColorInput
+              sx={{
+                height: "40px",
+                "& .MuiInputBase-root": {
+                  height: "40px",
+                  width: "200px",
+                },
+                "& .MuiInputBase-input": {
+                  minHeight: "auto",
+                  height: "40px",
+                  width: "200px",
+                },
+                "& .MuiButtonBase-root": {
+                  minHeight: "auto",
+                  height: "40px",
+                  // width: "200px",
+                  padding: "5px",
+                },
+              }}
+              // value={
+              //   slide && slide[selectedItemType]
+              //     ? slide[selectedItemType].filter(
+              //         (text) => text.id === selectedItemId
+              //       )[0]?.fill
+              //     : "black"
+              // }
+              onChange={(color) => {
+                console.info("color onChange", color);
+                // update actual
+
+                dispatch({
+                  type: "sheets",
+                  payload: state.sheets.map((sheet) => {
+                    return {
+                      ...sheet,
+                      rows: sheet.rows.map((row) => {
+                        return {
+                          ...row,
+                          cells: row.cells.map((cell) => {
+                            const isSelected = selectedCells?.find(
+                              (id) => id === cell.id
+                            );
+
+                            return {
+                              ...cell,
+                              color: isSelected ? color : cell.color,
+                            };
+                          }),
+                        };
+                      }),
+                    };
+                  }),
+                });
+              }}
+            />
+          </PopoverPaper>
+        </PopoverWrapper>
       </Header>
       <Header>
         {!hasAnySheets && (
