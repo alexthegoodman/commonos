@@ -122,6 +122,32 @@ export const useKonvaRTE = (
     underline: false,
   };
 
+  const [editorActive, _setEditorActive] = useState(false);
+  // use ref to get up-to-date values in event listener
+  const editorActiveRef = useRef(editorActive);
+  const setEditorActive = (active: boolean) => {
+    editorActiveRef.current = active;
+    _setEditorActive(active);
+  };
+
+  const [insertCharacterId, _setInsertCharcterId] = useState<string | null>(
+    null
+  );
+  const insertCharacterIdRef = useRef(insertCharacterId);
+  const setInsertCharcterId = (id: string | null) => {
+    insertCharacterIdRef.current = id;
+    _setInsertCharcterId(id);
+  };
+
+  const [insertCharacterIndex, _setInsertCharacterIndex] = useState<
+    number | null
+  >(null);
+  const insertCharacterIndexRef = useRef(insertCharacterIndex);
+  const setInsertCharacterIndex = (index: number | null) => {
+    insertCharacterIndexRef.current = index;
+    _setInsertCharacterIndex(index);
+  };
+
   const [masterJson, _setMasterJson] = useState<MasterJson>([]);
   const masterJsonRef = useRef(masterJson);
   const setMasterJson = (data: MasterJson) => {
@@ -209,7 +235,7 @@ export const useKonvaRTE = (
 
     const floatArray = new Float32Array(flattened);
 
-    console.info("flattenForCompute floatArray", floatArray);
+    // console.info("flattenForCompute floatArray", floatArray);
 
     return floatArray;
   };
@@ -251,7 +277,214 @@ export const useKonvaRTE = (
     setTimeout(() => {
       console.info("reading from buffer...");
       readFromBuffer(gpuDevice, computeBuffer, characters, setMasterJson);
-    }, 50);
+    }, 10);
+  };
+
+  const spliceMasterJson = (
+    newCharacter: Character
+    // insertCharacterIndex: number
+  ) => {
+    // PERF: check
+    // const insertCharacterIndex = masterJsonRef.current.findIndex(
+    //   (char) => char.characterId === insertCharacterIdRef.current
+    // );
+
+    // PERF: check
+    // const next = [
+    //   ...masterJsonRef.current.slice(0, insertCharacterIndex + 1),
+    //   newCharacter,
+    //   ...masterJsonRef.current.slice(insertCharacterIndex + 1),
+    // ];
+
+    // insert newCharacter into masterJson at insertCharacterIndex
+    // PERF: seems to be a major perf hit
+    const next = masterJsonRef.current.slice();
+
+    console.info("insertCharacterIndex", insertCharacterIndexRef.current);
+
+    if (!insertCharacterIndexRef.current) {
+      return next;
+    }
+
+    next.splice(insertCharacterIndexRef.current + 1, 0, newCharacter);
+
+    // somewhat faster
+    // const next = [...masterJsonRef.current, newCharacter];
+
+    return next;
+  };
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    e.preventDefault();
+
+    if (editorActiveRef.current) {
+      if (!fontDataRef.current) {
+        console.info("key triggered before fonts loaded?");
+        return;
+      }
+
+      const characterId = uuidv4();
+
+      if (!insertCharacterIndexRef.current) {
+        console.info("trigger key with no text content?");
+        return;
+      }
+
+      switch (e.key) {
+        case "Enter":
+          {
+            const character = "\n";
+
+            const capHeightPx = getCapHeightPx(defaultStyle.fontSize);
+
+            const newlineSize: Size = {
+              width: 0,
+              height: capHeightPx,
+            };
+
+            const newCharacter: Character = {
+              characterId,
+              character,
+              location: null,
+              position: null,
+              size: newlineSize,
+              style: defaultStyle,
+              type: "newline",
+              lastLineCharacter: null,
+              wordIndex: null,
+              paragraphIndex: null,
+            };
+
+            // add the new character to the master json
+            const next = spliceMasterJson(newCharacter);
+
+            // setMasterJson(next);
+            positionByShader(next);
+
+            // setInsertCharcterId(characterId);
+            setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+          }
+          break;
+        case "Backspace":
+          {
+          }
+          break;
+        case "Delete":
+          {
+          }
+          break;
+        case "ArrowLeft":
+          {
+          }
+          break;
+        case "ArrowRight":
+          {
+          }
+          break;
+        case "ArrowUp":
+          {
+          }
+          break;
+        case "ArrowDown":
+          {
+          }
+          break;
+        case "Escape":
+          {
+            setEditorActive(false);
+          }
+          break;
+        case "Shift":
+          {
+          }
+          break;
+        case "Meta":
+          {
+          }
+          break;
+        case "Tab":
+          {
+            console.info("tab");
+
+            const type = "tab";
+            const character = "    ";
+
+            const capHeightPx = getCapHeightPx(defaultStyle.fontSize);
+
+            const tabSize: Size = {
+              width: 20,
+              height: capHeightPx,
+            };
+
+            const newCharacter: Character = {
+              characterId,
+              character,
+              location: null,
+              position: null,
+              size: tabSize,
+              style: defaultStyle,
+              type,
+              lastLineCharacter: null,
+              wordIndex: null,
+              paragraphIndex: null,
+            };
+
+            // add the new character to the master json
+            const next = spliceMasterJson(newCharacter);
+
+            // setMasterJson(next);
+            positionByShader(next);
+
+            // setInsertCharcterId(characterId);
+            setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+          }
+          break;
+        default:
+          {
+            // any other character
+            const type = "character";
+            const character = e.key;
+
+            const boundingBox = getCharacterBoundingBox(
+              fontDataRef.current,
+              character,
+              defaultStyle
+            );
+
+            if (!boundingBox) {
+              return;
+            }
+
+            const newSize = {
+              width: boundingBox?.width,
+              height: boundingBox?.height,
+            };
+
+            const newCharacter: Character = {
+              characterId,
+              character,
+              location: null,
+              position: null,
+              size: newSize,
+              style: defaultStyle,
+              type,
+              lastLineCharacter: null,
+              wordIndex: null,
+              paragraphIndex: null,
+            };
+
+            // add the new character to the master json
+            const next = spliceMasterJson(newCharacter);
+
+            // setMasterJson(next);
+            positionByShader(next);
+
+            // setInsertCharcterId(characterId);
+            setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+          }
+          break;
+      }
+    }
   };
 
   useEffect(() => {
@@ -269,10 +502,10 @@ export const useKonvaRTE = (
     if (fontData) {
       console.info("welcome to konva rte!");
 
-      //   window.addEventListener("keydown", handleKeydown);
+      window.addEventListener("keydown", handleKeydown);
 
       return () => {
-        // window.removeEventListener("keydown", handleKeydown);
+        window.removeEventListener("keydown", handleKeydown);
       };
     }
   }, [fontData]);
@@ -345,10 +578,27 @@ export const useKonvaRTE = (
   // when no text exists, will calculate at first character
   const handleCanvasClick = (e: KonvaEventObject<MouseEvent>) => {
     console.info("canvas click");
+
+    setEditorActive(true);
   };
+
   // set the insert index to this character
   const handleTextClick = (e: KonvaEventObject<MouseEvent>) => {
     console.info("text click");
+
+    const target = e.target;
+    const characterId = target.id();
+
+    console.info("characterId", characterId);
+
+    const characterIndex = masterJson.findIndex(
+      (char) => char.characterId === characterId
+    );
+    const character = masterJson[characterIndex];
+
+    // setInsertCharcterId(character.characterId);
+    setInsertCharacterIndex(characterIndex);
+    setEditorActive(true);
   };
 
   // TODO: check performance of this
