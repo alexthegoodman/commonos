@@ -114,8 +114,9 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
     for (var i = 0u; i <= index; i++) {
         let otherChar = characters[i];
+        let otherCharWidth = otherChar.size_width + 1.0; // letter spacing
         
-        if (lineWidth + otherChar.size_width > docDimensions.width) {
+        if (lineWidth + otherCharWidth > docDimensions.width) {
             // Move to next line
             currentLine += 1.0;
             yOffset += docDimensions.lineHeight;
@@ -134,10 +135,10 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
             char.position_y = yOffset;
             char.page = currentPage;
             char.line = currentLine;
-            char.lineIndex = f32(i - u32(lineWidth / otherChar.size_width));
+            char.lineIndex = f32(i - u32(lineWidth / otherCharWidth));
         }
         
-        lineWidth += otherChar.size_width;
+        lineWidth += otherCharWidth;
     }
 
     characters[index] = char;
