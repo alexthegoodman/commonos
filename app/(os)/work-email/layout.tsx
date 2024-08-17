@@ -4,17 +4,17 @@ import PrimaryTabs from "@/components/core/nav/PrimaryTabs";
 
 const relationshipTabs = [
   {
-    id: "inboxes",
-    label: "Inboxes",
-    href: "/work-email/inboxes",
+    id: "folders",
+    label: "Folders",
+    href: "/work-email/folders",
     badge: null,
   },
-  {
-    id: "settings",
-    label: "Settings",
-    href: "/work-email/settings",
-    badge: null,
-  },
+  // {
+  //   id: "settings",
+  //   label: "Settings",
+  //   href: "/work-email/settings",
+  //   badge: null,
+  // },
 ];
 
 export default function Layout({ children = null }) {

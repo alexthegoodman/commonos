@@ -1,18 +1,22 @@
 import {
   createInboxMutation,
+  createWorkEmailFolderMutation,
+  createWorkEmailTemplateMutation,
   inboxQuery,
   myInboxesQuery,
   myThreadEmailsQuery,
+  myWorkEmailFolderTemplatesQuery,
+  myWorkEmailFoldersQuery,
   sendWorkEmailMutation,
+  updateWorkEmailTemplateMutation,
+  workEmailTemplateQuery,
 } from "@/gql/work-email";
 import graphClient from "@/helpers/GQLClient";
 
 export const myInboxes = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myInboxes } = (await graphClient.client?.request(
-    myInboxesQuery
-  )) as any;
+  const { myInboxes } = (await graphClient?.request(myInboxesQuery)) as any;
 
   return myInboxes;
 };
@@ -20,12 +24,9 @@ export const myInboxes = async (token: string) => {
 export const createInbox = async (token: string, username: string) => {
   graphClient.setupClient(token);
 
-  const { createInbox } = (await graphClient.client?.request(
-    createInboxMutation,
-    {
-      username,
-    }
-  )) as any;
+  const { createInbox } = (await graphClient?.request(createInboxMutation, {
+    username,
+  })) as any;
 
   return createInbox;
 };
@@ -33,7 +34,7 @@ export const createInbox = async (token: string, username: string) => {
 export const getInbox = async (token: string, inboxId: string) => {
   graphClient.setupClient(token);
 
-  const { inbox } = (await graphClient.client?.request(inboxQuery, {
+  const { inbox } = (await graphClient?.request(inboxQuery, {
     inboxId,
   })) as any;
 
@@ -50,16 +51,13 @@ export const sendWorkEmail = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { sendWorkEmail } = (await graphClient.client?.request(
-    sendWorkEmailMutation,
-    {
-      inboxId,
-      threadId,
-      to,
-      subject,
-      body,
-    }
-  )) as any;
+  const { sendWorkEmail } = (await graphClient?.request(sendWorkEmailMutation, {
+    inboxId,
+    threadId,
+    to,
+    subject,
+    body,
+  })) as any;
 
   return sendWorkEmail;
 };
@@ -67,12 +65,104 @@ export const sendWorkEmail = async (
 export const myThreadEmails = async (token: string, threadId: string) => {
   graphClient.setupClient(token);
 
-  const { myThreadEmails } = (await graphClient.client?.request(
-    myThreadEmailsQuery,
+  const { myThreadEmails } = (await graphClient?.request(myThreadEmailsQuery, {
+    threadId,
+  })) as any;
+
+  return myThreadEmails;
+};
+
+export const myWorkEmailFolders = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { myWorkEmailFolders } = (await graphClient?.request(
+    myWorkEmailFoldersQuery
+  )) as any;
+
+  return myWorkEmailFolders;
+};
+
+export const myWorkEmailFolderTemplates = async (
+  token: string,
+  folderId: string
+) => {
+  graphClient.setupClient(token);
+
+  const { myWorkEmailFolderTemplates } = (await graphClient?.request(
+    myWorkEmailFolderTemplatesQuery,
     {
-      threadId,
+      folderId,
     }
   )) as any;
 
-  return myThreadEmails;
+  return myWorkEmailFolderTemplates;
+};
+
+export const getWorkEmailTemplate = async (
+  token: string,
+  templateId: string
+) => {
+  graphClient.setupClient(token);
+
+  const { workEmailTemplate } = (await graphClient?.request(
+    workEmailTemplateQuery,
+    {
+      templateId,
+    }
+  )) as any;
+
+  return workEmailTemplate;
+};
+
+export const createWorkEmailTemplate = async (
+  token: string,
+  folderId: string,
+  subject: string,
+  body: string
+) => {
+  graphClient.setupClient(token);
+
+  const { createWorkEmailTemplate } = (await graphClient?.request(
+    createWorkEmailTemplateMutation,
+    {
+      folderId,
+      subject,
+      body,
+    }
+  )) as any;
+
+  return createWorkEmailTemplate;
+};
+
+export const updateWorkEmailTemplate = async (
+  token: string,
+  templateId: string,
+  subject: string,
+  body: string
+) => {
+  graphClient.setupClient(token);
+
+  const { updateWorkEmailTemplate } = (await graphClient?.request(
+    updateWorkEmailTemplateMutation,
+    {
+      templateId,
+      subject,
+      body,
+    }
+  )) as any;
+
+  return updateWorkEmailTemplate;
+};
+
+export const createWorkEmailFolder = async (token: string, name: string) => {
+  graphClient.setupClient(token);
+
+  const { createWorkEmailFolder } = (await graphClient?.request(
+    createWorkEmailFolderMutation,
+    {
+      name,
+    }
+  )) as any;
+
+  return createWorkEmailFolder;
 };

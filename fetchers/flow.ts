@@ -23,7 +23,7 @@ const handleTokenUsageError = (e: any) => {
 export const getFlowData = async (token: string, flowId: string) => {
   graphClient.setupClient(token);
 
-  const { flow } = (await graphClient.client?.request(flowQuery, {
+  const { flow } = (await graphClient?.request(flowQuery, {
     flowId,
   })) as any;
 
@@ -33,7 +33,7 @@ export const getFlowData = async (token: string, flowId: string) => {
 export const getFlowsData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myFlows } = (await graphClient.client?.request(myFlowsQuery)) as any;
+  const { myFlows } = (await graphClient?.request(myFlowsQuery)) as any;
 
   return myFlows;
 };
@@ -45,7 +45,7 @@ export const newFlow = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { createFlow } = (await graphClient.client?.request(newFlowMutation, {
+  const { createFlow } = (await graphClient?.request(newFlowMutation, {
     prompt,
     typeCode,
   })) as any;
@@ -72,7 +72,7 @@ export const updateFlow = async (
     variables.resultsContext = context;
   }
 
-  const { updateFlow } = (await graphClient.client?.request(
+  const { updateFlow } = (await graphClient?.request(
     updateFlowMutation,
     variables
   )) as any;
@@ -97,13 +97,10 @@ export const getFileListData = async (
 
     console.info("calling getFileListData", flowId);
 
-    const { getFileList } = (await graphClient.client?.request(
-      getFileListQuery,
-      {
-        flowId,
-        // getThis,
-      }
-    )) as any;
+    const { getFileList } = (await graphClient?.request(getFileListQuery, {
+      flowId,
+      // getThis,
+    })) as any;
 
     callingFileList = false;
 
@@ -133,15 +130,12 @@ export const getQuestionsData = async (
 
     console.info("calling getQuestionsData", fileTitle);
 
-    const { getQuestions } = (await graphClient.client?.request(
-      getQuestionsQuery,
-      {
-        flowId,
-        fileApp,
-        fileTitle,
-        getThis,
-      }
-    )) as any;
+    const { getQuestions } = (await graphClient?.request(getQuestionsQuery, {
+      flowId,
+      fileApp,
+      fileTitle,
+      getThis,
+    })) as any;
 
     callingQuestions = false;
 
@@ -167,7 +161,7 @@ export const createFile = async (
       fileId,
     };
 
-    const { createFile } = (await graphClient.client?.request(
+    const { createFile } = (await graphClient?.request(
       createFileMutation,
       variables
     )) as any;
@@ -188,7 +182,7 @@ export const getGuideQuestionsData = async (
   try {
     graphClient.setupClient(token);
 
-    const { getGuideQuestions } = (await graphClient.client?.request(
+    const { getGuideQuestions } = (await graphClient?.request(
       getGuideQuestionsQuery,
       {
         fileApp,
@@ -214,7 +208,7 @@ export const getRevisedContentData = async (
   try {
     graphClient.setupClient(token);
 
-    const { getRevisedContent } = (await graphClient.client?.request(
+    const { getRevisedContent } = (await graphClient?.request(
       getRevisedContentQuery,
       {
         fileApp,

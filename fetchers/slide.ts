@@ -12,12 +12,9 @@ import graphClient from "../helpers/GQLClient";
 export const getSlideData = async (token: string, presentationId: string) => {
   graphClient.setupClient(token);
 
-  const { presentation } = (await graphClient.client?.request(
-    presentationQuery,
-    {
-      presentationId,
-    }
-  )) as any;
+  const { presentation } = (await graphClient?.request(presentationQuery, {
+    presentationId,
+  })) as any;
 
   return presentation;
 };
@@ -25,7 +22,7 @@ export const getSlideData = async (token: string, presentationId: string) => {
 export const getSlidesData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myPresentations } = (await graphClient.client?.request(
+  const { myPresentations } = (await graphClient?.request(
     myPresentationsQuery
   )) as any;
 
@@ -35,7 +32,7 @@ export const getSlidesData = async (token: string) => {
 export const newSlide = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { newPresentation } = (await graphClient.client?.request(
+  const { newPresentation } = (await graphClient?.request(
     newPresentationMutation
   )) as any;
 
@@ -50,7 +47,7 @@ export const updateSlide = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updatePresentation } = (await graphClient.client?.request(
+  const { updatePresentation } = (await graphClient?.request(
     updatePresentationMutation,
     {
       presentationId,
@@ -65,7 +62,7 @@ export const updateSlide = async (
 export const getSlideTemplatesData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { presentationTemplates } = (await graphClient.client?.request(
+  const { presentationTemplates } = (await graphClient?.request(
     presentationTemplatesQuery
   )) as any;
 
@@ -80,7 +77,7 @@ export const newSlideTemplate = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { newPresentationTemplate } = (await graphClient.client?.request(
+  const { newPresentationTemplate } = (await graphClient?.request(
     newPresentationTemplateMutation,
     {
       sourceId,
@@ -99,7 +96,7 @@ export const updateSlideTemplate = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updatePresentationTemplate } = (await graphClient.client?.request(
+  const { updatePresentationTemplate } = (await graphClient?.request(
     updatePresentationTemplateMutation,
     {
       presentationTemplateId,

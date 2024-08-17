@@ -194,7 +194,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 
-const DeleteButton = ({ id, onDelete }) => {
+export const DeleteButton = ({
+  style,
+  id,
+  message,
+  onDelete,
+  disabled,
+  ...buttonProps
+}) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => setOpen(true);
@@ -206,19 +213,32 @@ const DeleteButton = ({ id, onDelete }) => {
 
   return (
     <>
-      <IconButton size="small" onClick={handleClickOpen}>
+      <IconButton
+        size="small"
+        onClick={handleClickOpen}
+        style={style}
+        disabled={disabled}
+        {...buttonProps}
+      >
         <Delete />
       </IconButton>
       <Dialog open={open} keepMounted onClose={handleClose}>
         <DialogTitle>{"Are you sure?"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this item?
+            {message ? message : "Are you sure you want to delete this item?"}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleClose}>
+          <Button size="small" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button
+            size="small"
+            color="error"
+            variant="contained"
+            onClick={handleClose}
+          >
             Delete
           </Button>
         </DialogActions>

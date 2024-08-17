@@ -1,15 +1,28 @@
 import { realDefaultColumns, realDefaultRows } from "@/fixtures/sheets";
 import { Column, Row } from "@silevis/reactgrid";
 import React, { useState, useReducer, Dispatch } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-export interface SheetsContextState {
+export interface Sheet {
+  id: string;
+  name: string;
   columns: Column[];
   rows: Row[];
 }
 
+export interface SheetsContextState {
+  sheets: Sheet[];
+}
+
 export const SheetsContextState = {
-  columns: realDefaultColumns,
-  rows: realDefaultRows,
+  sheets: [
+    {
+      id: uuidv4(),
+      name: "Sheet 1",
+      columns: realDefaultColumns,
+      rows: realDefaultRows,
+    },
+  ],
 };
 
 export const SheetsContextReducer = (

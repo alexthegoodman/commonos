@@ -2,10 +2,10 @@
 
 import EmptyNotice from "@/components/core/layout/EmptyNotice";
 
-export default function Inbox() {
+export default function WorkEmail() {
   return (
     <>
-      <EmptyNotice message="Select or create an email thread to begin" />
+      <EmptyNotice message="Select or create a folder to begin" />
     </>
   );
 }

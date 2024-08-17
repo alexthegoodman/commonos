@@ -1,5 +1,12 @@
+const withMDX = require("@next/mdx")();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false,
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -24,4 +31,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withMDX(nextConfig);

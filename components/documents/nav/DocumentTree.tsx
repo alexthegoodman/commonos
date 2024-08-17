@@ -416,8 +416,7 @@ const DocumentTree = ({ documentId = "" }) => {
     if (treeDisabled) return;
 
     // create new document
-    const { newDocument } =
-      await graphClient.client?.request(newDocumentMutation);
+    const { newDocument } = await graphClient?.request(newDocumentMutation);
 
     // if parentId supplied, add to its children
     let newTree = treeData;

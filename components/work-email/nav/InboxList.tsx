@@ -1,6 +1,11 @@
 "use client";
 
-import { createInbox, myInboxes } from "@/fetchers/work-email";
+import {
+  createInbox,
+  createWorkEmailFolder,
+  myInboxes,
+  myWorkEmailFolders,
+} from "@/fetchers/work-email";
 import { usePathname, useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import useSWR, { mutate } from "swr";
@@ -35,8 +40,8 @@ export function CreateInboxModal({ open, handleClose }) {
 
   const onSubmit = async (data) => {
     setLoading(true);
-    await createInbox(token, data.username);
-    await mutate("inboxesKey", () => myInboxes(token));
+    await createWorkEmailFolder(token, data.name);
+    await mutate("workEmailFoldersKey", () => myWorkEmailFolders(token));
     handleClose();
     setLoading(false);
   };
@@ -46,13 +51,13 @@ export function CreateInboxModal({ open, handleClose }) {
   return (
     <Dialog open={open} keepMounted onClose={handleClose}>
       <form onSubmit={handleSubmit(onSubmit, onError)}>
-        <DialogTitle>{"Create Inbox"}</DialogTitle>
+        <DialogTitle>{"Create Folder"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
             <FormInput
               type="text"
-              name="username"
-              placeholder={`Username (ex. "alex" of alex@commonos.cloud)`}
+              name="name"
+              placeholder={`Name`}
               register={register}
               errors={errors}
               validation={{ required: true }}
@@ -68,7 +73,7 @@ export function CreateInboxModal({ open, handleClose }) {
             type="submit"
             disabled={loading}
           >
-            Save Inbox
+            Save Folder
           </Button>
         </DialogActions>
       </form>
@@ -86,44 +91,44 @@ export default function InboxList() {
   const pathname = usePathname();
   const thirdSlug = pathname.split("/")[3];
 
-  const { data: domainSettingsData } = useSWR(
-    "domainSettingsKey",
-    () => myDomainSettings(token),
-    {
-      revalidateOnMount: true,
-    }
-  );
+  // const { data: domainSettingsData } = useSWR(
+  //   "domainSettingsKey",
+  //   () => myDomainSettings(token),
+  //   {
+  //     revalidateOnMount: true,
+  //   }
+  // );
 
   const {
-    data: inboxesData,
+    data: foldersData,
     error,
     isLoading,
-  } = useSWR("inboxesKey", () => myInboxes(token), {
+  } = useSWR("workEmailFoldersKey", () => myWorkEmailFolders(token), {
     revalidateOnMount: true,
   });
 
   return (
     <Box display="flex" flexDirection="column">
       <Typography variant="h4" mb={2}>
-        Your Inboxes
+        Your Folders
       </Typography>
-      {inboxesData &&
-        inboxesData.map((inbox) => (
+      {foldersData &&
+        foldersData.map((folder) => (
           <Button
-            key={inbox.id}
-            onClick={() => router.push(`/work-email/inboxes/${inbox.id}`)}
+            key={folder.id}
+            onClick={() => router.push(`/work-email/folders/${folder.id}`)}
             sx={{
               marginBottom: 1,
               backgroundColor:
-                thirdSlug === inbox.id ? "#515151" : "transparent",
-              color: thirdSlug === inbox.id ? "#FFF" : "#515151",
+                thirdSlug === folder.id ? "#515151" : "transparent",
+              color: thirdSlug === folder.id ? "#FFF" : "#515151",
             }}
           >
-            {inbox.username}@{domainSettingsData?.domainName}
+            {folder.name}
           </Button>
         ))}
       <Button variant="contained" color="success" onClick={() => setOpen(true)}>
-        Create Inbox
+        Create Folder
       </Button>
       <CreateInboxModal open={open} handleClose={() => setOpen(false)} />
     </Box>

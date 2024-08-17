@@ -1,0 +1,842 @@
+[
+  {
+    "shortVersion": "conceptualize-a-farm-to-table-restaurant-model-tha",
+    "url": "/prompts/agriculture-and-food/conceptualize-a-farm-to-table-restaurant-model-tha",
+    "category": "Agriculture and Food",
+    "promptText": "Conceptualize a farm-to-table restaurant model that sources all ingredients from local farms within a 50-mile radius, promoting seasonal menus and reducing carbon footprints."
+  },
+  {
+    "shortVersion": "create-an-ai-powered-irrigation-system-that-adapts",
+    "url": "/prompts/agriculture-and-food/create-an-ai-powered-irrigation-system-that-adapts",
+    "category": "Agriculture and Food",
+    "promptText": "Create an AI-powered irrigation system that adapts water delivery based on real-time weather data, soil moisture levels, and plant growth stages to optimize water usage in large agricultural fields."
+  },
+  {
+    "shortVersion": "create-an-online-marketplace-that-connects-urban-c",
+    "url": "/prompts/agriculture-and-food/create-an-online-marketplace-that-connects-urban-c",
+    "category": "Agriculture and Food",
+    "promptText": "Create an online marketplace that connects urban consumers directly with rural farmers, offering subscription boxes for fresh produce, dairy products, and artisanal goods."
+  },
+  {
+    "shortVersion": "design-a-commercial-aquaponics-system-for-urban-en",
+    "url": "/prompts/agriculture-and-food/design-a-commercial-aquaponics-system-for-urban-en",
+    "category": "Agriculture and Food",
+    "promptText": "Design a commercial aquaponics system for urban environments that integrates fish farming with hydroponic plant cultivation to maximize space and resource efficiency."
+  },
+  {
+    "shortVersion": "design-a-vertical-farming-system-that-can-be-insta",
+    "url": "/prompts/agriculture-and-food/design-a-vertical-farming-system-that-can-be-insta",
+    "category": "Agriculture and Food",
+    "promptText": "Design a vertical farming system that can be installed in urban supermarkets to grow fresh vegetables on-site, reducing food miles and ensuring peak freshness for consumers."
+  },
+  {
+    "shortVersion": "design-an-educational-workshop-series-for-small-sc",
+    "url": "/prompts/agriculture-and-food/design-an-educational-workshop-series-for-small-sc",
+    "category": "Agriculture and Food",
+    "promptText": "Design an educational workshop series for small-scale farmers that focuses on sustainable farming practices, soil health improvement techniques, and organic pest control methods."
+  },
+  {
+    "shortVersion": "develop-a-blockchain-based-supply-chain-tracking-s",
+    "url": "/prompts/agriculture-and-food/develop-a-blockchain-based-supply-chain-tracking-s",
+    "category": "Agriculture and Food",
+    "promptText": "Develop a blockchain-based supply chain tracking system for organic produce, ensuring transparency and authenticity from farm to consumer while reducing fraud."
+  },
+  {
+    "shortVersion": "develop-a-comprehensive-training-program-for-aspir",
+    "url": "/prompts/agriculture-and-food/develop-a-comprehensive-training-program-for-aspir",
+    "category": "Agriculture and Food",
+    "promptText": "Develop a comprehensive training program for aspiring beekeepers that covers hive management, honey production, and the ecological importance of bees, including hands-on practice and online resources."
+  },
+  {
+    "shortVersion": "develop-a-smartphone-app-that-helps-urban-gardener",
+    "url": "/prompts/agriculture-and-food/develop-a-smartphone-app-that-helps-urban-gardener",
+    "category": "Agriculture and Food",
+    "promptText": "Develop a smartphone app that helps urban gardeners track plant health and growth with features like nutrient deficiency detection, watering reminders, and pest management tips."
+  },
+  {
+    "shortVersion": "establish-a-community-supported-agriculture--csa--",
+    "url": "/prompts/agriculture-and-food/establish-a-community-supported-agriculture--csa--",
+    "category": "Agriculture and Food",
+    "promptText": "Establish a community-supported agriculture (CSA) program that includes educational resources like monthly farm tours, cooking classes, and workshops on sustainable living for its members."
+  },
+  {
+    "shortVersion": "build-an-ai-driven-platform-for-e-commerce-website",
+    "url": "/prompts/customer-feedback-and-improvement/build-an-ai-driven-platform-for-e-commerce-website",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Build an AI-driven platform for e-commerce websites that gathers post-purchase feedback, analyzing sentiment and suggesting actionable improvements for product quality and customer service."
+  },
+  {
+    "shortVersion": "construct-an-interactive-feedback-kiosk-system-for",
+    "url": "/prompts/customer-feedback-and-improvement/construct-an-interactive-feedback-kiosk-system-for",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Construct an interactive feedback kiosk system for retail stores where customers can easily rate their shopping experience, suggest improvements, and receive instant responses from store management."
+  },
+  {
+    "shortVersion": "create-a-user-friendly-online-portal-for-education",
+    "url": "/prompts/customer-feedback-and-improvement/create-a-user-friendly-online-portal-for-education",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Create a user-friendly online portal for educational institutions where students and parents can provide detailed feedback about teachers, curriculum, and school facilities, integrating analytics to track improvement areas over time."
+  },
+  {
+    "shortVersion": "deploy-a-community-feedback-platform-for-local-gov",
+    "url": "/prompts/customer-feedback-and-improvement/deploy-a-community-feedback-platform-for-local-gov",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Deploy a community feedback platform for local government projects that allows residents to voice their opinions on public works, city planning, and community services, with features for voting and idea sharing."
+  },
+  {
+    "shortVersion": "design-a-gamified-feedback-system-for-a-mobile-gam",
+    "url": "/prompts/customer-feedback-and-improvement/design-a-gamified-feedback-system-for-a-mobile-gam",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Design a gamified feedback system for a mobile game, encouraging players to rate different aspects of gameplay and provide suggestions for new features or improvements, with incentives such as in-game rewards."
+  },
+  {
+    "shortVersion": "design-a-mobile-app-that-allows-users-to-leave-ins",
+    "url": "/prompts/customer-feedback-and-improvement/design-a-mobile-app-that-allows-users-to-leave-ins",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Design a mobile app that allows users to leave instant feedback after using public transportation, including features for rating cleanliness, punctuality, and safety, with real-time reporting to transit authorities."
+  },
+  {
+    "shortVersion": "develop-a-comprehensive-feedback-system-for-a-rest",
+    "url": "/prompts/customer-feedback-and-improvement/develop-a-comprehensive-feedback-system-for-a-rest",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Develop a comprehensive feedback system for a restaurant chain that incorporates guest surveys, social media monitoring, and mystery shopper reviews to continuously improve the dining experience."
+  },
+  {
+    "shortVersion": "formulate-a-multi-channel-feedback-strategy-for-a-",
+    "url": "/prompts/customer-feedback-and-improvement/formulate-a-multi-channel-feedback-strategy-for-a-",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Formulate a multi-channel feedback strategy for a telecommunications company that includes SMS surveys, phone calls, and email follow-ups to gauge customer satisfaction and identify areas for network enhancement."
+  },
+  {
+    "shortVersion": "initiate-a-customer-advisory-board-program-for-a-b",
+    "url": "/prompts/customer-feedback-and-improvement/initiate-a-customer-advisory-board-program-for-a-b",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Initiate a customer advisory board program for a B2B software company, creating a structured forum for key clients to provide in-depth feedback, participate in beta testing, and influence product development roadmaps."
+  },
+  {
+    "shortVersion": "innovate-a-real-time-feedback-tool-for-healthcare-",
+    "url": "/prompts/customer-feedback-and-improvement/innovate-a-real-time-feedback-tool-for-healthcare-",
+    "category": "Customer Feedback and Improvement",
+    "promptText": "Innovate a real-time feedback tool for healthcare providers to collect patient experiences after appointments, focusing on service quality, wait times, and staff professionalism, with data visualizations for actionable insights."
+  },
+  {
+    "shortVersion": "construct-a-self-service-support-portal-for-a-saas",
+    "url": "/prompts/customer-support/construct-a-self-service-support-portal-for-a-saas",
+    "category": "Customer Support",
+    "promptText": "Construct a self-service support portal for a SaaS company, featuring extensive FAQs, tutorial videos, and a community forum to empower users to solve common issues independently."
+  },
+  {
+    "shortVersion": "create-a-detailed-training-curriculum-for-new-cust",
+    "url": "/prompts/customer-support/create-a-detailed-training-curriculum-for-new-cust",
+    "category": "Customer Support",
+    "promptText": "Create a detailed training curriculum for new customer service representatives at a telecommunications company, including modules on product knowledge, system navigation, and customer interaction best practices."
+  },
+  {
+    "shortVersion": "create-a-personalized-follow-up-strategy-for-high-",
+    "url": "/prompts/customer-support/create-a-personalized-follow-up-strategy-for-high-",
+    "category": "Customer Support",
+    "promptText": "Create a personalized follow-up strategy for high-priority customer accounts, ensuring that their issues are resolved to satisfaction and reinforcing brand loyalty through attentive service."
+  },
+  {
+    "shortVersion": "create-an-educational-webinar-series-that-trains-s",
+    "url": "/prompts/customer-support/create-an-educational-webinar-series-that-trains-s",
+    "category": "Customer Support",
+    "promptText": "Create an educational webinar series that trains small business owners on best practices for using customer support tools and techniques to improve their own customer service operations."
+  },
+  {
+    "shortVersion": "design-a-quality-assurance-program-for-a-financial",
+    "url": "/prompts/customer-support/design-a-quality-assurance-program-for-a-financial",
+    "category": "Customer Support",
+    "promptText": "Design a quality assurance program for a financial services call center, including call monitoring, regular performance reviews, and coaching sessions to enhance agent performance and customer satisfaction."
+  },
+  {
+    "shortVersion": "design-an-omnichannel-customer-support-strategy-fo",
+    "url": "/prompts/customer-support/design-an-omnichannel-customer-support-strategy-fo",
+    "category": "Customer Support",
+    "promptText": "Design an omnichannel customer support strategy for a retail business, integrating phone, email, live chat, and social media support to provide a seamless, high-quality customer experience."
+  },
+  {
+    "shortVersion": "develop-a-chatbot-using-ai-to-handle-common-custom",
+    "url": "/prompts/customer-support/develop-a-chatbot-using-ai-to-handle-common-custom",
+    "category": "Customer Support",
+    "promptText": "Develop a chatbot using AI to handle common customer inquiries and technical support for an e-commerce platform, ensuring it can provide quick and accurate responses based on a comprehensive knowledge base."
+  },
+  {
+    "shortVersion": "develop-an-escalation-process-for-a-healthcare-ser",
+    "url": "/prompts/customer-support/develop-an-escalation-process-for-a-healthcare-ser",
+    "category": "Customer Support",
+    "promptText": "Develop an escalation process for a healthcare services provider, including clear protocols for handling sensitive patient information and procedures for rapidly addressing urgent medical inquiries."
+  },
+  {
+    "shortVersion": "develope-a-feedback-loop-system-that-regularly-gat",
+    "url": "/prompts/customer-support/develope-a-feedback-loop-system-that-regularly-gat",
+    "category": "Customer Support",
+    "promptText": "Develope a feedback loop system that regularly gathers customer satisfaction data and incorporates it into continuous training and improvement initiatives for a customer support team."
+  },
+  {
+    "shortVersion": "implement-a-ticketing-system-that-prioritizes-cust",
+    "url": "/prompts/customer-support/implement-a-ticketing-system-that-prioritizes-cust",
+    "category": "Customer Support",
+    "promptText": "Implement a ticketing system that prioritizes customer service requests based on urgency and complexity, and devises workflows to ensure timely and efficient resolution of issues for a B2B service provider."
+  },
+  {
+    "shortVersion": "architect-a-seamless-omnichannel-retail-experience",
+    "url": "/prompts/e-commerce-and-retail/architect-a-seamless-omnichannel-retail-experience",
+    "category": "E-Commerce and Retail",
+    "promptText": "Architect a seamless omnichannel retail experience for a furniture store, integrating their online shop, physical stores, and customer service to provide a cohesive and convenient shopping journey."
+  },
+  {
+    "shortVersion": "craft-a-customer-retention-strategy-for-an-online-",
+    "url": "/prompts/e-commerce-and-retail/craft-a-customer-retention-strategy-for-an-online-",
+    "category": "E-Commerce and Retail",
+    "promptText": "Craft a customer retention strategy for an online grocery delivery service, emphasizing seasonal promotions, referral programs, and personalized meal planning tips."
+  },
+  {
+    "shortVersion": "create-a-virtual-try-on-feature-for-an-online-eyew",
+    "url": "/prompts/e-commerce-and-retail/create-a-virtual-try-on-feature-for-an-online-eyew",
+    "category": "E-Commerce and Retail",
+    "promptText": "Create a virtual try-on feature for an online eyewear store, using augmented reality to help customers see how different frames will look on their face in real-time."
+  },
+  {
+    "shortVersion": "create-an-engaging-unboxing-video-series-for-a-sub",
+    "url": "/prompts/e-commerce-and-retail/create-an-engaging-unboxing-video-series-for-a-sub",
+    "category": "E-Commerce and Retail",
+    "promptText": "Create an engaging unboxing video series for a subscription box service specializing in gourmet snacks, showcasing unique products and providing behind-the-scenes stories of their makers."
+  },
+  {
+    "shortVersion": "design-a-mobile-app-that-helps-users-find-the-best",
+    "url": "/prompts/e-commerce-and-retail/design-a-mobile-app-that-helps-users-find-the-best",
+    "category": "E-Commerce and Retail",
+    "promptText": "Design a mobile app that helps users find the best deals and discounts across different e-commerce sites, incorporating real-time price comparisons and user reviews."
+  },
+  {
+    "shortVersion": "develop-a-loyalty-program-for-an-online-fashion-re",
+    "url": "/prompts/e-commerce-and-retail/develop-a-loyalty-program-for-an-online-fashion-re",
+    "category": "E-Commerce and Retail",
+    "promptText": "Develop a loyalty program for an online fashion retailer that not only rewards frequent purchases but also promotes sustainable and ethical fashion choices."
+  },
+  {
+    "shortVersion": "develop-a-pop-up-store-concept-for-a-new-lifestyle",
+    "url": "/prompts/e-commerce-and-retail/develop-a-pop-up-store-concept-for-a-new-lifestyle",
+    "category": "E-Commerce and Retail",
+    "promptText": "Develop a pop-up store concept for a new lifestyle brand, focusing on creating immersive and interactive customer experiences that highlight the uniqueness of their products."
+  },
+  {
+    "shortVersion": "develop-an-ai-powered-personal-shopping-assistant-",
+    "url": "/prompts/e-commerce-and-retail/develop-an-ai-powered-personal-shopping-assistant-",
+    "category": "E-Commerce and Retail",
+    "promptText": "Develop an AI-powered personal shopping assistant that can recommend products based on customers' browsing history, preferences, and purchase patterns on an e-commerce platform."
+  },
+  {
+    "shortVersion": "help-design-a-data-driven-email-marketing-strategy",
+    "url": "/prompts/e-commerce-and-retail/help-design-a-data-driven-email-marketing-strategy",
+    "category": "E-Commerce and Retail",
+    "promptText": "Help design a data-driven email marketing strategy for a beauty brand, targeting segmented customer groups with personalized product recommendations and exclusive offers."
+  },
+  {
+    "shortVersion": "help-me-create-a-marketing-campaign-for-a-new-line",
+    "url": "/prompts/e-commerce-and-retail/help-me-create-a-marketing-campaign-for-a-new-line",
+    "category": "E-Commerce and Retail",
+    "promptText": "Help me create a marketing campaign for a new line of eco-friendly home goods. The campaign should focus on the products' sustainability, innovative designs, and benefits to the environment."
+  },
+  {
+    "shortVersion": "build-a-narrative-driven-game-where-players-must-n",
+    "url": "/prompts/game-development/build-a-narrative-driven-game-where-players-must-n",
+    "category": "Game Development",
+    "promptText": "Build a narrative-driven game where players must navigate through a dystopian city controlled by a totalitarian regime. Emphasize stealth, hacking, and moral decision-making to influence the story's outcome."
+  },
+  {
+    "shortVersion": "conceptualize-a-game-that-takes-place-in-a-steampu",
+    "url": "/prompts/game-development/conceptualize-a-game-that-takes-place-in-a-steampu",
+    "category": "Game Development",
+    "promptText": "Conceptualize a game that takes place in a steampunk universe where players must innovate and manage their own airship fleet while exploring uncharted skies and engaging in aerial combat."
+  },
+  {
+    "shortVersion": "conceptualize-a-strategy-game-where-players-lead-a",
+    "url": "/prompts/game-development/conceptualize-a-strategy-game-where-players-lead-a",
+    "category": "Game Development",
+    "promptText": "Conceptualize a strategy game where players lead a tribe of tiny creatures on a mysterious island. Players must manage resources, develop technology, and perform rituals to ensure the tribe's survival against environmental challenges and other tribes."
+  },
+  {
+    "shortVersion": "create-a-multiplayer-online-battle-arena--moba--ga",
+    "url": "/prompts/game-development/create-a-multiplayer-online-battle-arena--moba--ga",
+    "category": "Game Development",
+    "promptText": "Create a multiplayer online battle arena (MOBA) game where mythical creatures from various folklore and legends compete in intense matches. Each character should have unique abilities and lore-specific backstory."
+  },
+  {
+    "shortVersion": "create-a-rhythm-based-action-game-where-players-co",
+    "url": "/prompts/game-development/create-a-rhythm-based-action-game-where-players-co",
+    "category": "Game Development",
+    "promptText": "Create a rhythm-based action game where players control a ninja who must synchronize their movements with the beat of the music to defeat enemies and navigate treacherous environments."
+  },
+  {
+    "shortVersion": "design-a-game-where-players-assume-the-role-of-anc",
+    "url": "/prompts/game-development/design-a-game-where-players-assume-the-role-of-anc",
+    "category": "Game Development",
+    "promptText": "Design a game where players assume the role of ancient alchemists searching for the Philosopher's Stone. The gameplay should incorporate realistic historical settings, intricate puzzle-solving mechanics, and alchemical experiments."
+  },
+  {
+    "shortVersion": "design-an-educational-game-that-allows-players-to-",
+    "url": "/prompts/game-development/design-an-educational-game-that-allows-players-to-",
+    "category": "Game Development",
+    "promptText": "Design an educational game that allows players to relive significant moments in world history, with a focus on influential figures and events. Ensure high historical accuracy and engaging gameplay to enhance learning."
+  },
+  {
+    "shortVersion": "develop-a-survival-horror-game-set-in-an-abandoned",
+    "url": "/prompts/game-development/develop-a-survival-horror-game-set-in-an-abandoned",
+    "category": "Game Development",
+    "promptText": "Develop a survival horror game set in an abandoned space station. Players must uncover the dark secrets of the station while surviving encounters with haunting creatures and managing scarce resources."
+  },
+  {
+    "shortVersion": "develop-an-open-world-rpg-set-in-a-post-apocalypti",
+    "url": "/prompts/game-development/develop-an-open-world-rpg-set-in-a-post-apocalypti",
+    "category": "Game Development",
+    "promptText": "Develop an open-world RPG set in a post-apocalyptic Earth where players must rebuild society using scavenged technology and ancient wisdom. Focus on resource management, crafting, and complex character interactions."
+  },
+  {
+    "shortVersion": "imagine-a-city-building-game-where-players-are-tas",
+    "url": "/prompts/game-development/imagine-a-city-building-game-where-players-are-tas",
+    "category": "Game Development",
+    "promptText": "Imagine a city-building game where players are tasked with constructing a fantasy kingdom from scratch. Include elements of diplomacy, resource management, and defending against mythical creatures."
+  },
+  {
+    "shortVersion": "architect-a-go-to-market-framework-for-a-blockchai",
+    "url": "/prompts/go-to-market-planning/architect-a-go-to-market-framework-for-a-blockchai",
+    "category": "Go-to-Market Planning",
+    "promptText": "Architect a go-to-market framework for a blockchain-based supply chain transparency platform, emphasizing its potential to reduce fraud, increase efficiency, and build consumer trust in various industries."
+  },
+  {
+    "shortVersion": "craft-a-brand-identity-and-launch-plan-for-a-new-p",
+    "url": "/prompts/go-to-market-planning/craft-a-brand-identity-and-launch-plan-for-a-new-p",
+    "category": "Go-to-Market Planning",
+    "promptText": "Craft a brand identity and launch plan for a new plant-based protein snack, focusing on health benefits, taste, and convenience for busy professionals and fitness enthusiasts."
+  },
+  {
+    "shortVersion": "create-a-detailed-promotional-strategy-for-a-high-",
+    "url": "/prompts/go-to-market-planning/create-a-detailed-promotional-strategy-for-a-high-",
+    "category": "Go-to-Market Planning",
+    "promptText": "Create a detailed promotional strategy for a high-end electric bicycle, targeting urban commuters and emphasizing its innovative design, advanced technology, and environmental impact."
+  },
+  {
+    "shortVersion": "create-a-strategic-content-marketing-plan-for-an-o",
+    "url": "/prompts/go-to-market-planning/create-a-strategic-content-marketing-plan-for-an-o",
+    "category": "Go-to-Market Planning",
+    "promptText": "Create a strategic content marketing plan for an online mental health platform, aimed at raising awareness, educating potential users, and fostering a community of support."
+  },
+  {
+    "shortVersion": "design-a-comprehensive-marketing-campaign-for-laun",
+    "url": "/prompts/go-to-market-planning/design-a-comprehensive-marketing-campaign-for-laun",
+    "category": "Go-to-Market Planning",
+    "promptText": "Design a comprehensive marketing campaign for launching an eco-friendly fashion line called EcoChic, highlighting sustainable materials, ethical manufacturing practices, and stylish designs."
+  },
+  {
+    "shortVersion": "design-an-influencer-partnership-strategy-for-a-ne",
+    "url": "/prompts/go-to-market-planning/design-an-influencer-partnership-strategy-for-a-ne",
+    "category": "Go-to-Market Planning",
+    "promptText": "Design an influencer partnership strategy for a new skincare line, selecting influencers that align with the brand’s values, and creating authentic, engaging content to drive product awareness and sales."
+  },
+  {
+    "shortVersion": "develop-a-social-media-campaign-for-a-new-mobile-a",
+    "url": "/prompts/go-to-market-planning/develop-a-social-media-campaign-for-a-new-mobile-a",
+    "category": "Go-to-Market Planning",
+    "promptText": "Develop a social media campaign for a new mobile app that connects local farmers with consumers, promoting fresh, organic produce and supporting the farm-to-table movement."
+  },
+  {
+    "shortVersion": "generate-a-marketing-blueprint-for-a-fitness-subsc",
+    "url": "/prompts/go-to-market-planning/generate-a-marketing-blueprint-for-a-fitness-subsc",
+    "category": "Go-to-Market Planning",
+    "promptText": "Generate a marketing blueprint for a fitness subscription box service, providing health-conscious individuals with curated workout gear, nutrition products, and fitness plans."
+  },
+  {
+    "shortVersion": "help-me-develop-a-series-of-engaging-webinars-and-",
+    "url": "/prompts/go-to-market-planning/help-me-develop-a-series-of-engaging-webinars-and-",
+    "category": "Go-to-Market Planning",
+    "promptText": "Help me develop a series of engaging webinars and video tutorials for a new productivity software aimed at remote workers, demonstrating its unique features and benefits for improving work-from-home efficiency."
+  },
+  {
+    "shortVersion": "plan-the-introduction-of-a-luxury-home-automation-",
+    "url": "/prompts/go-to-market-planning/plan-the-introduction-of-a-luxury-home-automation-",
+    "category": "Go-to-Market Planning",
+    "promptText": "Plan the introduction of a luxury home automation system, highlighting its ease of use, security features, and compatibility with other smart devices, targeting high-income homeowners."
+  },
+  {
+    "shortVersion": "construct-a-detailed-fitness-regimen-tailored-spec",
+    "url": "/prompts/health-and-wellness/construct-a-detailed-fitness-regimen-tailored-spec",
+    "category": "Health and Wellness",
+    "promptText": "Construct a detailed fitness regimen tailored specifically for seniors, incorporating low-impact exercises, balance improvement techniques, and cognitive engagement activities."
+  },
+  {
+    "shortVersion": "create-a-mobile-app-that-tracks-mental-health-metr",
+    "url": "/prompts/health-and-wellness/create-a-mobile-app-that-tracks-mental-health-metr",
+    "category": "Health and Wellness",
+    "promptText": "Create a mobile app that tracks mental health metrics through self-reported symptoms, offering personalized mindfulness exercises, therapy suggestions, and daily mood journals."
+  },
+  {
+    "shortVersion": "create-a-series-of-informative-videos-on-the-benef",
+    "url": "/prompts/health-and-wellness/create-a-series-of-informative-videos-on-the-benef",
+    "category": "Health and Wellness",
+    "promptText": "Create a series of informative videos on the benefits of intermittent fasting, including scientific explanations, success stories, and practical tips for beginners."
+  },
+  {
+    "shortVersion": "design-a-holistic-health-program-integrating-yoga-",
+    "url": "/prompts/health-and-wellness/design-a-holistic-health-program-integrating-yoga-",
+    "category": "Health and Wellness",
+    "promptText": "Design a holistic health program integrating yoga, meditation, and nutritional guidance to help busy professionals reduce stress and improve work-life balance."
+  },
+  {
+    "shortVersion": "develop-a-corporate-wellness-initiative-that-inclu",
+    "url": "/prompts/health-and-wellness/develop-a-corporate-wellness-initiative-that-inclu",
+    "category": "Health and Wellness",
+    "promptText": "Develop a corporate wellness initiative that includes regular health screenings, ergonomic workplace solutions, and stress management workshops to enhance employee well-being."
+  },
+  {
+    "shortVersion": "develop-an-online-course-that-educates-individuals",
+    "url": "/prompts/health-and-wellness/develop-an-online-course-that-educates-individuals",
+    "category": "Health and Wellness",
+    "promptText": "Develop an online course that educates individuals on the principles of Ayurvedic medicine, including personalized diet plans, herbs, and lifestyle recommendations for optimal health."
+  },
+  {
+    "shortVersion": "draft-a-comprehensive-guide-on-managing-chronic-pa",
+    "url": "/prompts/health-and-wellness/draft-a-comprehensive-guide-on-managing-chronic-pa",
+    "category": "Health and Wellness",
+    "promptText": "Draft a comprehensive guide on managing chronic pain through a blend of Western medical practices and alternative therapies, such as acupuncture and aromatherapy."
+  },
+  {
+    "shortVersion": "formulate-a-community-based-intervention-program-t",
+    "url": "/prompts/health-and-wellness/formulate-a-community-based-intervention-program-t",
+    "category": "Health and Wellness",
+    "promptText": "Formulate a community-based intervention program to combat childhood obesity, integrating physical activities, nutritional education, and parental involvement."
+  },
+  {
+    "shortVersion": "help-me-design-a-virtual-wellness-retreat-featurin",
+    "url": "/prompts/health-and-wellness/help-me-design-a-virtual-wellness-retreat-featurin",
+    "category": "Health and Wellness",
+    "promptText": "Help me design a virtual wellness retreat featuring interactive workshops on fitness, nutrition, and mental health practices, aimed at promoting holistic well-being."
+  },
+  {
+    "shortVersion": "plan-a-social-media-campaign-aimed-at-raising-awar",
+    "url": "/prompts/health-and-wellness/plan-a-social-media-campaign-aimed-at-raising-awar",
+    "category": "Health and Wellness",
+    "promptText": "Plan a social media campaign aimed at raising awareness about mental health, featuring stories of resilience, educational infographics, and resources for professional help."
+  },
+  {
+    "shortVersion": "create-a-comprehensive-exit-interview-process-to-g",
+    "url": "/prompts/human-resources/create-a-comprehensive-exit-interview-process-to-g",
+    "category": "Human Resources",
+    "promptText": "Create a comprehensive exit interview process to gather feedback from departing employees, analyze trends, and develop action plans to address common issues and improve retention."
+  },
+  {
+    "shortVersion": "create-a-performance-review-system-that-incorporat",
+    "url": "/prompts/human-resources/create-a-performance-review-system-that-incorporat",
+    "category": "Human Resources",
+    "promptText": "Create a performance review system that incorporates 360-degree feedback, self-assessments, and goal-setting workshops, ensuring the process is transparent and development-focused."
+  },
+  {
+    "shortVersion": "create-an-employee-recognition-program-that-includ",
+    "url": "/prompts/human-resources/create-an-employee-recognition-program-that-includ",
+    "category": "Human Resources",
+    "promptText": "Create an employee recognition program that includes regular awards for outstanding performance, peer-nominated recognitions, and a points-based system where employees can redeem rewards."
+  },
+  {
+    "shortVersion": "design-a-flexible-work-policy-that-includes-option",
+    "url": "/prompts/human-resources/design-a-flexible-work-policy-that-includes-option",
+    "category": "Human Resources",
+    "promptText": "Design a flexible work policy that includes options for compressed work weeks, flextime, and remote work, with guidelines aimed at maintaining productivity and work-life balance."
+  },
+  {
+    "shortVersion": "design-a-wellness-initiative-for-employees-that-of",
+    "url": "/prompts/human-resources/design-a-wellness-initiative-for-employees-that-of",
+    "category": "Human Resources",
+    "promptText": "Design a wellness initiative for employees that offers mental health resources, promotes physical fitness, and includes a monthly wellness challenge with incentives for participation."
+  },
+  {
+    "shortVersion": "develop-a-comprehensive-onboarding-program-for-rem",
+    "url": "/prompts/human-resources/develop-a-comprehensive-onboarding-program-for-rem",
+    "category": "Human Resources",
+    "promptText": "Develop a comprehensive onboarding program for remote employees, including virtual team-building activities, mentorship opportunities, and a learning management system for training modules."
+  },
+  {
+    "shortVersion": "develop-a-professional-development-program-that-in",
+    "url": "/prompts/human-resources/develop-a-professional-development-program-that-in",
+    "category": "Human Resources",
+    "promptText": "Develop a professional development program that includes access to online courses, workshops, and certifications, with a focus on advancing employees' skills and career growth."
+  },
+  {
+    "shortVersion": "develop-a-succession-planning-framework-to-identif",
+    "url": "/prompts/human-resources/develop-a-succession-planning-framework-to-identif",
+    "category": "Human Resources",
+    "promptText": "Develop a succession planning framework to identify and develop internal talent, integrating career development paths and leadership training programs to ensure continuity in key roles."
+  },
+  {
+    "shortVersion": "formulate-a-diversity-and-inclusion-strategy-that-",
+    "url": "/prompts/human-resources/formulate-a-diversity-and-inclusion-strategy-that-",
+    "category": "Human Resources",
+    "promptText": "Formulate a diversity and inclusion strategy that addresses hiring practices, cultural competency training, and the creation of employee resource groups to foster a more inclusive workplace."
+  },
+  {
+    "shortVersion": "implement-a-conflict-resolution-and-mediation-prog",
+    "url": "/prompts/human-resources/implement-a-conflict-resolution-and-mediation-prog",
+    "category": "Human Resources",
+    "promptText": "Implement a conflict resolution and mediation program that provides training for managers and employees, and offers a structured process for addressing workplace disputes."
+  },
+  {
+    "shortVersion": "architect-a-compliance-monitoring-system-for-a-pha",
+    "url": "/prompts/legal-and-compliance/architect-a-compliance-monitoring-system-for-a-pha",
+    "category": "Legal and Compliance",
+    "promptText": "Architect a compliance monitoring system for a pharmaceutical company to ensure adherence to FDA regulations, including procedures for clinical trials, drug approvals, and post-market surveillance."
+  },
+  {
+    "shortVersion": "construct-a-policy-document-for-an-e-commerce-comp",
+    "url": "/prompts/legal-and-compliance/construct-a-policy-document-for-an-e-commerce-comp",
+    "category": "Legal and Compliance",
+    "promptText": "Construct a policy document for an e-commerce company outlining the legal requirements for consumer data privacy and security, ensuring compliance with international standards and frameworks."
+  },
+  {
+    "shortVersion": "craft-a-legal-risk-assessment-toolkit-for-a-compan",
+    "url": "/prompts/legal-and-compliance/craft-a-legal-risk-assessment-toolkit-for-a-compan",
+    "category": "Legal and Compliance",
+    "promptText": "Craft a legal risk assessment toolkit for a company entering a foreign market, evaluating potential regulatory, political, and economic risks and providing mitigation strategies."
+  },
+  {
+    "shortVersion": "create-a-comprehensive-legal-strategy-for-a-tech-s",
+    "url": "/prompts/legal-and-compliance/create-a-comprehensive-legal-strategy-for-a-tech-s",
+    "category": "Legal and Compliance",
+    "promptText": "Create a comprehensive legal strategy for a tech startup to navigate intellectual property law, focusing on patent application, trademark registration, and safeguarding trade secrets."
+  },
+  {
+    "shortVersion": "create-an-employee-handbook-addressing-workplace-c",
+    "url": "/prompts/legal-and-compliance/create-an-employee-handbook-addressing-workplace-c",
+    "category": "Legal and Compliance",
+    "promptText": "Create an employee handbook addressing workplace compliance issues, including harassment policies, workplace safety, and ethical guidelines, tailored to meet federal and state regulations."
+  },
+  {
+    "shortVersion": "design-a-legal-education-webinar-series-for-small-",
+    "url": "/prompts/legal-and-compliance/design-a-legal-education-webinar-series-for-small-",
+    "category": "Legal and Compliance",
+    "promptText": "Design a legal education webinar series for small business owners about navigating employment law, focusing on hiring practices, employee rights, and termination procedures."
+  },
+  {
+    "shortVersion": "develop-a-compliance-program-for-a-multinational-c",
+    "url": "/prompts/legal-and-compliance/develop-a-compliance-program-for-a-multinational-c",
+    "category": "Legal and Compliance",
+    "promptText": "Develop a compliance program for a multinational corporation ensuring adherence to global data protection laws, including GDPR, CCPA, and PIPEDA. The program should include policies, training modules, and monitoring systems."
+  },
+  {
+    "shortVersion": "develop-a-corporate-social-responsibility--csr--pr",
+    "url": "/prompts/legal-and-compliance/develop-a-corporate-social-responsibility--csr--pr",
+    "category": "Legal and Compliance",
+    "promptText": "Develop a corporate social responsibility (CSR) program for a manufacturing company that aligns with environmental and labor laws, featuring sustainable practices and community engagement initiatives."
+  },
+  {
+    "shortVersion": "help-draft-a-litigation-readiness-plan-for-a-healt",
+    "url": "/prompts/legal-and-compliance/help-draft-a-litigation-readiness-plan-for-a-healt",
+    "category": "Legal and Compliance",
+    "promptText": "Help draft a litigation readiness plan for a healthcare provider, outlining steps to manage potential legal disputes, including document preservation, internal investigation processes, and settlement strategies."
+  },
+  {
+    "shortVersion": "help-me-design-a-risk-management-framework-for-a-f",
+    "url": "/prompts/legal-and-compliance/help-me-design-a-risk-management-framework-for-a-f",
+    "category": "Legal and Compliance",
+    "promptText": "Help me design a risk management framework for a financial institution to comply with anti-money laundering regulations and Know Your Customer (KYC) requirements, incorporating both preventive and detective controls."
+  },
+  {
+    "shortVersion": "architect-an-interactive--ai-driven-music-recommen",
+    "url": "/prompts/music-production/architect-an-interactive--ai-driven-music-recommen",
+    "category": "Music Production",
+    "promptText": "Architect an interactive, AI-driven music recommendation system that tailors playlists based on user mood, activity, and listening history."
+  },
+  {
+    "shortVersion": "craft-a-marketing-strategy-for-a-retro-themed-synt",
+    "url": "/prompts/music-production/craft-a-marketing-strategy-for-a-retro-themed-synt",
+    "category": "Music Production",
+    "promptText": "Craft a marketing strategy for a retro-themed synthwave album, including social media campaigns, influencer partnerships, and a limited-edition vinyl release."
+  },
+  {
+    "shortVersion": "create-a-sample-library-of-ambient-sounds-from-var",
+    "url": "/prompts/music-production/create-a-sample-library-of-ambient-sounds-from-var",
+    "category": "Music Production",
+    "promptText": "Create a sample library of ambient sounds from various natural environments, ensuring high-quality recordings and categorization for easy use in music production."
+  },
+  {
+    "shortVersion": "create-a-series-of-video-tutorials-on-advanced-sou",
+    "url": "/prompts/music-production/create-a-series-of-video-tutorials-on-advanced-sou",
+    "category": "Music Production",
+    "promptText": "Create a series of video tutorials on advanced sound design techniques using analog synthesizers, focusing on creating signature sounds and effects."
+  },
+  {
+    "shortVersion": "design-a-comprehensive-tutorial-series-for-aspirin",
+    "url": "/prompts/music-production/design-a-comprehensive-tutorial-series-for-aspirin",
+    "category": "Music Production",
+    "promptText": "Design a comprehensive tutorial series for aspiring music producers focused on mastering different DAWs, detailing workflows, tips, and common pitfalls to avoid."
+  },
+  {
+    "shortVersion": "develop-a-branding-and-visual-identity-for-an-upco",
+    "url": "/prompts/music-production/develop-a-branding-and-visual-identity-for-an-upco",
+    "category": "Music Production",
+    "promptText": "Develop a branding and visual identity for an upcoming indie rock band, including album artwork, stage design concepts, and promotional materials."
+  },
+  {
+    "shortVersion": "develop-a-comprehensive-guidebook-for-independent-",
+    "url": "/prompts/music-production/develop-a-comprehensive-guidebook-for-independent-",
+    "category": "Music Production",
+    "promptText": "Develop a comprehensive guidebook for independent musicians detailing the music distribution process, including how to use various platforms for maximum reach."
+  },
+  {
+    "shortVersion": "help-design-a-unique-music-festival-experience-tha",
+    "url": "/prompts/music-production/help-design-a-unique-music-festival-experience-tha",
+    "category": "Music Production",
+    "promptText": "Help design a unique music festival experience that integrates live performances with interactive art installations and VR music experiences."
+  },
+  {
+    "shortVersion": "help-me-produce-a-concept-album-that-narrates-the-",
+    "url": "/prompts/music-production/help-me-produce-a-concept-album-that-narrates-the-",
+    "category": "Music Production",
+    "promptText": "Help me produce a concept album that narrates the journey of a character overcoming personal obstacles, using a blend of orchestral and electronic elements to create a cinematic experience."
+  },
+  {
+    "shortVersion": "help-organize-a-global-music-collaboration-project",
+    "url": "/prompts/music-production/help-organize-a-global-music-collaboration-project",
+    "category": "Music Production",
+    "promptText": "Help organize a global music collaboration project that connects artists from different genres and backgrounds, facilitating cross-cultural musical innovation and creation."
+  },
+  {
+    "shortVersion": "craft-a-public-transportation-initiative-in-collab",
+    "url": "/prompts/non-profit-and-community-engagement/craft-a-public-transportation-initiative-in-collab",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Craft a public transportation initiative in collaboration with local governments to reduce carbon emissions, including bike-sharing programs, improved pedestrian pathways, and electric bus fleets."
+  },
+  {
+    "shortVersion": "create-a-series-of-workshops-aimed-at-fostering-st",
+    "url": "/prompts/non-profit-and-community-engagement/create-a-series-of-workshops-aimed-at-fostering-st",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Create a series of workshops aimed at fostering STEM education among underrepresented groups, utilizing hands-on activities and mentorship from industry professionals."
+  },
+  {
+    "shortVersion": "create-an-online-platform-that-facilitates-crowdfu",
+    "url": "/prompts/non-profit-and-community-engagement/create-an-online-platform-that-facilitates-crowdfu",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Create an online platform that facilitates crowdfunding for community projects, allowing residents to propose ideas and receive financial support from their neighbors and local businesses."
+  },
+  {
+    "shortVersion": "design-a-community-driven-urban-farming-initiative",
+    "url": "/prompts/non-profit-and-community-engagement/design-a-community-driven-urban-farming-initiative",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Design a community-driven urban farming initiative that integrates vertical gardens in cityscapes and educates local residents about sustainable agriculture practices."
+  },
+  {
+    "shortVersion": "design-a-comprehensive-educational-curriculum-for-",
+    "url": "/prompts/non-profit-and-community-engagement/design-a-comprehensive-educational-curriculum-for-",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Design a comprehensive educational curriculum for schools that incorporate lessons on social justice, inclusivity, and community service, highlighted by real-life case studies and guest speakers."
+  },
+  {
+    "shortVersion": "develop-a-mentorship-program-that-pairs-high-schoo",
+    "url": "/prompts/non-profit-and-community-engagement/develop-a-mentorship-program-that-pairs-high-schoo",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Develop a mentorship program that pairs high school students with professionals in various fields, aiming to provide career guidance and foster long-term relationships."
+  },
+  {
+    "shortVersion": "develop-a-mobile-app-that-connects-volunteers-with",
+    "url": "/prompts/non-profit-and-community-engagement/develop-a-mobile-app-that-connects-volunteers-with",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Develop a mobile app that connects volunteers with non-profit organizations in real-time, focusing on user-friendly features and effective matchmaking based on skills and interests."
+  },
+  {
+    "shortVersion": "establish-a-community-resource-center-that-offers-",
+    "url": "/prompts/non-profit-and-community-engagement/establish-a-community-resource-center-that-offers-",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Establish a community resource center that offers free legal advice, job training programs, and financial literacy workshops to low-income families."
+  },
+  {
+    "shortVersion": "organize-an-annual-eco-friendly-festival-that-prom",
+    "url": "/prompts/non-profit-and-community-engagement/organize-an-annual-eco-friendly-festival-that-prom",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Organize an annual eco-friendly festival that promotes environmental conservation, featuring recycling drives, educational talks, and interactive demonstrations of renewable technology."
+  },
+  {
+    "shortVersion": "plan-a-nationwide-campaign-to-raise-awareness-abou",
+    "url": "/prompts/non-profit-and-community-engagement/plan-a-nationwide-campaign-to-raise-awareness-abou",
+    "category": "Non-Profit and Community Engagement",
+    "promptText": "Plan a nationwide campaign to raise awareness about mental health issues, incorporating social media strategies, informational webinars, and local support groups."
+  },
+  {
+    "shortVersion": "architect-a-content-marketing-strategy-for-a-real-",
+    "url": "/prompts/sales-and-marketing/architect-a-content-marketing-strategy-for-a-real-",
+    "category": "Sales and Marketing",
+    "promptText": "Architect a content marketing strategy for a real estate agency, focusing on blog posts, video tours, and market reports to establish thought leadership and attract potential buyers and sellers."
+  },
+  {
+    "shortVersion": "construct-a-detailed-email-marketing-funnel-for-a-",
+    "url": "/prompts/sales-and-marketing/construct-a-detailed-email-marketing-funnel-for-a-",
+    "category": "Sales and Marketing",
+    "promptText": "Construct a detailed email marketing funnel for a new fitness app, centered around user onboarding, engagement, and retention strategies, including personalized workout recommendations and progress tracking."
+  },
+  {
+    "shortVersion": "create-a-social-media-content-calendar-for-a-local",
+    "url": "/prompts/sales-and-marketing/create-a-social-media-content-calendar-for-a-local",
+    "category": "Sales and Marketing",
+    "promptText": "Create a social media content calendar for a local bakery, integrating mouth-watering photos, behind-the-scenes videos, and customer testimonials to boost online engagement and in-store traffic."
+  },
+  {
+    "shortVersion": "create-an-omni-channel-marketing-plan-for-a-luxury",
+    "url": "/prompts/sales-and-marketing/create-an-omni-channel-marketing-plan-for-a-luxury",
+    "category": "Sales and Marketing",
+    "promptText": "Create an omni-channel marketing plan for a luxury skincare brand, blending online ads, influencer partnerships, and in-store events to build brand awareness and drive sales."
+  },
+  {
+    "shortVersion": "design-an-influencer-marketing-campaign-for-a-new-",
+    "url": "/prompts/sales-and-marketing/design-an-influencer-marketing-campaign-for-a-new-",
+    "category": "Sales and Marketing",
+    "promptText": "Design an influencer marketing campaign for a new sustainable fashion line, targeting eco-conscious millennials and leveraging social media platforms like Instagram and TikTok."
+  },
+  {
+    "shortVersion": "design-an-interactive--gamified-experience-for-a-t",
+    "url": "/prompts/sales-and-marketing/design-an-interactive--gamified-experience-for-a-t",
+    "category": "Sales and Marketing",
+    "promptText": "Design an interactive, gamified experience for a tech conference, where attendees can earn points and rewards for participating in sessions, visiting exhibitor booths, and networking, enhancing overall engagement and satisfaction."
+  },
+  {
+    "shortVersion": "develop-a-loyalty-program-for-a-gourmet-food-deliv",
+    "url": "/prompts/sales-and-marketing/develop-a-loyalty-program-for-a-gourmet-food-deliv",
+    "category": "Sales and Marketing",
+    "promptText": "Develop a loyalty program for a gourmet food delivery service, incorporating referral bonuses, tiered rewards, and exclusive offers to increase customer retention and lifetime value."
+  },
+  {
+    "shortVersion": "develop-a-series-of-engaging-webinars-for-a-softwa",
+    "url": "/prompts/sales-and-marketing/develop-a-series-of-engaging-webinars-for-a-softwa",
+    "category": "Sales and Marketing",
+    "promptText": "Develop a series of engaging webinars for a software as a service (SaaS) startup, focusing on features, customer success stories, and product demonstrations to convert leads into paying customers."
+  },
+  {
+    "shortVersion": "devise-a-comprehensive-seo-strategy-for-an-online-",
+    "url": "/prompts/sales-and-marketing/devise-a-comprehensive-seo-strategy-for-an-online-",
+    "category": "Sales and Marketing",
+    "promptText": "Devise a comprehensive SEO strategy for an online educational platform, focusing on optimizing content for search engines, building high-quality backlinks, and enhancing user experience to drive organic traffic."
+  },
+  {
+    "shortVersion": "plan-a-launch-event-for-a-new-electric-vehicle--in",
+    "url": "/prompts/sales-and-marketing/plan-a-launch-event-for-a-new-electric-vehicle--in",
+    "category": "Sales and Marketing",
+    "promptText": "Plan a launch event for a new electric vehicle, incorporating test drives, interactive exhibits on sustainability, and keynote speeches from industry leaders to generate buzz and media coverage."
+  },
+  {
+    "shortVersion": "architect-a-zero-waste-cafe-that-sources-local--or",
+    "url": "/prompts/sustainability-and-green-design/architect-a-zero-waste-cafe-that-sources-local--or",
+    "category": "Sustainability and Green Design",
+    "promptText": "Architect a zero-waste cafe that sources local, organic ingredients and implements composting and recycling programs to reduce landfill contributions."
+  },
+  {
+    "shortVersion": "architect-an-off-grid-tiny-home-that-utilizes-sola",
+    "url": "/prompts/sustainability-and-green-design/architect-an-off-grid-tiny-home-that-utilizes-sola",
+    "category": "Sustainability and Green Design",
+    "promptText": "Architect an off-grid tiny home that utilizes solar panels, rainwater harvesting, and composting toilets to achieve complete self-sufficiency."
+  },
+  {
+    "shortVersion": "create-a-modular--prefabricated-housing-solution-t",
+    "url": "/prompts/sustainability-and-green-design/create-a-modular--prefabricated-housing-solution-t",
+    "category": "Sustainability and Green Design",
+    "promptText": "Create a modular, prefabricated housing solution that can be quickly assembled in disaster-prone areas, focusing on sustainability and resilience."
+  },
+  {
+    "shortVersion": "create-an-eco-friendly-packaging-solution-for-a-po",
+    "url": "/prompts/sustainability-and-green-design/create-an-eco-friendly-packaging-solution-for-a-po",
+    "category": "Sustainability and Green Design",
+    "promptText": "Create an eco-friendly packaging solution for a popular consumer product, focusing on biodegradable materials and reducing environmental impact."
+  },
+  {
+    "shortVersion": "create-an-educational-platform-that-teaches-childr",
+    "url": "/prompts/sustainability-and-green-design/create-an-educational-platform-that-teaches-childr",
+    "category": "Sustainability and Green Design",
+    "promptText": "Create an educational platform that teaches children about the importance of recycling and waste management through interactive games and activities."
+  },
+  {
+    "shortVersion": "design-a-sustainable-fashion-line-that-utilizes-re",
+    "url": "/prompts/sustainability-and-green-design/design-a-sustainable-fashion-line-that-utilizes-re",
+    "category": "Sustainability and Green Design",
+    "promptText": "Design a sustainable fashion line that utilizes recycled materials, natural dyes, and fair trade practices to minimize ecological footprint and promote ethical production."
+  },
+  {
+    "shortVersion": "design-a-vertical-farming-system-for-urban-areas-t",
+    "url": "/prompts/sustainability-and-green-design/design-a-vertical-farming-system-for-urban-areas-t",
+    "category": "Sustainability and Green Design",
+    "promptText": "Design a vertical farming system for urban areas that uses hydroponics and renewable energy to produce fresh vegetables sustainably year-round."
+  },
+  {
+    "shortVersion": "design-an-innovative-water-filtration-system-that-",
+    "url": "/prompts/sustainability-and-green-design/design-an-innovative-water-filtration-system-that-",
+    "category": "Sustainability and Green Design",
+    "promptText": "Design an innovative water filtration system that purifies greywater for reuse in households and agricultural settings, reducing overall water consumption."
+  },
+  {
+    "shortVersion": "develop-a-comprehensive-urban-green-space-plan-tha",
+    "url": "/prompts/sustainability-and-green-design/develop-a-comprehensive-urban-green-space-plan-tha",
+    "category": "Sustainability and Green Design",
+    "promptText": "Develop a comprehensive urban green space plan that integrates community gardens, parks, and green rooftops to enhance biodiversity and air quality in metropolitan areas."
+  },
+  {
+    "shortVersion": "develop-a-mobile-app-that-helps-users-track-and-re",
+    "url": "/prompts/sustainability-and-green-design/develop-a-mobile-app-that-helps-users-track-and-re",
+    "category": "Sustainability and Green Design",
+    "promptText": "Develop a mobile app that helps users track and reduce their carbon footprint by providing personalized recommendations and tips for sustainable living."
+  },
+  {
+    "shortVersion": "construct-a-dynamic-online-course-aimed-at-upskill",
+    "url": "/prompts/training-and-development/construct-a-dynamic-online-course-aimed-at-upskill",
+    "category": "Training and Development",
+    "promptText": "Construct a dynamic online course aimed at upskilling professionals in data analytics, featuring case studies, interactive assessments, and industry tools tutorials."
+  },
+  {
+    "shortVersion": "create-a-detailed-training-manual-for-remote-team-",
+    "url": "/prompts/training-and-development/create-a-detailed-training-manual-for-remote-team-",
+    "category": "Training and Development",
+    "promptText": "Create a detailed training manual for remote team management, incorporating communication strategies, project management tools, and hybrid work models."
+  },
+  {
+    "shortVersion": "create-an-advanced-coding-bootcamp-for-experienced",
+    "url": "/prompts/training-and-development/create-an-advanced-coding-bootcamp-for-experienced",
+    "category": "Training and Development",
+    "promptText": "Create an advanced coding bootcamp for experienced programmers, targeting emerging technologies such as quantum computing and blockchain, and utilizing hands-on projects."
+  },
+  {
+    "shortVersion": "design-a-creative-writing-masterclass-for-aspiring",
+    "url": "/prompts/training-and-development/design-a-creative-writing-masterclass-for-aspiring",
+    "category": "Training and Development",
+    "promptText": "Design a creative writing masterclass for aspiring authors, incorporating exercises on plot development, character building, and self-publishing."
+  },
+  {
+    "shortVersion": "design-a-series-of-workshops-for-non-profit-organi",
+    "url": "/prompts/training-and-development/design-a-series-of-workshops-for-non-profit-organi",
+    "category": "Training and Development",
+    "promptText": "Design a series of workshops for non-profit organizations on grant writing and fundraising, focusing on best practices, donor engagement, and impact measurement."
+  },
+  {
+    "shortVersion": "design-an-inclusive-leadership-training-program-fo",
+    "url": "/prompts/training-and-development/design-an-inclusive-leadership-training-program-fo",
+    "category": "Training and Development",
+    "promptText": "Design an inclusive leadership training program focused on cultivating diversity and inclusion in the workplace, incorporating real-life scenarios and interactive workshops."
+  },
+  {
+    "shortVersion": "develop-a-comprehensive-onboarding-process-for-new",
+    "url": "/prompts/training-and-development/develop-a-comprehensive-onboarding-process-for-new",
+    "category": "Training and Development",
+    "promptText": "Develop a comprehensive onboarding process for new hires that integrates company culture, role-specific training, and personal development plans."
+  },
+  {
+    "shortVersion": "develop-a-training-curriculum-for-healthcare-profe",
+    "url": "/prompts/training-and-development/develop-a-training-curriculum-for-healthcare-profe",
+    "category": "Training and Development",
+    "promptText": "Develop a training curriculum for healthcare professionals focused on telemedicine practices, combining practical applications and regulatory compliance insights."
+  },
+  {
+    "shortVersion": "formulate-a-professional-development-series-for-ed",
+    "url": "/prompts/training-and-development/formulate-a-professional-development-series-for-ed",
+    "category": "Training and Development",
+    "promptText": "Formulate a professional development series for educators on integrating technology in classrooms to enhance learning outcomes and student engagement."
+  },
+  {
+    "shortVersion": "generate-a-mentorship-program-for-young-entreprene",
+    "url": "/prompts/training-and-development/generate-a-mentorship-program-for-young-entreprene",
+    "category": "Training and Development",
+    "promptText": "Generate a mentorship program for young entrepreneurs, pairing them with experienced business leaders, fostering hands-on learning and networking opportunities."
+  }
+]

@@ -7,29 +7,21 @@ import {
 import graphClient from "../helpers/GQLClient";
 
 export const getUserData = async (token: string) => {
-  try {
-    if (!token) {
-      throw new Error("No token provided");
-    }
-
-    graphClient.setupClient(token);
-
-    const { getCurrentUser } =
-      await graphClient.client?.request(getCurrentUserQuery);
-
-    return getCurrentUser;
-  } catch (error) {
-    console.error("getUserData error", error);
-    if (error.message.includes("JWT EXPIRED")) {
-      window.location.href = "/login";
-    }
+  if (!token) {
+    throw new Error("No token provided");
   }
+
+  graphClient.setupClient(token);
+
+  const { getCurrentUser } = await graphClient?.request(getCurrentUserQuery);
+
+  return getCurrentUser;
 };
 
 export const updateDocumentTree = async (token: string, documentTree) => {
   graphClient.setupClient(token);
 
-  const { updateUser } = await graphClient.client?.request(updateUserMutation, {
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
     documentTree: JSON.stringify(documentTree),
   });
 
@@ -42,7 +34,7 @@ export const updatePresentationFiles = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateUser } = await graphClient.client?.request(updateUserMutation, {
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
     presentationFiles: JSON.stringify(presentationFiles),
   });
 
@@ -52,7 +44,7 @@ export const updatePresentationFiles = async (
 export const updateSheetFiles = async (token: string, sheetFiles) => {
   graphClient.setupClient(token);
 
-  const { updateUser } = await graphClient.client?.request(updateUserMutation, {
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
     sheetFiles: JSON.stringify(sheetFiles),
   });
 
@@ -62,7 +54,7 @@ export const updateSheetFiles = async (token: string, sheetFiles) => {
 export const updateDrawingFiles = async (token: string, drawingFiles) => {
   graphClient.setupClient(token);
 
-  const { updateUser } = await graphClient.client?.request(updateUserMutation, {
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
     drawingFiles: JSON.stringify(drawingFiles),
   });
 
@@ -72,7 +64,7 @@ export const updateDrawingFiles = async (token: string, drawingFiles) => {
 export const updateSoundFiles = async (token: string, soundFiles) => {
   graphClient.setupClient(token);
 
-  const { updateUser } = await graphClient.client?.request(updateUserMutation, {
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
     soundFiles: JSON.stringify(soundFiles),
   });
 
@@ -82,7 +74,7 @@ export const updateSoundFiles = async (token: string, soundFiles) => {
 export const updateVideoFiles = async (token: string, videoFiles) => {
   graphClient.setupClient(token);
 
-  const { updateUser } = await graphClient.client?.request(updateUserMutation, {
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
     videoFiles: JSON.stringify(videoFiles),
   });
 
@@ -92,8 +84,7 @@ export const updateVideoFiles = async (token: string, videoFiles) => {
 export const newCheckout = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { newCheckout } =
-    await graphClient.client?.request(newCheckoutMutation);
+  const { newCheckout } = await graphClient?.request(newCheckoutMutation);
 
   return newCheckout;
 };
@@ -101,7 +92,7 @@ export const newCheckout = async (token: string) => {
 export const getPortalUrl = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { getPortalUrl } = await graphClient.client?.request(getPortalUrlQuery);
+  const { getPortalUrl } = await graphClient?.request(getPortalUrlQuery);
 
   return getPortalUrl;
 };

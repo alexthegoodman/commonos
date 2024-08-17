@@ -9,7 +9,7 @@ import graphClient from "../helpers/GQLClient";
 export const getDocumentData = async (token: string, documentId: string) => {
   graphClient.setupClient(token);
 
-  const { document } = (await graphClient.client?.request(documentQuery, {
+  const { document } = (await graphClient?.request(documentQuery, {
     documentId,
   })) as any;
 
@@ -19,9 +19,7 @@ export const getDocumentData = async (token: string, documentId: string) => {
 export const getDocumentsData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myDocuments } = (await graphClient.client?.request(
-    myDocumentsQuery
-  )) as any;
+  const { myDocuments } = (await graphClient?.request(myDocumentsQuery)) as any;
 
   return myDocuments;
 };
@@ -29,7 +27,7 @@ export const getDocumentsData = async (token: string) => {
 export const deleteDocument = async (token: string, documentId: string) => {
   graphClient.setupClient(token);
 
-  const { deleteDocument } = (await graphClient.client?.request(
+  const { deleteDocument } = (await graphClient?.request(
     deleteDocumentMutation,
     {
       documentId,
@@ -42,7 +40,7 @@ export const deleteDocument = async (token: string, documentId: string) => {
 export const generateTitles = async (token: string, markdown: string) => {
   graphClient.setupClient(token);
 
-  const { generateTitles } = (await graphClient.client?.request(
+  const { generateTitles } = (await graphClient?.request(
     generateTitlesMutation,
     {
       treeMd: markdown,

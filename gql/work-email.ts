@@ -99,3 +99,87 @@ export const myThreadEmailsQuery = gql`
     }
   }
 `;
+
+export const myWorkEmailFoldersQuery = gql`
+  query MyWorkEmailFoldersQuery {
+    myWorkEmailFolders {
+      id
+      name
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const myWorkEmailFolderTemplatesQuery = gql`
+  query MyWorkEmailFolderTemplatesQuery($folderId: String!) {
+    myWorkEmailFolderTemplates(folderId: $folderId) {
+      id
+      subject
+      body
+      initialMarkdown
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const workEmailTemplateQuery = gql`
+  query WorkEmailTemplateQuery($templateId: String!) {
+    workEmailTemplate(templateId: $templateId) {
+      id
+      subject
+      body
+      initialMarkdown
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const createWorkEmailTemplateMutation = gql`
+  mutation CreateWorkEmailTemplateMutation(
+    $folderId: String!
+    $subject: String!
+    $body: String!
+  ) {
+    createWorkEmailTemplate(
+      folderId: $folderId
+      subject: $subject
+      body: $body
+    ) {
+      id
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const updateWorkEmailTemplateMutation = gql`
+  mutation UpdateWorkEmailTemplateMutation(
+    $templateId: String!
+    $subject: String
+    $body: String
+  ) {
+    updateWorkEmailTemplate(
+      templateId: $templateId
+      subject: $subject
+      body: $body
+    ) {
+      id
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const createWorkEmailFolderMutation = gql`
+  mutation CreateWorkEmailFolderMutation($name: String!) {
+    createWorkEmailFolder(name: $name) {
+      id
+      name
+      updatedAt
+      createdAt
+    }
+  }
+`;

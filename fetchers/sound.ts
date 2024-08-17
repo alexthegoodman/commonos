@@ -9,7 +9,7 @@ import graphClient from "../helpers/GQLClient";
 export const getSoundData = async (token: string, soundId: string) => {
   graphClient.setupClient(token);
 
-  const { sound } = (await graphClient.client?.request(soundQuery, {
+  const { sound } = (await graphClient?.request(soundQuery, {
     soundId,
   })) as any;
 
@@ -19,9 +19,7 @@ export const getSoundData = async (token: string, soundId: string) => {
 export const getSoundsData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { mySounds } = (await graphClient.client?.request(
-    mySoundsQuery
-  )) as any;
+  const { mySounds } = (await graphClient?.request(mySoundsQuery)) as any;
 
   return mySounds;
 };
@@ -29,9 +27,7 @@ export const getSoundsData = async (token: string) => {
 export const newSound = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { newSound } = (await graphClient.client?.request(
-    newSoundMutation
-  )) as any;
+  const { newSound } = (await graphClient?.request(newSoundMutation)) as any;
 
   return newSound;
 };
@@ -44,14 +40,11 @@ export const updateSound = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateSound } = (await graphClient.client?.request(
-    updateSoundMutation,
-    {
-      soundId,
-      title,
-      context,
-    }
-  )) as any;
+  const { updateSound } = (await graphClient?.request(updateSoundMutation, {
+    soundId,
+    title,
+    context,
+  })) as any;
 
   return updateSound;
 };

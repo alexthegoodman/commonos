@@ -52,6 +52,15 @@ export const getThemeOptions = (mode: string) => {
     spacing: 8,
 
     components: {
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            background: "white",
+            color: "#333333",
+            boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
+          },
+        },
+      },
       MuiButton: {
         styleOverrides: {
           root: {
@@ -64,6 +73,13 @@ export const getThemeOptions = (mode: string) => {
             padding: "0px 15px",
             "&:hover": {
               boxShadow: "none",
+            },
+          },
+          outlinedSecondary: {
+            color: "#515151",
+            borderColor: "#515151",
+            "&:hover": {
+              borderColor: "black",
             },
           },
           textPrimary: {
@@ -229,7 +245,7 @@ export const getThemeOptions = (mode: string) => {
           paper: "#333333",
         },
         success: {
-          main: "#38ef7d",
+          main: "#38ef7d", // 56, 239, 125
           dark: "#38ef7d",
         },
       },

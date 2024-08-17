@@ -30,7 +30,7 @@ import graphClient from "@/helpers/GQLClient";
 export const getContactSettings = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myContactSettings } = (await graphClient.client?.request(
+  const { myContactSettings } = (await graphClient?.request(
     contactSettingsQuery
   )) as any;
 
@@ -40,7 +40,7 @@ export const getContactSettings = async (token: string) => {
 export const getCompanySettings = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myCompanySettings } = (await graphClient.client?.request(
+  const { myCompanySettings } = (await graphClient?.request(
     companySettingsQuery
   )) as any;
 
@@ -50,7 +50,7 @@ export const getCompanySettings = async (token: string) => {
 export const putContactSettings = async (token: string, fields: any) => {
   graphClient.setupClient(token);
 
-  const { putContactSettings } = (await graphClient.client?.request(
+  const { putContactSettings } = (await graphClient?.request(
     putContactSettingsMutation,
     {
       fields: JSON.stringify(fields),
@@ -63,7 +63,7 @@ export const putContactSettings = async (token: string, fields: any) => {
 export const putCompanySettings = async (token: string, fields: any) => {
   graphClient.setupClient(token);
 
-  const { putCompanySettings } = (await graphClient.client?.request(
+  const { putCompanySettings } = (await graphClient?.request(
     putCompanySettingsMutation,
     {
       fields: JSON.stringify(fields),
@@ -76,7 +76,7 @@ export const putCompanySettings = async (token: string, fields: any) => {
 export const getCompany = async (token: string, companyId: string) => {
   graphClient.setupClient(token);
 
-  const { company } = (await graphClient.client?.request(companyQuery, {
+  const { company } = (await graphClient?.request(companyQuery, {
     companyId,
   })) as any;
 
@@ -86,7 +86,7 @@ export const getCompany = async (token: string, companyId: string) => {
 export const getContact = async (token: string, contactId: string) => {
   graphClient.setupClient(token);
 
-  const { contact } = (await graphClient.client?.request(contactQuery, {
+  const { contact } = (await graphClient?.request(contactQuery, {
     contactId,
   })) as any;
 
@@ -100,7 +100,7 @@ export const getMyCompanies = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { rows, count } = (await graphClient.client?.request(myCompaniesQuery, {
+  const { rows, count } = (await graphClient?.request(myCompaniesQuery, {
     skip: rowsPerPage * page,
     take: rowsPerPage,
   })) as any;
@@ -115,7 +115,7 @@ export const getMyContacts = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { rows, count } = (await graphClient.client?.request(myContactsQuery, {
+  const { rows, count } = (await graphClient?.request(myContactsQuery, {
     skip: rowsPerPage * page,
     take: rowsPerPage,
   })) as any;
@@ -126,12 +126,9 @@ export const getMyContacts = async (
 export const createCompany = async (token: string, fields: any) => {
   graphClient.setupClient(token);
 
-  const { createCompany } = (await graphClient.client?.request(
-    createCompanyMutation,
-    {
-      fields: JSON.stringify(fields),
-    }
-  )) as any;
+  const { createCompany } = (await graphClient?.request(createCompanyMutation, {
+    fields: JSON.stringify(fields),
+  })) as any;
 
   return createCompany;
 };
@@ -139,12 +136,9 @@ export const createCompany = async (token: string, fields: any) => {
 export const createContact = async (token: string, fields: any) => {
   graphClient.setupClient(token);
 
-  const { createContact } = (await graphClient.client?.request(
-    createContactMutation,
-    {
-      fields: JSON.stringify(fields),
-    }
-  )) as any;
+  const { createContact } = (await graphClient?.request(createContactMutation, {
+    fields: JSON.stringify(fields),
+  })) as any;
 
   return createContact;
 };
@@ -156,13 +150,10 @@ export const updateCompany = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateCompany } = (await graphClient.client?.request(
-    updateCompanyMutation,
-    {
-      companyId,
-      fields: JSON.stringify(fields),
-    }
-  )) as any;
+  const { updateCompany } = (await graphClient?.request(updateCompanyMutation, {
+    companyId,
+    fields: JSON.stringify(fields),
+  })) as any;
 
   return updateCompany;
 };
@@ -174,13 +165,10 @@ export const updateContact = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateContact } = (await graphClient.client?.request(
-    updateContactMutation,
-    {
-      contactId,
-      fields: JSON.stringify(fields),
-    }
-  )) as any;
+  const { updateContact } = (await graphClient?.request(updateContactMutation, {
+    contactId,
+    fields: JSON.stringify(fields),
+  })) as any;
 
   return updateContact;
 };
@@ -188,12 +176,9 @@ export const updateContact = async (
 export const deleteContact = async (token: string, contactId: string) => {
   graphClient.setupClient(token);
 
-  const { deleteContact } = (await graphClient.client?.request(
-    deleteContactMutation,
-    {
-      contactId,
-    }
-  )) as any;
+  const { deleteContact } = (await graphClient?.request(deleteContactMutation, {
+    contactId,
+  })) as any;
 
   return deleteContact;
 };
@@ -201,12 +186,9 @@ export const deleteContact = async (token: string, contactId: string) => {
 export const deleteCompany = async (token: string, companyId: string) => {
   graphClient.setupClient(token);
 
-  const { deleteCompany } = (await graphClient.client?.request(
-    deleteCompanyMutation,
-    {
-      companyId,
-    }
-  )) as any;
+  const { deleteCompany } = (await graphClient?.request(deleteCompanyMutation, {
+    companyId,
+  })) as any;
 
   return deleteCompany;
 };
@@ -214,7 +196,7 @@ export const deleteCompany = async (token: string, companyId: string) => {
 export const getFunnelData = async (token: string, funnelId: string) => {
   graphClient.setupClient(token);
 
-  const { funnel } = (await graphClient.client?.request(funnelQuery, {
+  const { funnel } = (await graphClient?.request(funnelQuery, {
     funnelId,
   })) as any;
 
@@ -224,7 +206,7 @@ export const getFunnelData = async (token: string, funnelId: string) => {
 export const getDashboardData = async (token: string, dashboardId: string) => {
   graphClient.setupClient(token);
 
-  const { dashboard } = (await graphClient.client?.request(dashboardQuery, {
+  const { dashboard } = (await graphClient?.request(dashboardQuery, {
     dashboardId,
   })) as any;
 
@@ -234,12 +216,9 @@ export const getDashboardData = async (token: string, dashboardId: string) => {
 export const searchContacts = async (token: string, query: string) => {
   graphClient.setupClient(token);
 
-  const { searchContacts } = (await graphClient.client?.request(
-    searchContactsQuery,
-    {
-      query,
-    }
-  )) as any;
+  const { searchContacts } = (await graphClient?.request(searchContactsQuery, {
+    query,
+  })) as any;
 
   return searchContacts;
 };
@@ -247,12 +226,9 @@ export const searchContacts = async (token: string, query: string) => {
 export const getContactsByIds = async (token: string, ids: string[]) => {
   graphClient.setupClient(token);
 
-  const { contactsByIds } = (await graphClient.client?.request(
-    contactsByIdsQuery,
-    {
-      ids,
-    }
-  )) as any;
+  const { contactsByIds } = (await graphClient?.request(contactsByIdsQuery, {
+    ids,
+  })) as any;
 
   return contactsByIds;
 };
@@ -260,7 +236,7 @@ export const getContactsByIds = async (token: string, ids: string[]) => {
 export const createFunnel = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { createFunnel } = (await graphClient.client?.request(
+  const { createFunnel } = (await graphClient?.request(
     createFunnelMutation
   )) as any;
 
@@ -270,9 +246,7 @@ export const createFunnel = async (token: string) => {
 export const myFunnels = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myFunnels } = (await graphClient.client?.request(
-    myFunnelsQuery
-  )) as any;
+  const { myFunnels } = (await graphClient?.request(myFunnelsQuery)) as any;
 
   return myFunnels;
 };
@@ -285,14 +259,11 @@ export const updateFunnel = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateFunnel } = (await graphClient.client?.request(
-    updateFunnelMutation,
-    {
-      funnelId,
-      title,
-      context,
-    }
-  )) as any;
+  const { updateFunnel } = (await graphClient?.request(updateFunnelMutation, {
+    funnelId,
+    title,
+    context,
+  })) as any;
 
   return updateFunnel;
 };
@@ -300,7 +271,7 @@ export const updateFunnel = async (
 export const myDashboards = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { myDashboards } = (await graphClient.client?.request(
+  const { myDashboards } = (await graphClient?.request(
     myDashboardsQuery
   )) as any;
 
@@ -310,7 +281,7 @@ export const myDashboards = async (token: string) => {
 export const createDashboard = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { createDashboard } = (await graphClient.client?.request(
+  const { createDashboard } = (await graphClient?.request(
     createDashboardMutation
   )) as any;
 
@@ -325,7 +296,7 @@ export const updateDashboard = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateDashboard } = (await graphClient.client?.request(
+  const { updateDashboard } = (await graphClient?.request(
     updateDashboardMutation,
     {
       dashboardId,
@@ -344,7 +315,7 @@ export const getVisualData = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { visualData } = (await graphClient.client?.request(visualDataQuery, {
+  const { visualData } = (await graphClient?.request(visualDataQuery, {
     item,
     field,
   })) as any;

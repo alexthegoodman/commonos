@@ -16,7 +16,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useCookies } from "react-cookie";
-import { styled } from "@mui/material";
+import { Link, styled } from "@mui/material";
 import ColorModeSwitch from "@/components/core/nav/ColorModeSwitch";
 import LogoutButton from "@/components/core/settings/LogoutButton";
 
@@ -42,13 +42,13 @@ const InnerWrappper = styled(Box)(({ theme }) => ({
   margin: "0 auto",
   display: "flex",
   alignItems: "center",
-  justifyContent: "flex-start",
+  justifyContent: "space-between",
 }));
 
 function LoggedInButtons() {
   return (
     <>
-      <Button href="/launcher">Enter CommonOS</Button>
+      <Link href="/launcher">Enter CommonOS</Link>
       <LogoutButton />
     </>
   );
@@ -57,8 +57,8 @@ function LoggedInButtons() {
 function LoggedOutButtons() {
   return (
     <>
-      <Button href="/login">Login</Button>
-      <Button href="/sign-up">Sign Up</Button>
+      <Link href="/login">Login</Link>
+      <Link href="/sign-up">Sign Up</Link>
     </>
   );
 }
@@ -76,11 +76,20 @@ export default function DrawerAppBar(props: Props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        CommonOS
-      </Typography>
+      <Link href="/">
+        <Typography variant="h6" sx={{ my: 2, fontWeight: "600" }}>
+          CommonOS
+        </Typography>
+      </Link>
       <Divider />
-      <List>
+      <List
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         {navItems.map((item) => (
           <ListItem key={`listItem${item.href}`} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }} href={item.href}>
@@ -102,30 +111,40 @@ export default function DrawerAppBar(props: Props) {
       <AppBar component="nav">
         <Toolbar>
           <InnerWrappper>
+            <Link href="/">
+              <Typography variant="h6" sx={{ fontWeight: "600" }}>
+                CommonOS
+              </Typography>
+            </Link>
+
             <IconButton
               color="inherit"
               aria-label="open drawer"
-              edge="start"
+              edge="end"
               onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { sm: "none" } }}
+              sx={{
+                mr: 1,
+                display: { sm: "none" },
+                position: "absolute",
+                right: "15px",
+              }}
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-            >
-              CommonOS
-            </Typography>
+
             <Box
-              sx={{ display: { xs: "none", sm: "flex" }, flexDirection: "row" }}
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                flexDirection: "row",
+                alignItems: "center",
+                gap: "20px",
+              }}
             >
               <ColorModeSwitch />
               {navItems.map((item) => (
-                <Button key={item.href} href={item.href}>
+                <Link key={item.href} href={item.href}>
                   {item.label}
-                </Button>
+                </Link>
               ))}
               {token ? <LoggedInButtons /> : <LoggedOutButtons />}
             </Box>
@@ -134,10 +153,12 @@ export default function DrawerAppBar(props: Props) {
       </AppBar>
       <nav>
         <Drawer
+          anchor="right"
           container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
+          disableScrollLock={true}
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.
           }}

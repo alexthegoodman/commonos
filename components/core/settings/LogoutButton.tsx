@@ -18,7 +18,13 @@ export default function LogoutButton() {
 
   return (
     <>
-      <Button onClick={logout}>Logout</Button>
+      <Button
+        onClick={logout}
+        size="small"
+        style={{ padding: "0", minWidth: "auto" }}
+      >
+        Logout
+      </Button>
     </>
   );
 }

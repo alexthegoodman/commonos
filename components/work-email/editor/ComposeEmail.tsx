@@ -49,12 +49,12 @@ export default function ComposeEmail({
     console.info("delta", delta);
     if (editorRef.current) {
       editorRef.current.update(() => {
-        // const newMarkdown = $convertToMarkdownString(TRANSFORMERS);
+        const newMarkdown = $convertToMarkdownString(TRANSFORMERS);
         // // console.info("newMarkdown", newMarkdown);
         // dispatch({ type: "markdown", payload: newMarkdown });
-        const newHtml = $generateHtmlFromNodes(editorRef.current, null);
+        // const newHtml = $generateHtmlFromNodes(editorRef.current, null);
         // console.info("newHtml", newHtml);
-        handleChange(newHtml);
+        handleChange(newMarkdown);
       });
     }
   };

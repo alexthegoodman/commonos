@@ -24,7 +24,7 @@ const EditorHeader = ({ title, setTitle }) => {
           defaultValue={title}
           placeholder="Title"
           style={{
-            width: "603px",
+            width: "100%",
           }}
         />
       </Box>

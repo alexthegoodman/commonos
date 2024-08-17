@@ -1,6 +1,7 @@
 import InnerLayout from "@/components/core/nav/InnerLayout";
 import { Inter } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
+// import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "CommonOS",
@@ -59,7 +60,20 @@ export default function RootLayout({
         }}
       >
         <InnerLayout>{children}</InnerLayout>
-        <Analytics />
+        {/* <Analytics /> */}
+        <Script
+          async
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-1HJFP73TM9"
+        ></Script>
+        <Script strategy="afterInteractive" id="gtm">
+          {`
+           window.dataLayer = window.dataLayer || [];
+           function gtag(){dataLayer.push(arguments);}
+           gtag('js', new Date());
+           gtag('config', 'G-1HJFP73TM9');
+        `}
+        </Script>
         <link rel="stylesheet" href="https://use.typekit.net/moh7wlc.css" />
       </body>
     </html>

@@ -7,7 +7,6 @@ import {
   CmSidebar,
   MobileSideButton,
 } from "@/components/core/layout/Wrapper";
-import InboxList from "@/components/work-email/nav/InboxList";
 
 export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -19,10 +18,13 @@ export default function Layout({ children }) {
         variant="contained"
         color="secondary"
       >
-        Browse Inboxes
+        Browse Settings
       </MobileSideButton>
       <CmSidebar mobileOpen={mobileOpen}>
-        <InboxList />
+        <Typography variant="overline">Work Email Settings</Typography>
+        <Box display="flex" flexDirection="column" mt={1} gap={1}>
+          <Link href="/work-email/settings/domain/">Domain</Link>
+        </Box>
       </CmSidebar>
       <CmContent>{children}</CmContent>
     </Box>

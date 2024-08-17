@@ -108,10 +108,11 @@ export default function ComposePost({
                 <ContentEditable
                   style={{
                     backgroundColor: "white",
-                    minHeight: "500px",
+                    minHeight: "750px",
                     width: "100%",
-                    padding: "5px 15px",
+                    padding: "5px 25px",
                     lineHeight: "1.35",
+                    fontFamily: "proxima-nova",
                   }}
                   className="editor-input"
                 />

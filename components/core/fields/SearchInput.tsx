@@ -26,7 +26,7 @@ const SearchInput = ({
           <FormInput
             type="search"
             name="search"
-            placeholder="Search interests..."
+            placeholder="Search..."
             register={register}
             errors={errors}
             validation={{ required: false }}

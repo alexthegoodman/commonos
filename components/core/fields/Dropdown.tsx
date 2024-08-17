@@ -1,9 +1,13 @@
 "use client";
 
-import { Menu, MenuItem } from "@mui/material";
+import { Button, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 
-export default function Dropdown({ options, handleMenuItemClick }) {
+export default function Dropdown({
+  label = "Choose...",
+  options,
+  handleMenuItemClick,
+}) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -16,15 +20,20 @@ export default function Dropdown({ options, handleMenuItemClick }) {
   };
 
   return (
-    <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-      {options.map((option, i) => (
-        <MenuItem
-          key={`menuItem` + i}
-          onClick={(event) => handleMenuItemClick(option)}
-        >
-          {option.label}
-        </MenuItem>
-      ))}
-    </Menu>
+    <>
+      <Button size="small" onClick={handleClick}>
+        {label}
+      </Button>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        {options.map((option, i) => (
+          <MenuItem
+            key={`menuItem` + i}
+            onClick={(event) => handleMenuItemClick(option)}
+          >
+            {option.label}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   );
 }

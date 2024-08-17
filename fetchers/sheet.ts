@@ -9,7 +9,7 @@ import graphClient from "../helpers/GQLClient";
 export const getSheetData = async (token: string, sheetId: string) => {
   graphClient.setupClient(token);
 
-  const { sheet } = (await graphClient.client?.request(sheetQuery, {
+  const { sheet } = (await graphClient?.request(sheetQuery, {
     sheetId,
   })) as any;
 
@@ -19,9 +19,7 @@ export const getSheetData = async (token: string, sheetId: string) => {
 export const getSheetsData = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { mySheets } = (await graphClient.client?.request(
-    mySheetsQuery
-  )) as any;
+  const { mySheets } = (await graphClient?.request(mySheetsQuery)) as any;
 
   return mySheets;
 };
@@ -29,9 +27,7 @@ export const getSheetsData = async (token: string) => {
 export const newSheet = async (token: string) => {
   graphClient.setupClient(token);
 
-  const { newSheet } = (await graphClient.client?.request(
-    newSheetMutation
-  )) as any;
+  const { newSheet } = (await graphClient?.request(newSheetMutation)) as any;
 
   return newSheet;
 };
@@ -44,14 +40,11 @@ export const updateSheet = async (
 ) => {
   graphClient.setupClient(token);
 
-  const { updateSheet } = (await graphClient.client?.request(
-    updateSheetMutation,
-    {
-      sheetId,
-      title,
-      context,
-    }
-  )) as any;
+  const { updateSheet } = (await graphClient?.request(updateSheetMutation, {
+    sheetId,
+    title,
+    context,
+  })) as any;
 
   return updateSheet;
 };

@@ -30,7 +30,7 @@ export default function InnerLayout({
         /> */}
         {/* <DynamicInner /> */}
         <MultiPageRTE markdown={initialMarkdown} />
-        <AutoSidebar documentId={documentId} documentData={documentData} />
+        {/* <AutoSidebar documentId={documentId} documentData={documentData} /> */}
       </Box>
     </DocumentsContext.Provider>
   );

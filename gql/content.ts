@@ -39,7 +39,7 @@ export const updatePostTypeMutation = gql`
 
 export const postTypeQuery = gql`
   query PostType($postTypeId: String!) {
-    postType(postTypeId: $postTypeId) {
+    postType: postType(postTypeId: $postTypeId) {
       id
       name
       fields
@@ -54,6 +54,7 @@ export const postTypeQuery = gql`
       updatedAt
       createdAt
     }
+    postCount: countPosts(postTypeId: $postTypeId)
   }
 `;
 
@@ -101,13 +102,14 @@ export const updatePostMutation = gql`
 
 export const myPostsQuery = gql`
   query MyPosts($postTypeId: String!) {
-    myPosts(postTypeId: $postTypeId) {
+    rows: myPosts(postTypeId: $postTypeId) {
       id
       published
       title
       updatedAt
       createdAt
     }
+    count: countPosts(postTypeId: $postTypeId)
   }
 `;
 

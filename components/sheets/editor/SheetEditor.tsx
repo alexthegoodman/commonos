@@ -13,21 +13,22 @@ import "@silevis/reactgrid/styles.css";
 import { Button, styled } from "@mui/material";
 import { useSheetsContext } from "@/context/SheetsContext";
 import { v4 as uuidv4 } from "uuid";
+import { SheetGrid } from "./SheetGrid";
 
-const applyChangesToRow = (
-  changes: CellChange<TextCell>[],
-  prevRows: Row[],
-  prevColumns: Column[]
-): Row[] => {
-  changes.forEach((change) => {
-    const rowIndex = prevRows.findIndex((el) => el.rowId === change.rowId);
-    const cellIndex = prevColumns.findIndex(
-      (el) => el.columnId === change.columnId
-    );
-    prevRows[rowIndex].cells[cellIndex].text = change.newCell.text;
-  });
-  return [...prevRows];
-};
+// const applyChangesToRow = (
+//   changes: CellChange<TextCell>[],
+//   prevRows: Row[],
+//   prevColumns: Column[]
+// ): Row[] => {
+//   changes.forEach((change) => {
+//     const rowIndex = prevRows.findIndex((el) => el.rowId === change.rowId);
+//     const cellIndex = prevColumns.findIndex(
+//       (el) => el.columnId === change.columnId
+//     );
+//     prevRows[rowIndex].cells[cellIndex].text = change.newCell.text;
+//   });
+//   return [...prevRows];
+// };
 
 const GridWrapper = styled("div")(({ theme }) => ({
   // backgroundColor: theme.palette.background.paper,
@@ -50,20 +51,36 @@ const InnerWrapper = styled("div")(({ theme }) => ({
   },
   "& .rowButton": {
     position: "absolute",
-    bottom: "-37px",
+    bottom: "-70px",
     left: 0,
-    width: "100%",
+    width: "calc(100% - 15px)",
     boxShadow: "none",
+  },
+  "& .rowButton, & .columnButton": {
+    backgroundColor: "white",
+    color: "#515151",
+    border: "1px solid rgb(232, 232, 232)",
+    borderRadius: "0px !important",
   },
 }));
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-export default function SheetEditor() {
+export default function SheetEditor({
+  selectedCells = null,
+  setSelectedCells = () => {},
+  selectedSheet,
+  setSelectedSheet,
+}) {
   const [state, dispatch] = useSheetsContext();
 
-  const columns = state.columns;
-  const rows = state.rows;
+  const hasAnySheets = state?.sheets?.length;
+  const currentSheet = hasAnySheets
+    ? state.sheets[selectedSheet ? selectedSheet : 0]
+    : state;
+
+  const columns = currentSheet.columns;
+  const rows = currentSheet.rows;
 
   // add index column to columns
   const columnsWithIndex = [
@@ -81,6 +98,7 @@ export default function SheetEditor() {
   const rowsWithIndex = [
     {
       rowId: uuidv4(),
+      height: 30,
       cells: columnsWithIndex.map((column, i) => ({
         type: "header",
         text: i === 0 ? "" : alphabet.charAt(i - 1),
@@ -100,74 +118,80 @@ export default function SheetEditor() {
     })),
   ];
 
-  const handleChanges = (changes: CellChange<TextCell>[]) => {
-    dispatch({
-      type: "rows",
-      payload: applyChangesToRow(changes, rows, columns),
-    });
-  };
+  // const handleChanges = (changes: CellChange<TextCell>[]) => {
+  //   dispatch({
+  //     type: "rows",
+  //     payload: applyChangesToRow(changes, rows, columns),
+  //   });
+  // };
 
   const handleColumnResize = (ci: Id, width: number) => {
-    dispatch({
-      type: "columns",
-      payload: columns.map((column) => {
-        if (column.columnId === ci) {
-          return { ...column, width };
-        }
-        return column;
-      }),
-    });
+    // dispatch({
+    //   type: "columns",
+    //   payload: columns.map((column) => {
+    //     if (column.columnId === ci) {
+    //       return { ...column, width };
+    //     }
+    //     return column;
+    //   }),
+    // });
   };
 
   const addColumn = () => {
-    dispatch({
-      type: "columns",
-      payload: [
-        ...columns,
-        {
-          columnId: uuidv4(),
-          width: 100,
-          reorderable: true,
-          resizable: true,
-        },
-      ],
-    });
-    dispatch({
-      type: "rows",
-      payload: rows.map((row) => ({
-        ...row,
-        cells: [
-          ...row.cells,
-          {
-            type: "text",
-            text: "",
-          },
-        ],
-      })),
-    });
+    // dispatch({
+    //   type: "columns",
+    //   payload: [
+    //     ...columns,
+    //     {
+    //       columnId: uuidv4(),
+    //       width: 100,
+    //       reorderable: true,
+    //       resizable: true,
+    //     },
+    //   ],
+    // });
+    // dispatch({
+    //   type: "rows",
+    //   payload: rows.map((row) => ({
+    //     ...row,
+    //     cells: [
+    //       ...row.cells,
+    //       {
+    //         type: "text",
+    //         text: "",
+    //       },
+    //     ],
+    //   })),
+    // });
   };
 
   const addRow = () => {
-    dispatch({
-      type: "rows",
-      payload: [
-        ...rows,
-        {
-          rowId: uuidv4(),
-          cells: columns.map((column) => ({
-            type: "text",
-            text: "",
-          })),
-        },
-      ],
-    });
+    // dispatch({
+    //   type: "rows",
+    //   payload: [
+    //     ...rows,
+    //     {
+    //       rowId: uuidv4(),
+    //       cells: columns.map((column) => ({
+    //         type: "text",
+    //         text: "",
+    //       })),
+    //     },
+    //   ],
+    // });
+  };
+
+  const handleSelectionChange = (selectedRanges) => {
+    console.info("selectedRanges", selectedRanges);
+
+    setSelectedCells(selectedRanges);
   };
 
   return (
     <>
       <GridWrapper>
         <InnerWrapper>
-          <ReactGrid
+          {/* <ReactGrid
             rows={rowsWithIndex}
             columns={columnsWithIndex}
             onCellsChanged={handleChanges}
@@ -175,6 +199,13 @@ export default function SheetEditor() {
             enableRangeSelection
             enableRowSelection
             enableColumnSelection
+            onSelectionChanged={handleSelectionChange}
+          /> */}
+          <SheetGrid
+            rows={rowsWithIndex}
+            columns={columnsWithIndex}
+            selectedCells={selectedCells}
+            onSelectionChanged={handleSelectionChange}
           />
           <Button
             className="columnButton"
