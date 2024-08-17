@@ -106,6 +106,19 @@ const startupCompute = async () => {
 
 startupCompute();
 
+// extend window type
+declare global {
+  interface Window {
+    // __canvasRTEEditorActive: boolean;
+    //   __canvasRTEInsertCharacterId: string | null;
+    __canvasRTEInsertCharacterIndex: number;
+  }
+}
+
+// window.__canvasRTEEditorActive = false;
+//   window.__canvasRTEInsertCharacterId = null;
+window.__canvasRTEInsertCharacterIndex = 0;
+
 export const useKonvaRTE = (
   initialMarkdown: string,
   mainTextSize: DocumentSize
@@ -231,6 +244,7 @@ export const useKonvaRTE = (
       flattened.push(char.location?.line ? char.location?.line : 0);
       flattened.push(char.location?.lineIndex ? char.location?.lineIndex : 0);
       flattened.push(type);
+      flattened.push(char.lastLineCharacter ? 1 : 0);
     });
 
     const floatArray = new Float32Array(flattened);
@@ -274,10 +288,10 @@ export const useKonvaRTE = (
       flatChars.length
     );
 
-    setTimeout(() => {
-      console.info("reading from buffer...");
-      readFromBuffer(gpuDevice, computeBuffer, characters, setMasterJson);
-    }, 10);
+    // setTimeout(() => {
+    console.info("reading from buffer...");
+    readFromBuffer(gpuDevice, computeBuffer, characters, setMasterJson);
+    // }, 10);
   };
 
   const spliceMasterJson = (
@@ -300,13 +314,16 @@ export const useKonvaRTE = (
     // PERF: seems to be a major perf hit
     const next = masterJsonRef.current.slice();
 
-    console.info("insertCharacterIndex", insertCharacterIndexRef.current);
+    console.info(
+      "insertCharacterIndex",
+      window.__canvasRTEInsertCharacterIndex
+    );
 
-    if (!insertCharacterIndexRef.current) {
+    if (!window.__canvasRTEInsertCharacterIndex) {
       return next;
     }
 
-    next.splice(insertCharacterIndexRef.current + 1, 0, newCharacter);
+    next.splice(window.__canvasRTEInsertCharacterIndex + 1, 0, newCharacter);
 
     // somewhat faster
     // const next = [...masterJsonRef.current, newCharacter];
@@ -325,7 +342,7 @@ export const useKonvaRTE = (
 
       const characterId = uuidv4();
 
-      if (!insertCharacterIndexRef.current) {
+      if (!window.__canvasRTEInsertCharacterIndex) {
         console.info("trigger key with no text content?");
         return;
       }
@@ -362,7 +379,9 @@ export const useKonvaRTE = (
             positionByShader(next);
 
             // setInsertCharcterId(characterId);
-            setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+            // setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+            window.__canvasRTEInsertCharacterIndex =
+              window.__canvasRTEInsertCharacterIndex + 1;
           }
           break;
         case "Backspace":
@@ -436,7 +455,9 @@ export const useKonvaRTE = (
             positionByShader(next);
 
             // setInsertCharcterId(characterId);
-            setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+            // setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+            window.__canvasRTEInsertCharacterIndex =
+              window.__canvasRTEInsertCharacterIndex + 1;
           }
           break;
         default:
@@ -480,7 +501,9 @@ export const useKonvaRTE = (
             positionByShader(next);
 
             // setInsertCharcterId(characterId);
-            setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+            // setInsertCharacterIndex(insertCharacterIndexRef.current + 1);
+            window.__canvasRTEInsertCharacterIndex =
+              window.__canvasRTEInsertCharacterIndex + 1;
           }
           break;
       }
@@ -597,7 +620,8 @@ export const useKonvaRTE = (
     const character = masterJson[characterIndex];
 
     // setInsertCharcterId(character.characterId);
-    setInsertCharacterIndex(characterIndex);
+    // setInsertCharacterIndex(characterIndex);
+    window.__canvasRTEInsertCharacterIndex = characterIndex;
     setEditorActive(true);
   };
 
