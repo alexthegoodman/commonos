@@ -1,6 +1,7 @@
 "use client";
 
-import { useCanvasRTE } from "@/hooks/useCanvasRTE";
+// import { useCanvasRTE } from "@/hooks/useCanvasRTE";
+import { useKonvaRTE } from "@/hooks/useKonvaRTE";
 import { useRef } from "react";
 import { Group, Layer, Rect, Stage, Text } from "react-konva";
 
@@ -30,7 +31,7 @@ export default function MultiPageRTE({ markdown = "" }) {
   };
 
   const { masterJson, jsonByPage, handleCanvasClick, handleTextClick } =
-    useCanvasRTE(markdown, mainTextSize);
+    useKonvaRTE(markdown, mainTextSize);
 
   console.info("masterJson", masterJson);
 

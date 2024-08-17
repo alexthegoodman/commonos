@@ -1,3 +1,5 @@
+import { Character } from "@/hooks/useKonvaRTE";
+
 export async function initializeWebGPU() {
   if (!navigator.gpu) {
     console.error("WebGPU is not supported in this browser.");
@@ -46,6 +48,24 @@ export function createBuffer(device: GPUDevice, data: Float32Array) {
   return buffer;
 }
 
+export const createDocDimensionsBuffer = (
+  device: GPUDevice,
+  width: number,
+  height: number,
+  lineHeight: number,
+  pageHeight: number
+) => {
+  const buffer = device.createBuffer({
+    size: 4 * 4, // 4 floats
+    usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+  });
+
+  const dimensions = new Float32Array([width, height, lineHeight, pageHeight]);
+  device.queue.writeBuffer(buffer, 0, dimensions);
+
+  return buffer;
+};
+
 export function createBindGroupLayout(device: GPUDevice): GPUBindGroupLayout {
   const bindGroupLayout = device.createBindGroupLayout({
     entries: [
@@ -57,6 +77,14 @@ export function createBindGroupLayout(device: GPUDevice): GPUBindGroupLayout {
           minBindingSize: 0,
         },
       },
+      {
+        binding: 1,
+        visibility: GPUShaderStage.COMPUTE,
+        buffer: {
+          type: "uniform" as "uniform",
+          minBindingSize: 0,
+        },
+      },
     ],
   });
   return bindGroupLayout;
@@ -65,7 +93,8 @@ export function createBindGroupLayout(device: GPUDevice): GPUBindGroupLayout {
 export function createBindGroup(
   device: GPUDevice,
   pipeline: GPUComputePipeline,
-  buffer: GPUBuffer
+  buffer: GPUBuffer,
+  docDimensionsBuffer: GPUBuffer
 ) {
   const bindGroup = device.createBindGroup({
     layout: pipeline.getBindGroupLayout(0),
@@ -75,6 +104,10 @@ export function createBindGroup(
         resource: {
           buffer: buffer,
         },
+      },
+      {
+        binding: 1,
+        resource: { buffer: docDimensionsBuffer },
       },
     ],
   });
@@ -104,7 +137,12 @@ export function dispatchCompute(
   queue.submit([commands]);
 }
 
-export async function readFromBuffer(device: GPUDevice, buffer: GPUBuffer) {
+export async function readFromBuffer(
+  device: GPUDevice,
+  buffer: GPUBuffer,
+  characters: Character[],
+  setMasterJson: any
+) {
   const readBuffer = device.createBuffer({
     size: buffer.size,
     usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
@@ -118,6 +156,41 @@ export async function readFromBuffer(device: GPUDevice, buffer: GPUBuffer) {
   await readBuffer.mapAsync(GPUMapMode.READ);
   const copyArrayBuffer = readBuffer.getMappedRange();
   const result = new Float32Array(copyArrayBuffer);
-  console.log(result);
+  const restructured = restructureCharacters(result, characters);
+  console.log(restructured);
+  setMasterJson(restructured);
   readBuffer.unmap();
+}
+
+function restructureCharacters(
+  floatArray: Float32Array,
+  subsection: Character[]
+): Character[] {
+  const characters: Character[] = [];
+  const stride = 7; // Number of float values per character
+
+  let x = 0;
+  for (let i = 0; i < floatArray.length; i += stride) {
+    const characterData = subsection[x];
+    const character: Character = {
+      ...characterData,
+      position: {
+        x: floatArray[i],
+        y: floatArray[i + 1],
+      },
+      size: {
+        width: floatArray[i + 2],
+        height: floatArray[i + 3],
+      },
+      location: {
+        page: floatArray[i + 4],
+        line: floatArray[i + 5],
+        lineIndex: floatArray[i + 6],
+      },
+    };
+    characters.push(character);
+    x++;
+  }
+
+  return characters;
 }
