@@ -167,7 +167,7 @@ function restructureCharacters(
   subsection: Character[]
 ): Character[] {
   const characters: Character[] = [];
-  const stride = 7; // Number of float values per character
+  const stride = 8; // Number of float values per character
 
   let x = 0;
   for (let i = 0; i < floatArray.length; i += stride) {

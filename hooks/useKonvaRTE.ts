@@ -181,6 +181,22 @@ export const useKonvaRTE = (
   const flattenForCompute = (subsection: Character[]) => {
     const flattened = [] as number[];
     subsection.forEach((char) => {
+      let type = 0;
+      switch (char.type) {
+        case "character":
+          type = 0;
+          break;
+        case "newline":
+          type = 1;
+          break;
+        case "tab":
+          type = 2;
+          break;
+        default:
+          type = 0;
+          break;
+      }
+
       flattened.push(char.position?.x ? char.position?.x : 0);
       flattened.push(char.position?.y ? char.position?.y : 0);
       flattened.push(char.size.width);
@@ -188,6 +204,7 @@ export const useKonvaRTE = (
       flattened.push(char.location?.page ? char.location?.page : 0);
       flattened.push(char.location?.line ? char.location?.line : 0);
       flattened.push(char.location?.lineIndex ? char.location?.lineIndex : 0);
+      flattened.push(type);
     });
 
     const floatArray = new Float32Array(flattened);
@@ -272,7 +289,10 @@ export const useKonvaRTE = (
         }
 
         let newSize: Size = { width: 0, height: 0 };
+        let type: CharacterType = "character";
         if (character === "\n") {
+          type = "newline";
+
           const capHeightPx = getCapHeightPx(defaultStyle.fontSize);
 
           newSize = {
@@ -280,6 +300,8 @@ export const useKonvaRTE = (
             height: capHeightPx,
           };
         } else {
+          type = "character";
+
           const boundingBox = getCharacterBoundingBox(
             fontDataRef.current,
             character,
@@ -303,7 +325,7 @@ export const useKonvaRTE = (
           position: null,
           size: newSize,
           style: defaultStyle,
-          type: "character",
+          type,
           lastLineCharacter: false,
           wordIndex: 0,
           paragraphIndex: 0,
