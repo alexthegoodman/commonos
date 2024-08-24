@@ -6,7 +6,22 @@ import IntervalTree, {
 } from "@flatten-js/interval-tree";
 import * as fontkit from "fontkit";
 
-interface LayoutInfo {}
+// interface LayoutInfo {}
+
+interface FormattedText {
+  text: string;
+  format: Style | null;
+}
+
+interface RenderItem {
+  char: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  capHeight: number;
+  format: Style;
+}
 
 export type Style = {
   color: string;
@@ -32,25 +47,6 @@ const defaultStyle: Style = {
   underline: false,
 };
 
-const blobToBuffer = async (blob: Blob) => {
-  const arrayBuffer = await blob.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  return buffer;
-};
-
-const loadFont = async (setFont: (font: fontkit.Font) => void) => {
-  try {
-    const response = await fetch("/fonts/Inter-Regular.ttf");
-    const blob = await response.blob();
-    const buffer = await blobToBuffer(blob);
-    const font = fontkit.create(buffer);
-    setFont(font as fontkit.Font);
-  } catch (error) {
-    console.error("Error loading font", error);
-    // TODO: show snackbar, disable loading of initial text, possibly try loading other font
-  }
-};
-
 class LayoutTree {
   public root: LayoutNode;
 
@@ -58,7 +54,7 @@ class LayoutTree {
     this.root = new LayoutNode(0, Infinity);
   }
 
-  update(start: number, end: number, layoutInfo: LayoutInfo) {
+  update(start: number, end: number, layoutInfo: RenderItem[]) {
     this.root.update(start, end, layoutInfo);
   }
 
@@ -70,24 +66,90 @@ class LayoutTree {
 class LayoutNode {
   public start: number;
   public end: number;
-  public left: number | null;
-  public right: number | null;
-  public layoutInfo: LayoutInfo | null;
+  public left: LayoutNode | null;
+  public right: LayoutNode | null;
+  public layoutInfo: RenderItem[] | null;
+  public max: number;
 
-  constructor(start: number, end: number) {
+  constructor(
+    start: number,
+    end: number,
+    layoutInfo: RenderItem[] | null = null
+  ) {
     this.start = start;
     this.end = end;
     this.left = null;
     this.right = null;
-    this.layoutInfo = null;
+    this.layoutInfo = layoutInfo ? layoutInfo : null;
+    this.max = end; // Helps in quickly determining if a range intersects this node
   }
 
-  update(start: number, end: number, layoutInfo: LayoutInfo) {
-    // Implementation to update the tree
+  update(start: number, end: number, layoutInfo: RenderItem[]) {
+    // If the update range is completely outside this node's range, do nothing
+    if (end <= this.start || start >= this.end) {
+      return;
+    }
+
+    // If this node is completely contained in the update range, update this node
+    if (start <= this.start && end >= this.end) {
+      this.layoutInfo = layoutInfo;
+      return;
+    }
+
+    // If this node is a leaf and partially overlaps, split it
+    if (!this.left && !this.right) {
+      this.split();
+    }
+
+    // Recurse on children
+    if (this.left) {
+      this.left.update(start, end, layoutInfo);
+    }
+    if (this.right) {
+      this.right.update(start, end, layoutInfo);
+    }
+
+    // Update max value
+    this.max = Math.max(
+      this.left ? this.left.max : this.end,
+      this.right ? this.right.max : this.end
+    );
   }
 
-  query(start: number, end: number) {
-    // Implementation to query the tree
+  query(start: number, end: number): LayoutNode[] {
+    // If the query range is completely outside this node's range, return empty array
+    if (end <= this.start || start >= this.max) {
+      return [];
+    }
+
+    // If this node is a leaf, return its layout info
+    if (!this.left && !this.right) {
+      // return [
+      //   { start: this.start, end: this.end, layoutInfo: this.layoutInfo },
+      // ];
+      return [new LayoutNode(this.start, this.end, this.layoutInfo)];
+    }
+
+    // Recurse on children
+    let result: LayoutNode[] = [];
+    if (this.left) {
+      result = result.concat(this.left.query(start, end));
+    }
+    if (this.right) {
+      result = result.concat(this.right.query(start, end));
+    }
+
+    return result;
+  }
+
+  split() {
+    const mid = Math.floor((this.start + this.end) / 2);
+    this.left = new LayoutNode(this.start, mid);
+    this.right = new LayoutNode(mid, this.end);
+    if (this.layoutInfo) {
+      this.left.layoutInfo = this.layoutInfo;
+      this.right.layoutInfo = this.layoutInfo;
+    }
   }
 }
 
@@ -98,11 +160,14 @@ class FormattedPage {
   public layout: LayoutTree;
   public size: DocumentSize;
 
-  constructor(size: DocumentSize) {
+  public fontData: fontkit.Font;
+
+  constructor(size: DocumentSize, fontData: fontkit.Font) {
     this.content = new ComponentRope("");
     this.formatting = new IntervalTree();
     this.layout = new LayoutTree();
     this.size = size;
+    this.fontData = fontData;
   }
 
   insert(index: number, text: string, format: Style) {
@@ -123,21 +188,13 @@ class FormattedPage {
   adjustFormatting(index: number, length: number) {
     // this.formatting.forEach([index, Infinity], (interval: Interval) => {
     // TODO: optimize
-    this.formatting.forEach((interval: Interval) => {
-      if (interval[0] >= index) {
-        this.formatting.remove(interval);
-        this.formatting.insert([
-          interval[0] + length,
-          interval[1] + length,
-          //   interval[2],
-        ]);
-      } else if (interval[1] > index) {
-        this.formatting.remove(interval);
-        this.formatting.insert([
-          interval[0],
-          interval[1] + length,
-          //   interval[2],
-        ]);
+    this.formatting.forEach((key: [number, number], value) => {
+      if (key[0] >= index) {
+        this.formatting.remove(key);
+        this.formatting.insert([key[0] + length, key[1] + length], value);
+      } else if (key[1] > index) {
+        this.formatting.remove(key);
+        this.formatting.insert([key[0], key[1] + length], value);
       }
     });
   }
@@ -150,15 +207,18 @@ class FormattedPage {
 
   mergeTextAndFormatting(
     text: string,
-    formats: SearchOutput<any>,
+    formats: SearchOutput<Style>,
     offset: number
   ) {
-    let result = [];
+    let result: FormattedText[] = [];
     let currentIndex = 0;
 
     formats.sort((a, b) => a[0] - b[0]);
 
-    for (let [start, end, format] of formats) {
+    for (let [interval, format] of formats) {
+      let start = interval[0];
+      let end = interval[1];
+
       start = Math.max(start - offset, 0);
       end = Math.min(end - offset, text.length);
 
@@ -184,8 +244,12 @@ class FormattedPage {
     this.layout.update(start, end, layoutInfo);
   }
 
-  calculateLayout(text: string, formats: any, offset: number) {
-    let layoutInfo = [];
+  calculateLayout(
+    text: string,
+    formats: SearchOutput<Style>,
+    offset: number
+  ): RenderItem[] {
+    let layoutInfo: RenderItem[] = [];
     let currentX = 0;
     let currentY = 0;
     let lineHeight = 0;
@@ -193,11 +257,14 @@ class FormattedPage {
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
       const format = this.getFormatAtIndex(i, formats);
-      const fontData = this.getFontData(format.fontFamily);
       const style = { ...defaultStyle, fontSize: format.fontSize };
 
-      const { width, height } = getCharacterBoundingBox(fontData, char, style);
-      const capHeight = getCapHeightPx(style.fontSize);
+      const { width, height } = getCharacterBoundingBox(
+        this.fontData,
+        char,
+        style
+      );
+      const capHeight = getCapHeightPx(this.fontData, style.fontSize);
 
       // Check if we need to wrap to the next line
       if (currentX + width > this.size.width) {
@@ -223,12 +290,20 @@ class FormattedPage {
     return layoutInfo;
   }
 
-  getFormatAtIndex(index: number, formats) {
-    // Find the applicable format for the given index
-  }
+  getFormatAtIndex(index: number, formats: SearchOutput<Style>): Style {
+    // Find the last format that starts before or at the given index
+    const applicableFormat = formats.reduce(
+      (prev, curr) => {
+        const [start, end, style] = curr;
+        if (start <= index && start >= prev[0] && end > index) {
+          return curr;
+        }
+        return prev;
+      },
+      [-1, -1, defaultStyle]
+    );
 
-  getFontData(fontFamily) {
-    // Retrieve or load font data for the given font family
+    return applicableFormat[2];
   }
 }
 
@@ -268,30 +343,38 @@ const getCapHeightPx = (fontData: fontkit.Font, fontSize: number) => {
   );
 };
 
-class MultiPageEditor {
+export class MultiPageEditor {
   public pages: FormattedPage[];
   public size: DocumentSize;
-  public visibleLines: any;
+  public visibleLines: number;
   public scrollPosition: number;
+  public fontData: fontkit.Font;
 
-  constructor(size: DocumentSize, visibleLines: any) {
-    this.pages = [new FormattedPage(size)];
+  constructor(
+    size: DocumentSize,
+    visibleLines: number,
+    fontData: fontkit.Font
+  ) {
+    this.pages = [new FormattedPage(size, fontData)];
     this.size = size; // Height of a page in characters or pixels
     this.visibleLines = visibleLines;
     this.scrollPosition = 0;
+    this.fontData = fontData;
   }
 
+  // run on scroll?
   renderVisible() {
     const startIndex = this.scrollPosition * this.size.height;
     const endIndex = startIndex + this.visibleLines * this.size.height;
     const formattedText = this.getFormattedText(startIndex, endIndex);
     const layout = this.getLayoutInfo(startIndex, endIndex);
 
+    // set to React via supplied state setter?
     return this.combineTextAndLayout(formattedText, layout);
   }
 
   getLayoutInfo(start: number, end: number) {
-    let result = [];
+    let result: LayoutNode[] = [];
     let currentIndex = start;
     let startPage = this.getPageIndexForGlobalIndex(start);
     let endPage = this.getPageIndexForGlobalIndex(end);
@@ -309,8 +392,52 @@ class MultiPageEditor {
     return result;
   }
 
-  combineTextAndLayout(formattedText, layout) {
-    // Combine formatted text with layout information for rendering
+  combineTextAndLayout(
+    formattedText: FormattedText[],
+    layout: LayoutNode[]
+  ): RenderItem[] {
+    let renderItems: RenderItem[] = [];
+    let textIndex = 0;
+
+    for (const layoutItem of layout) {
+      const { start, end, layoutInfo } = layoutItem;
+
+      if (!layoutInfo) {
+        return [];
+      }
+
+      for (let i = 0; i < layoutInfo.length; i++) {
+        const charLayout = layoutInfo[i];
+        let format: Style | undefined | null;
+
+        // Find the corresponding formatted text
+        while (textIndex < formattedText.length) {
+          const textItem = formattedText[textIndex];
+          if (start + i < textItem.text.length) {
+            format = textItem.format;
+            break;
+          }
+          textIndex++;
+        }
+
+        if (!format) {
+          console.warn(`No format found for character at index ${start + i}`);
+          continue;
+        }
+
+        renderItems.push({
+          char: formattedText[textIndex].text[start + i - textIndex],
+          x: charLayout.x,
+          y: charLayout.y,
+          width: charLayout.width,
+          height: charLayout.height,
+          capHeight: charLayout.capHeight,
+          format: format,
+        });
+      }
+    }
+
+    return renderItems;
   }
 
   insert(globalIndex: number, text: string, format: Style) {
@@ -324,18 +451,22 @@ class MultiPageEditor {
   rebalancePages(startPageIndex: number) {
     for (let i = startPageIndex; i < this.pages.length; i++) {
       const currentPage = this.pages[i];
-      const nextPage = this.pages[i + 1] || new FormattedPage(this.size);
+      const nextPage =
+        this.pages[i + 1] || new FormattedPage(this.size, this.fontData);
 
       while (currentPage.content.length > this.size.height) {
         const overflow = currentPage.content.length - this.size.height;
-        const overflowText = currentPage.content.slice(-overflow).join("");
+        // const overflowText = currentPage.content.slice(-overflow).join("");
+        const overflowText = currentPage.content.substring(
+          currentPage.content.length - overflow
+        );
         const overflowFormatting = currentPage.formatting.search([
           this.size.height,
           Infinity,
         ]);
 
         currentPage.delete(this.size.height, currentPage.content.length);
-        nextPage.insert(0, overflowText, overflowFormatting);
+        nextPage.insert(0, overflowText, overflowFormatting[1]);
       }
 
       if (nextPage.content.length > 0 && i + 1 >= this.pages.length) {
@@ -364,7 +495,7 @@ class MultiPageEditor {
   }
 
   getFormattedText(startIndex: number, endIndex: number) {
-    let result = [];
+    let result: FormattedText[] = [];
     let currentIndex = startIndex;
     let startPage = this.getPageIndexForGlobalIndex(startIndex);
     let endPage = this.getPageIndexForGlobalIndex(endIndex);
