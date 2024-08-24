@@ -1,6 +1,10 @@
 "use client";
 
-import { MultiPageEditor, useMultiPageRTE } from "@/hooks/useMultiPageRTE";
+import {
+  defaultStyle,
+  MultiPageEditor,
+  useMultiPageRTE,
+} from "@/hooks/useMultiPageRTE";
 import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Rect, Stage, Text } from "react-konva";
 import * as fontkit from "fontkit";
@@ -56,7 +60,11 @@ export default function FullRTE({ markdown = "" }) {
 
   useEffect(() => {
     if (fontData) {
+      console.info("fontdata loaded, intializing editor");
       const multiPageEditor = new MultiPageEditor(mainTextSize, 100, fontData);
+      multiPageEditor.insert(0, "Hello World", defaultStyle);
+      const renderable = multiPageEditor.renderVisible();
+      console.info("renderable: ", renderable);
     }
   }, [fontData]);
 
