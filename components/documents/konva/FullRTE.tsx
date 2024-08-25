@@ -3,6 +3,7 @@
 import {
   defaultStyle,
   MultiPageEditor,
+  RenderItem,
   useMultiPageRTE,
 } from "@/hooks/useMultiPageRTE";
 import { useEffect, useRef, useState } from "react";
@@ -31,6 +32,7 @@ const loadFont = async (setFont: (font: fontkit.Font) => void) => {
 export default function FullRTE({ markdown = "" }) {
   const stageRef = useRef(null);
   const [fontData, setFontData] = useState(null);
+  const [masterJson, setMasterJson] = useState<RenderItem[]>([]);
 
   const pxPerIn = 96;
   const marginSizeIn = {
@@ -62,131 +64,130 @@ export default function FullRTE({ markdown = "" }) {
     if (fontData) {
       console.info("fontdata loaded, intializing editor");
       const multiPageEditor = new MultiPageEditor(mainTextSize, 100, fontData);
-      multiPageEditor.insert(0, "Hello World", defaultStyle);
+      multiPageEditor.insert(0, markdown, defaultStyle);
       const renderable = multiPageEditor.renderVisible();
       console.info("renderable: ", renderable);
+      setMasterJson(renderable);
     }
   }, [fontData]);
 
   const {} = useMultiPageRTE(markdown, mainTextSize);
 
-  return <>RTE</>;
+  console.info("masterJson", masterJson);
 
-  //   console.info("masterJson", masterJson);
+  return (
+    <>
+      <Stage
+        ref={stageRef}
+        width={documentSize.width}
+        // height={documentSize.height * Object.keys(jsonByPage).length}
+        height={documentSize.height}
+        // onMouseDown={handleMouseDown}
+        // onMousemove={handleMouseMove}
+        // onMouseup={handleMouseUp}
+        // onMouseDown={handleCanvasClick}
+      >
+        {/* <Layer>
+            {Object.keys(jsonByPage).map((key, i) => {
+              const masterJson = jsonByPage[key];
 
-  //   return (
-  //     <>
-  //       <Stage
-  //         ref={stageRef}
-  //         width={documentSize.width}
-  //         height={documentSize.height * Object.keys(jsonByPage).length}
-  //         // height={documentSize.height}
-  //         // onMouseDown={handleMouseDown}
-  //         // onMousemove={handleMouseMove}
-  //         // onMouseup={handleMouseUp}
-  //         // onMouseDown={handleCanvasClick}
-  //       >
-  //         <Layer>
-  //           {Object.keys(jsonByPage).map((key, i) => {
-  //             const masterJson = jsonByPage[key];
+              return (
+                <>
+                  <Rect
+                    x={0}
+                    y={documentSize.height * i}
+                    width={documentSize.width}
+                    height={documentSize.height}
+                    fill="#e5e5e5"
+                  />
+                  <Rect
+                    x={marginSize.x}
+                    y={documentSize.height * i + marginSize.y}
+                    width={mainTextSize.width}
+                    height={mainTextSize.height}
+                    fill="#fff"
+                    onMouseDown={handleCanvasClick}
+                  />
+                  <Group
+                    x={marginSize.x}
+                    y={documentSize.height * i + marginSize.y}
+                  >
+                    {masterJson.map((charText, i) => {
+                      const randomColor = `#${Math.floor(
+                        Math.random() * 16777215
+                      ).toString(16)}`;
 
-  //             return (
-  //               <>
-  //                 <Rect
-  //                   x={0}
-  //                   y={documentSize.height * i}
-  //                   width={documentSize.width}
-  //                   height={documentSize.height}
-  //                   fill="#e5e5e5"
-  //                 />
-  //                 <Rect
-  //                   x={marginSize.x}
-  //                   y={documentSize.height * i + marginSize.y}
-  //                   width={mainTextSize.width}
-  //                   height={mainTextSize.height}
-  //                   fill="#fff"
-  //                   onMouseDown={handleCanvasClick}
-  //                 />
-  //                 <Group
-  //                   x={marginSize.x}
-  //                   y={documentSize.height * i + marginSize.y}
-  //                 >
-  //                   {masterJson.map((charText, i) => {
-  //                     const randomColor = `#${Math.floor(
-  //                       Math.random() * 16777215
-  //                     ).toString(16)}`;
-
-  //                     return (
-  //                       <>
-  //                         <Text
-  //                           key={`${charText.characterId}-${i}`}
-  //                           id={charText.characterId}
-  //                           x={charText?.position?.x}
-  //                           y={charText?.position?.y}
-  //                           text={charText.character}
-  //                           fontSize={charText.style.fontSize}
-  //                           fontFamily={charText.style.fontFamily}
-  //                           fontStyle={
-  //                             charText.style.italic ? "italic" : "normal"
-  //                           }
-  //                           fill={charText.style.color}
-  //                           onClick={handleTextClick}
-  //                         />
-  //                       </>
-  //                     );
-  //                   })}
-  //                 </Group>
-  //               </>
-  //             );
-  //           })}
-  //         </Layer>
-  //         {/* <Layer>
-  //           <Rect
-  //             x={0}
-  //             y={0}
-  //             width={documentSize.width}
-  //             height={documentSize.height}
-  //             fill="#e5e5e5"
-  //           />
-  //           <Rect
-  //             x={marginSize.x}
-  //             y={0}
-  //             width={mainTextSize.width}
-  //             height={mainTextSize.height}
-  //             fill="#fff"
-  //             onMouseDown={handleCanvasClick}
-  //           />
-  //           {masterJson.map((charText, i) => {
-  //             return (
-  //               <>
-  //                 <Text
-  //                   key={`${charText.characterId}-${i}`}
-  //                   id={charText.characterId}
-  //                   x={charText?.position?.x}
-  //                   y={charText?.position?.y}
-  //                   text={charText.character}
-  //                   fontSize={charText.style.fontSize}
-  //                   fontFamily={charText.style.fontFamily}
-  //                   fontStyle={charText.style.italic ? "italic" : "normal"}
-  //                   fill={charText.style.color}
-  //                   onClick={handleTextClick}
-  //                 />
-  //               </>
-  //             );
-  //           })}
-  //         </Layer> */}
-  //       </Stage>
-  //       <style jsx>{`
-  //         @font-face {
-  //           font-family: "Inter";
-  //           src: url("/fonts/Inter-Regular.ttf");
-  //           font-weight: normal;
-  //           font-style: normal;
-  //         }
-  //       `}</style>
-  //       <div className="preloadFont" style={{ fontFamily: "Inter" }}>
-  //         .
-  //       </div>
-  //     </>
-  //   );
+                      return (
+                        <>
+                          <Text
+                            key={`${charText.characterId}-${i}`}
+                            id={charText.characterId}
+                            x={charText?.position?.x}
+                            y={charText?.position?.y}
+                            text={charText.character}
+                            fontSize={charText.style.fontSize}
+                            fontFamily={charText.style.fontFamily}
+                            fontStyle={
+                              charText.style.italic ? "italic" : "normal"
+                            }
+                            fill={charText.style.color}
+                            onClick={handleTextClick}
+                          />
+                        </>
+                      );
+                    })}
+                  </Group>
+                </>
+              );
+            })}
+          </Layer> */}
+        <Layer>
+          <Rect
+            x={0}
+            y={0}
+            width={documentSize.width}
+            height={documentSize.height}
+            fill="#FFFFFF"
+          />
+          {/* <Rect
+            x={marginSize.x}
+            y={0}
+            width={mainTextSize.width}
+            height={mainTextSize.height}
+            fill="#fff"
+            //   onMouseDown={handleCanvasClick}
+          /> */}
+          {masterJson.map((charText, i) => {
+            return (
+              <>
+                <Text
+                  // key={`${charText.characterId}-${i}`}
+                  // id={charText.characterId}
+                  x={charText?.x}
+                  y={charText?.y}
+                  text={charText.char}
+                  fontSize={charText.format.fontSize}
+                  fontFamily={charText.format.fontFamily}
+                  fontStyle={charText.format.italic ? "italic" : "normal"}
+                  fill={charText.format.color}
+                  // onClick={handleTextClick}
+                />
+              </>
+            );
+          })}
+        </Layer>
+      </Stage>
+      <style jsx>{`
+        @font-face {
+          font-family: "Inter";
+          src: url("/fonts/Inter-Regular.ttf");
+          font-weight: normal;
+          font-style: normal;
+        }
+      `}</style>
+      <div className="preloadFont" style={{ fontFamily: "Inter" }}>
+        .
+      </div>
+    </>
+  );
 }

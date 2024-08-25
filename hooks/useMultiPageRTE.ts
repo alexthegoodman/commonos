@@ -19,7 +19,7 @@ interface FormattedText {
   format: Style | null;
 }
 
-interface RenderItem {
+export interface RenderItem {
   char: string;
   x: number;
   y: number;
@@ -36,6 +36,7 @@ export type Style = {
   fontFamily: string;
   italic: boolean;
   underline: boolean;
+  isLineBreak: boolean;
 };
 
 export type DocumentSize = {
@@ -51,6 +52,7 @@ export const defaultStyle: Style = {
   fontFamily: "Inter",
   italic: false,
   underline: false,
+  isLineBreak: false,
 };
 
 class LayoutTree {
@@ -91,9 +93,8 @@ class LayoutNode {
   }
 
   update(start: number, end: number, layoutInfo: RenderItem[]) {
-    console.info("LayoutNode update: ", start, end, layoutInfo);
+    // console.info("LayoutNode update: ", start, end, layoutInfo);
 
-    // best here?
     this.layoutInfo = layoutInfo;
 
     // If the update range is completely outside this node's range, do nothing
@@ -106,7 +107,7 @@ class LayoutNode {
       return;
     }
 
-    console.info("working on update...");
+    // console.info("working on update...");
 
     // Recurse on children
     if (this.left) {
@@ -118,6 +119,7 @@ class LayoutNode {
 
     // If this node is a leaf and partially overlaps, split it
     if (!this.left && !this.right) {
+      // console.info("split");
       this.split();
     }
 
@@ -131,6 +133,7 @@ class LayoutNode {
   query(start: number, end: number): LayoutNode[] {
     // If the query range is completely outside this node's range, return empty array
     if (end <= this.start || start >= this.max) {
+      // console.warn("node query out of range", end, this.start, start, this.max);
       return [];
     }
 
@@ -151,7 +154,7 @@ class LayoutNode {
       result = result.concat(this.right.query(start, end));
     }
 
-    console.info("LayoutNode query: ", result);
+    // console.info("LayoutNode query: ", result);
 
     return result;
   }
@@ -160,11 +163,30 @@ class LayoutNode {
     const mid = Math.floor((this.start + this.end) / 2);
     this.left = new LayoutNode(this.start, mid);
     this.right = new LayoutNode(mid, this.end);
+
     if (this.layoutInfo) {
-      console.info("split set layoutInfo", this.layoutInfo);
+      // console.info("split set layoutInfo", this.layoutInfo);
       this.left.layoutInfo = this.layoutInfo;
       this.right.layoutInfo = this.layoutInfo;
     }
+
+    // if (this.layoutInfo) {
+    //   // Find the index where we should split the layoutInfo
+    //   const splitIndex = this.layoutInfo.findIndex((item) => item.x >= mid);
+
+    //   if (splitIndex !== -1) {
+    //     // Split the layoutInfo between left and right nodes
+    //     this.left.layoutInfo = this.layoutInfo.slice(0, splitIndex);
+    //     this.right.layoutInfo = this.layoutInfo.slice(splitIndex);
+    //   } else {
+    //     // If all items are in the left half
+    //     this.left.layoutInfo = this.layoutInfo;
+    //     this.right.layoutInfo = [];
+    //   }
+    // }
+
+    // Clear the layoutInfo from this node as it's no longer a leaf
+    // this.layoutInfo = null;
   }
 }
 
@@ -186,14 +208,60 @@ class FormattedPage {
   }
 
   insert(index: number, text: string, format: Style) {
-    this.content.insert(index, text);
-    if (format) {
-      // this.formatting.insert([index, index + text.length], format);
-      this.formatting.insert(new Interval(index, index + text.length), format);
-    }
-    this.adjustFormatting(index, text.length);
+    const lines = text.split(/\r?\n/);
+    let currentIndex = index;
 
-    console.info("inserted to page: ", this.content, this.formatting);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // console.info(
+      //   "check length",
+      //   this.content.length,
+      //   currentIndex,
+      //   line.length
+      // );
+
+      currentIndex = Math.min(currentIndex, this.content.length);
+
+      if (line.length > 0) {
+        // Insert the line
+        this.content.insert(currentIndex, line);
+        // this.updateFormatting(currentIndex, line.length, format);
+        this.formatting.insert(
+          new Interval(currentIndex, currentIndex + line.length),
+          format
+        );
+      }
+
+      // let addLength = line.length;
+      // if (currentIndex + addLength > this.content.length) {
+      //   addLength -= 1;
+      // }
+
+      currentIndex += line.length;
+
+      // If this isn't the last line, insert a line break
+      // console.info("i", i, lines.length);
+      if (i < lines.length - 1) {
+        this.insertLineBreak(currentIndex);
+        currentIndex++;
+      }
+    }
+
+    this.updateLayout(index, currentIndex);
+  }
+
+  insertLineBreak(index: number) {
+    // Insert a special character or object to represent a line break
+    index = Math.min(index, this.content.length);
+    // console.info("inserting line break");
+    this.content.insert(index, "\n");
+    // this.content.insert(index + 1, "\n");
+    // this.updateFormatting(index, 1, { isLineBreak: true });
+    this.formatting.insert(new Interval(index, index + 1), {
+      ...defaultStyle,
+      isLineBreak: true,
+    });
   }
 
   delete(start: number, end: number) {
@@ -228,6 +296,7 @@ class FormattedPage {
       interval: key,
       format: value,
     })) as unknown as MappedFormat[];
+    // console.info("also getFormattedText", formats);
     return this.mergeTextAndFormatting(text, formats, start);
   }
 
@@ -242,13 +311,15 @@ class FormattedPage {
     // formats.sort((a, b) => a[0] - b[0]);
     formats.sort((a, b) => a.interval.low - a.interval.low);
 
-    console.info("formats", formats);
+    // console.info("formats", formats);
 
     for (let { interval, format } of formats) {
       // let start = interval[0];
       // let end = interval[1];
       let start = interval.low;
       let end = interval.high;
+
+      // if format interval is 0 and 0, it will continue to pull from 0...
 
       start = Math.max(start - offset, 0);
       end = Math.min(end - offset, text.length);
@@ -275,25 +346,31 @@ class FormattedPage {
       format: value,
     })) as unknown as MappedFormat[];
     const layoutInfo = this.calculateLayout(text, formats, start);
-    console.info("updateLayout: ", layoutInfo);
+    // console.info("updateLayout: ", layoutInfo);
     this.layout.update(start, end, layoutInfo);
   }
 
-  calculateLayout(
-    text: string,
-    formats: MappedFormat[],
-    offset: number
-  ): RenderItem[] {
-    let layoutInfo: RenderItem[] = [];
+  calculateLayout(text: string, formats: MappedFormat[], offset: number) {
+    let layoutInfo = [];
     let currentX = 0;
     let currentY = 0;
     let lineHeight = 0;
 
-    console.info("calculate layout: ", text, formats, offset);
+    // console.info("calculateLayout", offset);
 
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
-      const format = this.getFormatAtIndex(i, formats);
+      const format = this.getFormatAtIndex(i + offset, formats);
+
+      if (char === "\n" || format.isLineBreak) {
+        // Move to the next line
+        currentX = 0;
+        currentY += lineHeight;
+        lineHeight = 0;
+        continue;
+      }
+
+      // const fontData = this.getFontData(format.fontFamily);
       const style = { ...defaultStyle, fontSize: format.fontSize };
 
       const { width, height } = getCharacterBoundingBox(
@@ -312,7 +389,7 @@ class FormattedPage {
 
       layoutInfo.push({
         char,
-        x: currentX,
+        x: currentX ? currentX + letterSpacing : 0,
         y: currentY,
         width,
         height,
@@ -320,11 +397,11 @@ class FormattedPage {
         format,
       });
 
-      currentX += width;
+      currentX += width + letterSpacing;
       lineHeight = Math.max(lineHeight, capHeight);
     }
 
-    console.info("layout info: ", layoutInfo);
+    // console.info("layoutinfo", layoutInfo);
 
     return layoutInfo;
   }
@@ -406,27 +483,24 @@ export class MultiPageEditor {
   }
 
   // run on scroll?
+  // TODO: account for newlines?
   renderVisible() {
     const startIndex = this.scrollPosition * this.size.height;
+    // const endIndex = Math.round(
+    //   startIndex + this.visibleLines * this.size.height
+    // );
     const endIndex = Math.round(
-      startIndex + this.visibleLines * this.size.height
+      startIndex + this.visibleLines * 26 // replace with lineheight?
     );
 
-    // testing
-    this.pages[0].updateLayout(startIndex, endIndex);
+    // runs during insert(), before renderVisible()
+    // this.pages[0].updateLayout(startIndex, endIndex);
 
     const formattedText = this.getFormattedText(startIndex, endIndex);
     const layout = this.getLayoutInfo(startIndex, endIndex);
 
-    console.info(
-      "render visible: ",
-      startIndex,
-      endIndex,
-      formattedText,
-      layout
-    );
+    // console.info("render visible: ", startIndex, endIndex, layout);
 
-    // set to React via supplied state setter?
     return this.combineTextAndLayout(formattedText, layout);
   }
 
@@ -434,10 +508,12 @@ export class MultiPageEditor {
     let pageIndex = this.getPageIndexForGlobalIndex(globalIndex);
     let localIndex = this.getLocalIndex(globalIndex, pageIndex);
 
-    console.info("insert indexes: ", pageIndex, localIndex);
+    // console.info("insert indexes: ", pageIndex, localIndex);
 
     this.pages[pageIndex].insert(localIndex, text, format);
-    this.rebalancePages(pageIndex);
+
+    // TODO: assure functioning
+    // this.rebalancePages(pageIndex);
   }
 
   getLayoutInfo(start: number, end: number) {
@@ -446,14 +522,15 @@ export class MultiPageEditor {
     let startPage = this.getPageIndexForGlobalIndex(start);
     let endPage = this.getPageIndexForGlobalIndex(end);
 
-    console.info("getLayoutInfo: ", startPage, endPage);
+    // console.info("getLayoutInfo: ", startPage, endPage);
 
     // Optimization for single-page queries
     if (startPage === endPage) {
       const page = this.pages[startPage];
       const pageStartIndex = this.getLocalIndex(start, startPage);
       const pageEndIndex = this.getLocalIndex(end, startPage);
-      return page.layout.query(pageStartIndex, pageEndIndex);
+      const queryResult = page.layout.query(pageStartIndex, pageEndIndex);
+      return queryResult;
     }
 
     for (let i = startPage; i <= endPage; i++) {
@@ -498,12 +575,13 @@ export class MultiPageEditor {
         }
 
         if (!format) {
-          console.warn(`No format found for character at index ${start + i}`);
+          // console.warn(`No format found for character at index ${start + i}`);
           continue;
         }
 
         renderItems.push({
-          char: formattedText[textIndex].text[start + i - textIndex],
+          // char: formattedText[textIndex].text[start + i - textIndex],
+          char: charLayout.char,
           x: charLayout.x,
           y: charLayout.y,
           width: charLayout.width,
@@ -572,6 +650,8 @@ export class MultiPageEditor {
     let currentIndex = startIndex;
     let startPage = this.getPageIndexForGlobalIndex(startIndex);
     let endPage = this.getPageIndexForGlobalIndex(endIndex);
+
+    // console.info("getFormattedText", startPage, endPage);
 
     for (let i = startPage; i <= endPage; i++) {
       const page = this.pages[i];
