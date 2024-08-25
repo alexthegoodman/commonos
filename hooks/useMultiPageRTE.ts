@@ -5,6 +5,8 @@ import IntervalTree, {
   SearchOutput,
 } from "@flatten-js/interval-tree";
 import * as fontkit from "fontkit";
+import { KonvaEventObject } from "konva/lib/Node";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 interface MappedFormat {
   interval: {
@@ -27,6 +29,7 @@ export interface RenderItem {
   height: number;
   capHeight: number;
   format: Style;
+  page: number;
 }
 
 export type Style = {
@@ -54,6 +57,38 @@ export const defaultStyle: Style = {
   underline: false,
   isLineBreak: false,
 };
+
+const blobToBuffer = async (blob: Blob) => {
+  const arrayBuffer = await blob.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  return buffer;
+};
+
+const loadFont = async (setFont: (font: fontkit.Font) => void) => {
+  try {
+    const response = await fetch("/fonts/Inter-Regular.ttf");
+    const blob = await response.blob();
+    const buffer = await blobToBuffer(blob);
+    const font = fontkit.create(buffer);
+    setFont(font as fontkit.Font);
+  } catch (error) {
+    console.error("Error loading font", error);
+    // TODO: show snackbar, disable loading of initial text, possibly try loading other font
+  }
+};
+
+// extend window type
+declare global {
+  interface Window {
+    // __canvasRTEEditorActive: boolean;
+    //   __canvasRTEInsertCharacterId: string | null;
+    __canvasRTEInsertCharacterIndex: number;
+  }
+}
+
+// window.__canvasRTEEditorActive = false;
+//   window.__canvasRTEInsertCharacterId = null;
+window.__canvasRTEInsertCharacterIndex = 0;
 
 class LayoutTree {
   public root: LayoutNode;
@@ -185,7 +220,7 @@ class LayoutNode {
     //   }
     // }
 
-    // Clear the layoutInfo from this node as it's no longer a leaf
+    // // Clear the layoutInfo from this node as it's no longer a leaf
     // this.layoutInfo = null;
   }
 }
@@ -196,15 +231,21 @@ class FormattedPage {
   public formatting: IntervalTree;
   public layout: LayoutTree;
   public size: DocumentSize;
+  public pageNumber: number;
 
   public fontData: fontkit.Font;
 
-  constructor(size: DocumentSize, fontData: fontkit.Font) {
+  constructor(
+    size: DocumentSize,
+    fontData: fontkit.Font,
+    pageNumber: number = 1
+  ) {
     this.content = new ComponentRope("");
     this.formatting = new IntervalTree();
     this.layout = new LayoutTree();
     this.size = size;
     this.fontData = fontData;
+    this.pageNumber = pageNumber;
   }
 
   insert(index: number, text: string, format: Style) {
@@ -214,14 +255,14 @@ class FormattedPage {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
 
+      currentIndex = Math.min(currentIndex, this.content.length);
+
       // console.info(
       //   "check length",
       //   this.content.length,
       //   currentIndex,
       //   line.length
       // );
-
-      currentIndex = Math.min(currentIndex, this.content.length);
 
       if (line.length > 0) {
         // Insert the line
@@ -232,6 +273,8 @@ class FormattedPage {
           format
         );
       }
+
+      // console.info("after length", this.content.length);
 
       // let addLength = line.length;
       // if (currentIndex + addLength > this.content.length) {
@@ -248,7 +291,8 @@ class FormattedPage {
       }
     }
 
-    this.updateLayout(index, currentIndex);
+    // this.updateLayout(index, currentIndex);
+    this.updateLayout(0, this.content.length);
   }
 
   insertLineBreak(index: number) {
@@ -266,7 +310,7 @@ class FormattedPage {
 
   delete(start: number, end: number) {
     const deleteLength = end - start;
-    this.content.remove(start, deleteLength);
+    this.content.remove(start, end);
     this.formatting.remove([start, end]);
     this.adjustFormatting(start, -deleteLength);
   }
@@ -345,22 +389,36 @@ class FormattedPage {
       interval: key,
       format: value,
     })) as unknown as MappedFormat[];
-    const layoutInfo = this.calculateLayout(text, formats, start);
-    // console.info("updateLayout: ", layoutInfo);
+    // console.info("updateLayout: ", text, formats, start);
+    const layoutInfo = this.calculateLayout(text, formats, start, 0);
+    // console.info("updateLayout: ", start, end, layoutInfo);
     this.layout.update(start, end, layoutInfo);
   }
 
-  calculateLayout(text: string, formats: MappedFormat[], offset: number) {
+  calculateLayout(
+    text: string,
+    formats: MappedFormat[],
+    offset: number,
+    pageNumber: number
+  ) {
     let layoutInfo = [];
     let currentX = 0;
     let currentY = 0;
     let lineHeight = 0;
 
-    // console.info("calculateLayout", offset);
+    let currentPageNumber = this.pageNumber;
+    const pageHeight = this.size.height; // Assuming you have a pageHeight property
+
+    console.info("calculateLayout", text);
 
     for (let i = 0; i < text.length; i++) {
       const char = text[i];
-      const format = this.getFormatAtIndex(i + offset, formats);
+      // const format = this.getFormatAtIndex(i + offset, formats);
+      const format = this.getFormatAtIndex(i, formats);
+
+      if (!format.fontSize) {
+        console.warn("no format on char?");
+      }
 
       if (char === "\n" || format.isLineBreak) {
         // Move to the next line
@@ -387,6 +445,14 @@ class FormattedPage {
         lineHeight = 0;
       }
 
+      // // Check again for new page after line break
+      console.info("check page ", currentY + capHeight, pageHeight);
+      if (currentY + capHeight > pageHeight) {
+        currentPageNumber++;
+        currentY = 0;
+        console.warn("new page", currentPageNumber);
+      }
+
       layoutInfo.push({
         char,
         x: currentX ? currentX + letterSpacing : 0,
@@ -395,6 +461,7 @@ class FormattedPage {
         height,
         capHeight,
         format,
+        page: currentPageNumber,
       });
 
       currentX += width + letterSpacing;
@@ -415,7 +482,7 @@ class FormattedPage {
         let start = interval.low;
         let end = interval.high;
 
-        if (start <= index && start >= prev.interval.low && end > index) {
+        if (start <= index && start >= prev.interval.high && end > index) {
           return curr;
         }
         return prev;
@@ -423,8 +490,40 @@ class FormattedPage {
       { interval: { low: -1, high: -1 }, format: defaultStyle }
     );
 
-    return applicableFormat.format;
+    // return applicableFormat.format;
+    // return applicableFormat.interval.low > 0
+    //   ? applicableFormat.format
+    //   : defaultStyle;
+    // testing
+    return defaultStyle;
   }
+
+  // getFormatAtIndex(index: number, formats: MappedFormat[]): Style {
+  //   // Sort formats by start index, then by end index (longer ranges first)
+  //   const sortedFormats = formats.sort((a, b) => {
+  //     if (a.interval.low !== b.interval.low) {
+  //       return a.interval.low - b.interval.low;
+  //     }
+  //     return b.interval.high - a.interval.high;
+  //   });
+
+  //   // Find the last format that includes the given index
+  //   const applicableFormat = sortedFormats.reduce(
+  //     (prev: MappedFormat | null, curr: MappedFormat) => {
+  //       const { interval, format } = curr;
+  //       let start = interval.low;
+  //       let end = interval.high;
+
+  //       if (start <= index && end > index) {
+  //         return curr;
+  //       }
+  //       return prev;
+  //     },
+  //     null
+  //   );
+
+  //   return applicableFormat ? applicableFormat.format : defaultStyle;
+  // }
 }
 
 const getCharacterBoundingBox = (
@@ -486,20 +585,23 @@ export class MultiPageEditor {
   // TODO: account for newlines?
   renderVisible() {
     const startIndex = this.scrollPosition * this.size.height;
-    // const endIndex = Math.round(
-    //   startIndex + this.visibleLines * this.size.height
-    // );
     const endIndex = Math.round(
-      startIndex + this.visibleLines * 26 // replace with lineheight?
+      startIndex + this.visibleLines * this.size.height
     );
-
-    // runs during insert(), before renderVisible()
-    // this.pages[0].updateLayout(startIndex, endIndex);
+    // const endIndex = Math.round(
+    //   startIndex + this.visibleLines * 26 // replace with lineheight?
+    // );
 
     const formattedText = this.getFormattedText(startIndex, endIndex);
     const layout = this.getLayoutInfo(startIndex, endIndex);
 
-    // console.info("render visible: ", startIndex, endIndex, layout);
+    console.info(
+      "render visible: ",
+      startIndex,
+      endIndex,
+      formattedText,
+      layout
+    );
 
     return this.combineTextAndLayout(formattedText, layout);
   }
@@ -508,12 +610,11 @@ export class MultiPageEditor {
     let pageIndex = this.getPageIndexForGlobalIndex(globalIndex);
     let localIndex = this.getLocalIndex(globalIndex, pageIndex);
 
-    // console.info("insert indexes: ", pageIndex, localIndex);
+    console.info("insert indexes: ", pageIndex, localIndex);
 
     this.pages[pageIndex].insert(localIndex, text, format);
 
-    // TODO: assure functioning
-    // this.rebalancePages(pageIndex);
+    this.rebalancePages(pageIndex);
   }
 
   getLayoutInfo(start: number, end: number) {
@@ -564,18 +665,27 @@ export class MultiPageEditor {
         const charLayout = layoutInfo[i];
         let format: Style | undefined | null;
 
-        // Find the corresponding formatted text
-        while (textIndex < formattedText.length) {
-          const textItem = formattedText[textIndex];
-          if (start + i < textItem.text.length) {
-            format = textItem.format;
-            break;
-          }
-          textIndex++;
-        }
+        // // Find the corresponding formatted text
+        // let x = 0;
+        // while (textIndex < formattedText.length) {
+        //   const textItem = formattedText[textIndex];
+        //   if (x < textItem.text.length) {
+        //     format = textItem.format;
+        //     break;
+        //   }
+        //   textIndex++;
+        //   x++;
+        // }
+        const textItem = formattedText[textIndex];
+
+        format = textItem.format;
 
         if (!format) {
           // console.warn(`No format found for character at index ${start + i}`);
+          continue;
+        }
+
+        if (!charLayout.x || !charLayout.y) {
           continue;
         }
 
@@ -588,8 +698,11 @@ export class MultiPageEditor {
           height: charLayout.height,
           capHeight: charLayout.capHeight,
           format: format,
+          page: charLayout.page,
         });
       }
+
+      textIndex++;
     }
 
     return renderItems;
@@ -601,8 +714,14 @@ export class MultiPageEditor {
       const nextPage =
         this.pages[i + 1] || new FormattedPage(this.size, this.fontData);
 
-      while (currentPage.content.length > this.size.height) {
-        const overflow = currentPage.content.length - this.size.height;
+      currentPage.pageNumber = i; // Update page number
+      nextPage.pageNumber = i + 1;
+
+      const pageHeight = this.size.height;
+
+      while (currentPage.content.length > pageHeight) {
+        const overflow = currentPage.content.length - pageHeight;
+        // const overflow = Math.abs(1000 - currentPage.content.length);
         // const overflowText = currentPage.content.slice(-overflow).join("");
         const overflowText = currentPage.content.substring(
           currentPage.content.length - overflow
@@ -615,7 +734,8 @@ export class MultiPageEditor {
           })
         );
 
-        currentPage.delete(this.size.height, currentPage.content.length);
+        currentPage.delete(pageHeight, currentPage.content.length);
+        // currentPage.delete(1000, currentPage.content.length);
         nextPage.insert(0, overflowText, overflowFormatting[1]);
       }
 
@@ -674,5 +794,209 @@ export const useMultiPageRTE = (
   initialMarkdown: string,
   mainTextSize: DocumentSize
 ) => {
-  return {};
+  const [fontData, setFontData] = useState(null);
+  const [masterJson, setMasterJson] = useState<RenderItem[]>([]);
+
+  // use ref to get up-to-date values in event listener
+  const [editorInstance, _setEditorInstance] = useState<MultiPageEditor | null>(
+    null
+  );
+  const editorInstanceRef = useRef(editorInstance);
+  const setEditorInstance = (editor: MultiPageEditor) => {
+    editorInstanceRef.current = editor;
+    _setEditorInstance(editor);
+  };
+
+  const [editorActive, _setEditorActive] = useState(false);
+  const editorActiveRef = useRef(editorActive);
+  const setEditorActive = (active: boolean) => {
+    editorActiveRef.current = active;
+    _setEditorActive(active);
+  };
+
+  useEffect(() => {
+    loadFont(setFontData);
+  }, []);
+
+  useEffect(() => {
+    if (fontData) {
+      console.info("fontdata loaded, intializing editor");
+
+      const multiPageEditor = new MultiPageEditor(mainTextSize, 100, fontData);
+      multiPageEditor.insert(0, initialMarkdown, defaultStyle);
+
+      const renderable = multiPageEditor.renderVisible();
+
+      console.info("renderable: ", renderable);
+
+      setEditorInstance(multiPageEditor);
+      setMasterJson(renderable);
+    }
+  }, [fontData]);
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    e.preventDefault();
+
+    if (editorActiveRef.current) {
+      // const characterId = uuidv4();
+
+      if (!window.__canvasRTEInsertCharacterIndex) {
+        console.info("trigger key with no cursor?");
+        return;
+      }
+
+      switch (e.key) {
+        case "Enter":
+          {
+            const character = "\n";
+
+            editorInstanceRef.current?.insert(
+              window.__canvasRTEInsertCharacterIndex,
+              character,
+              defaultStyle
+            );
+
+            window.__canvasRTEInsertCharacterIndex =
+              window.__canvasRTEInsertCharacterIndex + 1;
+          }
+          break;
+        case "Backspace":
+          {
+          }
+          break;
+        case "Delete":
+          {
+          }
+          break;
+        case "ArrowLeft":
+          {
+          }
+          break;
+        case "ArrowRight":
+          {
+          }
+          break;
+        case "ArrowUp":
+          {
+          }
+          break;
+        case "ArrowDown":
+          {
+          }
+          break;
+        case "Escape":
+          {
+            setEditorActive(false);
+          }
+          break;
+        case "Shift":
+          {
+          }
+          break;
+        case "Meta":
+          {
+          }
+          break;
+        case "Tab":
+          {
+            const type = "tab";
+            const character = "    ";
+
+            editorInstanceRef.current?.insert(
+              window.__canvasRTEInsertCharacterIndex,
+              character,
+              defaultStyle
+            );
+
+            window.__canvasRTEInsertCharacterIndex =
+              window.__canvasRTEInsertCharacterIndex + 1;
+          }
+          break;
+        default:
+          {
+            // any other character
+            const type = "character";
+            const character = e.key;
+
+            // console.info("char", character);
+
+            if (!editorActiveRef.current) {
+              console.error("No editor");
+            }
+
+            editorInstanceRef.current?.insert(
+              window.__canvasRTEInsertCharacterIndex,
+              character,
+              defaultStyle
+            );
+
+            window.__canvasRTEInsertCharacterIndex =
+              window.__canvasRTEInsertCharacterIndex + 1;
+          }
+          break;
+      }
+
+      const renderable = editorInstanceRef.current?.renderVisible();
+
+      if (renderable) {
+        setMasterJson(renderable);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (fontData) {
+      console.info("welcome to multi-page rte!");
+
+      window.addEventListener("keydown", handleKeydown);
+
+      return () => {
+        window.removeEventListener("keydown", handleKeydown);
+      };
+    }
+  }, [fontData]);
+
+  // when no text exists, will calculate at first character
+  const handleCanvasClick = (e: KonvaEventObject<MouseEvent>) => {
+    console.info("canvas click");
+
+    setEditorActive(true);
+  };
+
+  // set the insert index to this character
+  const handleTextClick = (e: KonvaEventObject<MouseEvent>) => {
+    console.info("text click");
+
+    const target = e.target;
+    const characterId = target.id();
+    const characterIndex = parseInt(characterId.split("-")[1]);
+
+    console.info("characterId", characterId, characterIndex);
+
+    const character = masterJson[characterIndex];
+
+    window.__canvasRTEInsertCharacterIndex = characterIndex;
+
+    setEditorActive(true);
+  };
+
+  const jsonByPage = useMemo(() => {
+    const pages = masterJson.reduce(
+      (acc, char) => {
+        // if (!char.page) return acc;
+        if (!acc[char.page]) {
+          acc[char.page] = [];
+        }
+
+        acc[char.page].push(char);
+
+        return acc;
+      },
+      {} as { [key: number]: RenderItem[] }
+    );
+
+    return pages;
+  }, [masterJson]);
+
+  return { masterJson, jsonByPage, handleCanvasClick, handleTextClick };
 };
