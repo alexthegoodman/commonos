@@ -28,6 +28,7 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Grid,
   IconButton,
@@ -694,7 +695,17 @@ export default function FlowEditor({ id, prompt }) {
                         </Box>
                       </Box>
                       <Box>
-                        <span>{tab.label}</span>
+                        <Box display="flex" flexDirection="row">
+                          <span>{tab.label}</span>
+                          {tab.beta ? (
+                            <Chip
+                              style={{ width: "65px", marginLeft: "5px" }}
+                              label="Beta"
+                            />
+                          ) : (
+                            <></>
+                          )}
+                        </Box>
                         <p>{tab.description}</p>
                       </Box>
                     </AppButton>

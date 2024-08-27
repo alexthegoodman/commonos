@@ -13,6 +13,7 @@ export const allTabs = [
     href: "/documents",
     badge: null,
     description: `Fully formatted documents with styling and visuals`,
+    beta: true,
   },
   {
     id: "slides",
@@ -20,6 +21,7 @@ export const allTabs = [
     href: "/slides",
     badge: null,
     description: `Beautiful presentations with shapes and text`,
+    beta: false,
   },
   {
     id: "sheets",
@@ -27,6 +29,7 @@ export const allTabs = [
     href: "/sheets",
     badge: null,
     description: `Spreadsheets with formulas, colors, formats, and more`,
+    beta: false,
   },
   {
     id: "drawings",
@@ -34,6 +37,7 @@ export const allTabs = [
     href: "/drawings",
     badge: null,
     description: `Browse your generated images`,
+    beta: false,
   },
   {
     id: "relationships",
@@ -41,6 +45,7 @@ export const allTabs = [
     href: "/relationships",
     badge: null,
     description: `CRM with kanban funnels and cross-app integrations`,
+    beta: false,
   },
   // {
   //   id: "analytics",
@@ -54,6 +59,7 @@ export const allTabs = [
     href: "/content",
     badge: null,
     description: `CMS with post types and custom fields`,
+    beta: false,
   },
   // {
   //   id: "send-email",
@@ -67,6 +73,7 @@ export const allTabs = [
     href: "/work-email",
     badge: null,
     description: `View your generated email templates`,
+    beta: false,
   },
   // {
   //   id: "rss",
