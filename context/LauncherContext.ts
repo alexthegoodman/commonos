@@ -12,30 +12,35 @@ export const allTabs = [
     label: "Documents",
     href: "/documents",
     badge: null,
+    description: `Fully formatted documents with styling and visuals`,
   },
   {
     id: "slides",
     label: "Slides",
     href: "/slides",
     badge: null,
+    description: `Beautiful presentations with shapes and text`,
   },
   {
     id: "sheets",
     label: "Sheets",
     href: "/sheets",
     badge: null,
+    description: `Spreadsheets with formulas, colors, formats, and more`,
   },
   {
     id: "drawings",
     label: "Drawings",
     href: "/drawings",
     badge: null,
+    description: `Browse your generated images`,
   },
   {
     id: "relationships",
     label: "Relationships",
     href: "/relationships",
     badge: null,
+    description: `CRM with kanban funnels and cross-app integrations`,
   },
   // {
   //   id: "analytics",
@@ -48,6 +53,7 @@ export const allTabs = [
     label: "Content",
     href: "/content",
     badge: null,
+    description: `CMS with post types and custom fields`,
   },
   // {
   //   id: "send-email",
@@ -60,6 +66,7 @@ export const allTabs = [
     label: "Work Email",
     href: "/work-email",
     badge: null,
+    description: `View your generated email templates`,
   },
   // {
   //   id: "rss",

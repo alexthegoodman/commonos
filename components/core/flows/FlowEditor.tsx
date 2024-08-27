@@ -66,6 +66,23 @@ const AnswerButton = styled(Button)(({ theme }) => ({
   },
 }));
 
+const AppButton = styled(Button)(({ theme }) => ({
+  width: "300px",
+  paddingTop: "15px",
+  paddingBottom: "15px",
+  "& span, & p": {
+    display: "block",
+    margin: 0,
+    padding: 0,
+  },
+  "& span": {
+    fontWeight: 600,
+  },
+  "& p": {
+    fontSize: "14px",
+  },
+}));
+
 const PromptWrapper = styled(Box)(({ theme }) => ({
   marginTop: theme.spacing(2),
   marginBottom: theme.spacing(2),
@@ -628,7 +645,7 @@ export default function FlowEditor({ id, prompt }) {
           <Typography variant="body1" mb={4}>
             Please select the apps you would like to generate files for.
           </Typography>
-          <Box maxWidth="700px" mb={1}>
+          <Box maxWidth="1000px" mb={1}>
             {!loading && allTabs && (
               <>
                 {allTabs.map((tab, i) => {
@@ -636,7 +653,7 @@ export default function FlowEditor({ id, prompt }) {
                     ? true
                     : false;
                   return (
-                    <Button
+                    <AppButton
                       key={tab.id}
                       sx={{
                         backgroundColor: chosen ? "#99c7a2" : "transparent",
@@ -661,7 +678,7 @@ export default function FlowEditor({ id, prompt }) {
                     >
                       {chosen && <CheckCircle style={{ marginRight: "5px" }} />}
                       <Box>
-                        <Box mr={0.5} position="relative" top="3px">
+                        <Box mr={2} position="relative" top="3px">
                           {tab?.id === "launcher" && <Apps />}
                           {tab?.id === "documents" && <Article />}
                           {tab?.id === "slides" && <Slideshow />}
@@ -676,8 +693,11 @@ export default function FlowEditor({ id, prompt }) {
                           {tab?.id === "work-email" && <Email />}
                         </Box>
                       </Box>
-                      {tab.label}
-                    </Button>
+                      <Box>
+                        <span>{tab.label}</span>
+                        <p>{tab.description}</p>
+                      </Box>
+                    </AppButton>
                   );
                 })}
               </>
