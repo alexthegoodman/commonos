@@ -19,6 +19,8 @@ export default function InnerLayout({
   const { markdown, plaintext } = context;
   const initialMarkdown = plaintext && !markdown ? plaintext : markdown;
 
+  // console.info("double check", initialMarkdown);
+
   return (
     <DocumentsContext.Provider
       value={useReducer(DocumentsContextReducer, context)}

@@ -119,10 +119,10 @@ export class ComponentRope {
       const leftLength = this._left!.length;
       if (position < leftLength) {
         this._left!.insert(position, value);
-        this.length = this._left!.length + this._right!.length;
       } else {
         this._right!.insert(position - leftLength, value);
       }
+      this.length = this._left!.length + this._right!.length;
     }
     this.adjust();
   }

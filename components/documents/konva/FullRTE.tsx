@@ -9,6 +9,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Rect, Stage, Text } from "react-konva";
 import * as fontkit from "fontkit";
+import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 
 export default function FullRTE({ markdown = "" }) {
   const stageRef = useRef(null);
@@ -38,7 +39,11 @@ export default function FullRTE({ markdown = "" }) {
   const { masterJson, jsonByPage, handleCanvasClick, handleTextClick } =
     useMultiPageRTE(markdown, mainTextSize);
 
-  console.info("jsonByPage", jsonByPage);
+  //   console.info("jsonByPage", jsonByPage);
+
+  //   if (Object.keys(jsonByPage).length < 1) {
+  //     return <PrimaryLoader />;
+  //   }
 
   return (
     <>
@@ -77,17 +82,18 @@ export default function FullRTE({ markdown = "" }) {
                   x={marginSize.x}
                   y={documentSize.height * i + marginSize.y}
                 >
-                  {masterJson.map((charText, i) => {
-                    const randomColor = `#${Math.floor(
-                      Math.random() * 16777215
-                    ).toString(16)}`;
+                  {masterJson.map((charText: RenderItem, i) => {
+                    // const randomColor = `#${Math.floor(
+                    //   Math.random() * 16777215
+                    // ).toString(16)}`;
 
                     return (
                       <>
                         <Text
                           // key={`${charText.characterId}-${i}`}
                           // id={charText.characterId}
-                          id={`${charText.char}-${i}`}
+                          id={`${charText.char}-${charText.page}-${i}`}
+                          key={`${charText.char}-${charText.page}-${i}`}
                           x={charText?.x}
                           y={charText?.y}
                           text={charText.char}
@@ -107,42 +113,6 @@ export default function FullRTE({ markdown = "" }) {
             );
           })}
         </Layer>
-        {/* <Layer>
-          <Rect
-            x={0}
-            y={0}
-            width={documentSize.width}
-            height={documentSize.height}
-            fill="#FFFFFF"
-          />
-          {/* <Rect
-            x={marginSize.x}
-            y={0}
-            width={mainTextSize.width}
-            height={mainTextSize.height}
-            fill="#fff"
-            //   onMouseDown={handleCanvasClick}
-          /> 
-          {masterJson.map((charText, i) => {
-            return (
-              <>
-                <Text
-                  // key={`${charText.characterId}-${i}`}
-                  // id={charText.characterId}
-                  id={`${charText.char}-${i}`}
-                  x={charText?.x}
-                  y={charText?.y}
-                  text={charText.char}
-                  fontSize={charText.format.fontSize}
-                  fontFamily={charText.format.fontFamily}
-                  fontStyle={charText.format.italic ? "italic" : "normal"}
-                  fill={charText.format.color}
-                  onClick={handleTextClick}
-                />
-              </>
-            );
-          })}
-        </Layer> */}
       </Stage>
       <style jsx>{`
         @font-face {
