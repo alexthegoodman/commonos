@@ -25,7 +25,7 @@ export default function InnerLayout({
     <DocumentsContext.Provider
       value={useReducer(DocumentsContextReducer, context)}
     >
-      <Box>
+      <Box px={2}>
         {/* <LexicalRTE
           documentId={documentId}
           documentData={documentData}
@@ -33,7 +33,12 @@ export default function InnerLayout({
         /> */}
         {/* <DynamicInner /> */}
         {/* <MultiPageRTE markdown={initialMarkdown} /> */}
-        <FullRTE markdown={initialMarkdown} />
+        <FullRTE
+          markdown={initialMarkdown}
+          documentId={documentId}
+          documentData={documentData}
+          refetch={refetch}
+        />
         {/* <AutoSidebar documentId={documentId} documentData={documentData} /> */}
       </Box>
     </DocumentsContext.Provider>

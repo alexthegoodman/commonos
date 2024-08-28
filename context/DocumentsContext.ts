@@ -5,6 +5,7 @@ export interface DocumentsContextState {
   editorValue: string;
   editorJson: any;
   editorPlaintext: string;
+  pages: any[] | null;
 }
 
 export const DocumentsContextState = {
@@ -12,6 +13,7 @@ export const DocumentsContextState = {
   editorValue: "",
   editorJson: null,
   editorPlaintext: "",
+  pages: [],
 };
 
 export const DocumentsContextReducer = (

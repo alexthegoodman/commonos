@@ -160,7 +160,7 @@ export const getThemeOptions = (mode: string) => {
           select: {
             borderRadius: "25px !important",
             boxSizing: "border-box",
-            minHeight: "70px",
+            minHeight: "50px",
             boxShadow: "0px 15px 15px 4px rgba(0, 0, 0, 0.12)",
             border: "none",
             padding: "0px 25px !important",
