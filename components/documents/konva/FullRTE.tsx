@@ -70,14 +70,27 @@ export default function FullRTE({
     };
   }, [documentSize.height]);
 
-  const { masterJson, jsonByPage, handleCanvasClick, handleTextClick } =
-    useMultiPageRTE(markdown, mainTextSize);
+  const {
+    masterJson,
+    jsonByPage,
+    firstSelectedNode,
+    lastSelectedNode,
+    handleCanvasClick,
+    handleTextClick,
+    handleTextMouseDown,
+    handleTextMouseMove,
+    handleTextMouseUp,
+  } = useMultiPageRTE(markdown, mainTextSize);
 
   //   console.info("page index", currentPageIndex);
 
   //   if (Object.keys(jsonByPage).length < 1) {
   //     return <PrimaryLoader />;
   //   }
+
+  console.info("selectedTextNodes", firstSelectedNode, lastSelectedNode);
+
+  let isSelected = false;
 
   return (
     <>
@@ -228,7 +241,7 @@ export default function FullRTE({
                   y={documentSize.height * i}
                   width={documentSize.width}
                   height={documentSize.height}
-                  fill="#FFF"
+                  fill="#e5e5e5"
                 />
                 <Rect
                   x={marginSize.x}
@@ -246,14 +259,35 @@ export default function FullRTE({
                     // const randomColor = `#${Math.floor(
                     //   Math.random() * 16777215
                     // ).toString(16)}`;
+                    const charId = `${charText.char}-${charText.page}-${i}`;
+                    // const isSelected = selectedTextNodes.includes(charId);
+                    if (firstSelectedNode === charId && lastSelectedNode) {
+                      isSelected = true;
+                    }
+
+                    if (lastSelectedNode === charId) {
+                      isSelected = false;
+                    }
 
                     return (
                       <>
+                        {isSelected && (
+                          <Rect
+                            id={`${charText.char}-${charText.page}-${i}-sel`}
+                            key={`${charText.char}-${charText.page}-${i}-sel`}
+                            fill="#38ef7d"
+                            height={26}
+                            width={charText.width + 2}
+                            x={charText?.x}
+                            y={charText?.y}
+                          />
+                        )}
+
                         <Text
                           // key={`${charText.characterId}-${i}`}
                           // id={charText.characterId}
-                          id={`${charText.char}-${charText.page}-${i}`}
-                          key={`${charText.char}-${charText.page}-${i}`}
+                          id={charId}
+                          key={charId}
                           x={charText?.x}
                           y={charText?.y}
                           text={charText.char}
@@ -264,6 +298,9 @@ export default function FullRTE({
                           }
                           fill={charText.format.color}
                           onClick={handleTextClick}
+                          onMouseDown={handleTextMouseDown}
+                          onMouseMove={handleTextMouseMove}
+                          onMouseUp={handleTextMouseUp}
                         />
                       </>
                     );

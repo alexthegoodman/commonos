@@ -840,6 +840,10 @@ export const useMultiPageRTE = (
 ) => {
   const [fontData, setFontData] = useState(null);
   const [masterJson, setMasterJson] = useState<RenderItem[]>([]);
+  const [isSelectingText, setIsSelectingText] = useState(false);
+  // const [selectedTextNodes, setSelectedTextNodes] = useState([]);
+  const [firstSelectedNode, setFirstSelectedNode] = useState(null);
+  const [lastSelectedNode, setLastSelectedNode] = useState(null);
 
   // use ref to get up-to-date values in event listener
   const [editorInstance, _setEditorInstance] = useState<MultiPageEditor | null>(
@@ -1039,6 +1043,32 @@ export const useMultiPageRTE = (
     setEditorActive(true);
   };
 
+  const handleTextMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+    console.info("text down", e);
+    setIsSelectingText(true);
+
+    const target = e.target;
+    const characterId = target.id();
+
+    setFirstSelectedNode(characterId);
+    setLastSelectedNode(null);
+  };
+  const handleTextMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+    if (isSelectingText && e.evt.buttons) {
+      console.info("selecting text", e);
+
+      const target = e.target;
+      const characterId = target.id();
+
+      // setSelectedTextNodes((nodes) => [characterId, ...nodes]);
+      setLastSelectedNode(characterId);
+    }
+  };
+  const handleTextMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+    console.info("text up", e);
+    setIsSelectingText(false);
+  };
+
   const jsonByPage = useMemo(() => {
     const pages = masterJson.reduce(
       (acc, char) => {
@@ -1057,5 +1087,15 @@ export const useMultiPageRTE = (
     return pages;
   }, [masterJson]);
 
-  return { masterJson, jsonByPage, handleCanvasClick, handleTextClick };
+  return {
+    masterJson,
+    jsonByPage,
+    firstSelectedNode,
+    lastSelectedNode,
+    handleCanvasClick,
+    handleTextClick,
+    handleTextMouseDown,
+    handleTextMouseMove,
+    handleTextMouseUp,
+  };
 };
