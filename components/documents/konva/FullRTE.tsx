@@ -14,7 +14,12 @@ import { Box, IconButton, MenuItem, Select, Typography } from "@mui/material";
 import { useDocumentsContext } from "@/context/DocumentsContext";
 import { v4 as uuidv4 } from "uuid";
 import EditorHeader from "../editor/EditorHeader";
-import { TextB, TextItalic, TextStrikethrough } from "@phosphor-icons/react";
+import {
+  TextB,
+  TextItalic,
+  TextStrikethrough,
+  TextUnderline,
+} from "@phosphor-icons/react";
 
 export default function FullRTE({
   markdown = "",
@@ -80,6 +85,7 @@ export default function FullRTE({
     handleTextMouseDown,
     handleTextMouseMove,
     handleTextMouseUp,
+    handleFormattingDown,
   } = useMultiPageRTE(markdown, mainTextSize);
 
   //   console.info("page index", currentPageIndex);
@@ -133,19 +139,25 @@ export default function FullRTE({
             }
 
             console.info("update font size of selected text", value);
+
+            handleFormattingDown({
+              fontSize: value,
+            });
           }}
         >
           <MenuItem value={"init"}>Font Size</MenuItem>
-          <MenuItem value={"10px"}>10px</MenuItem>
-          <MenuItem value={"14px"}>14px</MenuItem>
-          <MenuItem value={"18px"}>18px</MenuItem>
-          <MenuItem value={"24px"}>24px</MenuItem>
-          <MenuItem value={"32px"}>32px</MenuItem>
-          <MenuItem value={"48px"}>48px</MenuItem>
+          <MenuItem value={10}>10px</MenuItem>
+          <MenuItem value={14}>14px</MenuItem>
+          <MenuItem value={18}>18px</MenuItem>
+          <MenuItem value={24}>24px</MenuItem>
+          <MenuItem value={32}>32px</MenuItem>
+          <MenuItem value={48}>48px</MenuItem>
         </Select>
         <IconButton
           onClick={() => {
-            //   editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
+            handleFormattingDown({
+              fontWeight: "600",
+            });
           }}
           className={"toolbar-item spaced " + (false ? "active" : "")}
           aria-label="Format Bold"
@@ -156,7 +168,9 @@ export default function FullRTE({
         </IconButton>
         <IconButton
           onClick={() => {
-            //   editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic");
+            handleFormattingDown({
+              italic: true,
+            });
           }}
           className={"toolbar-item spaced " + (false ? "active" : "")}
           aria-label="Format Italics"
@@ -166,13 +180,15 @@ export default function FullRTE({
         </IconButton>
         <IconButton
           onClick={() => {
-            //   editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
+            handleFormattingDown({
+              underline: true,
+            });
           }}
           className={"toolbar-item spaced " + (false ? "active" : "")}
-          aria-label="Format Strikethrough"
+          aria-label="Format Underline"
         >
           {/* <i className="ph ph-text-strikethrough-thin"></i> */}
-          <TextStrikethrough weight="thin" />
+          <TextUnderline weight="thin" />
         </IconButton>
         <Select
           label="Add Shape"
@@ -294,9 +310,14 @@ export default function FullRTE({
                           fontSize={charText.format.fontSize}
                           fontFamily={charText.format.fontFamily}
                           fontStyle={
-                            charText.format.italic ? "italic" : "normal"
+                            charText.format.italic
+                              ? "italic"
+                              : charText.format.fontWeight
                           }
                           fill={charText.format.color}
+                          textDecoration={
+                            charText.format.underline ? "underline" : ""
+                          }
                           onClick={handleTextClick}
                           onMouseDown={handleTextMouseDown}
                           onMouseMove={handleTextMouseMove}

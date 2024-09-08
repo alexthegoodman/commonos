@@ -328,13 +328,69 @@ class FormattedPage {
     });
   }
 
+  alterFormatting(start: number, end: number, formatChanges: Partial<Style>) {
+    // Ensure start and end are within bounds
+    start = Math.max(0, Math.min(start, this.content.length));
+    end = Math.max(start, Math.min(end, this.content.length));
+
+    const formatStart = start;
+    const formatEnd = end;
+
+    // Get existing formatting in the range
+    const existingFormats = this.formatting.search(
+      [formatStart, formatEnd],
+      (value, key) => ({
+        interval: key,
+        format: value,
+      })
+    ) as unknown as MappedFormat[];
+
+    // Remove existing formatting in the range
+    this.formatting.remove([formatStart, formatEnd]);
+
+    // Apply new formatting
+    for (const { interval, format } of existingFormats) {
+      const newStart = Math.max(interval.low, formatStart);
+      const newEnd = Math.min(interval.high, formatEnd);
+
+      if (newStart < newEnd) {
+        const updatedFormat = { ...format, ...formatChanges };
+        // console.info(
+        //   "apply new formatting",
+        //   newStart,
+        //   newEnd,
+        //   format,
+        //   updatedFormat
+        // );
+        this.formatting.remove(new Interval(newStart, newEnd));
+        this.formatting.insert(new Interval(newStart, newEnd), updatedFormat);
+      }
+    }
+
+    // If there's any gap in formatting, fill it with the new format
+    if (
+      existingFormats.length === 0 ||
+      existingFormats[0].interval.low > start ||
+      existingFormats[existingFormats.length - 1].interval.high < end
+    ) {
+      const defaultFormatWithChanges = { ...defaultStyle, ...formatChanges };
+      this.formatting.insert(
+        new Interval(formatStart, formatEnd),
+        defaultFormatWithChanges
+      );
+    }
+
+    // Update layout for the affected range
+    this.updateLayout(formatStart, formatEnd);
+  }
+
   getFormattedText(start: number, end: number) {
     const text = this.content.substring(start, end);
     const formats = this.formatting.search([start, end], (value, key) => ({
       interval: key,
       format: value,
     })) as unknown as MappedFormat[];
-    // console.info("also getFormattedText", text);
+    // console.info("also getFormattedText", start, end, formats);
     return this.mergeTextAndFormatting(text, formats, start);
   }
 
@@ -385,7 +441,7 @@ class FormattedPage {
     })) as unknown as MappedFormat[];
     // console.info("updateLayout: ", text, formats, start);
     const layoutInfo = this.calculateLayout(text, formats, start, 0);
-    console.info("updateLayout: ", start, end);
+    // console.info("updateLayout: ", start, end);
     this.layout.update(start, end, layoutInfo);
   }
 
@@ -423,7 +479,11 @@ class FormattedPage {
       }
 
       // const fontData = this.getFontData(format.fontFamily);
-      const style = { ...defaultStyle, fontSize: format.fontSize };
+      const style = {
+        ...defaultStyle,
+        fontSize: format.fontSize,
+        fontWeight: format.fontWeight,
+      };
 
       const { width, height } = getCharacterBoundingBox(
         this.fontData,
@@ -538,7 +598,7 @@ export class MultiPageEditor {
 
   public rebalanceDebounce: any;
   public rebalanceDebounceStaggered: any;
-  public avgPageLength = 2400; // TODO: better algorithm for determining exact overflow is needed
+  public avgPageLength = 3000; // TODO: better algorithm for determining exact overflow is needed
 
   constructor(
     size: DocumentSize,
@@ -563,18 +623,18 @@ export class MultiPageEditor {
     // const endIndex = Math.round(
     //   startIndex + this.visibleLines * 26 // replace with lineheight? would expect consistent lineheight?
     // );
-    const endIndex = this.pages.length * 3000;
+    const endIndex = this.pages.length * this.avgPageLength;
 
     const formattedText = this.getFormattedText(startIndex, endIndex);
     const layout = this.getLayoutInfo(startIndex, endIndex);
 
-    console.info(
-      "render visible: ",
-      startIndex,
-      endIndex,
-      formattedText,
-      layout
-    );
+    // console.info(
+    //   "render visible: ",
+    //   startIndex,
+    //   endIndex,
+    //   formattedText,
+    //   layout
+    // );
 
     return this.combineTextAndLayout(
       formattedText,
@@ -582,6 +642,37 @@ export class MultiPageEditor {
       startIndex,
       endIndex
     );
+  }
+
+  alterFormatting(
+    globalStart: number,
+    globalEnd: number,
+    formatChanges: Partial<Style>,
+    setMasterJson: any
+  ) {
+    let startPageIndex = this.getPageIndexForGlobalIndex(globalStart);
+    let startLocalIndex = this.getLocalIndex(globalStart, startPageIndex);
+
+    let endPageIndex = this.getPageIndexForGlobalIndex(globalEnd);
+    let endLocalIndex = this.getLocalIndex(globalEnd, endPageIndex);
+
+    console.info(
+      "alter formatting ",
+      startPageIndex,
+      endPageIndex,
+      startLocalIndex,
+      endLocalIndex
+    );
+
+    if (startPageIndex === endPageIndex) {
+      this.pages[startPageIndex].alterFormatting(
+        startLocalIndex,
+        endLocalIndex,
+        formatChanges
+      );
+
+      this.renderAndRebalance(startPageIndex, setMasterJson, false);
+    }
   }
 
   insert(
@@ -601,6 +692,14 @@ export class MultiPageEditor {
 
     this.pages[pageIndex].insert(localIndex, text, format);
 
+    this.renderAndRebalance(pageIndex, setMasterJson, initialize);
+  }
+
+  renderAndRebalance(
+    pageIndex: number,
+    setMasterJson: any,
+    initialize = false
+  ) {
     // this.rebalanceDebounce = setTimeout(() => {
     this.rebalancePages(pageIndex, initialize);
     const renderable = this.renderVisible();
@@ -654,6 +753,8 @@ export class MultiPageEditor {
     let renderItems: RenderItem[] = [];
     let textIndex = 0;
 
+    console.info("formattedText and layout", formattedText, layout);
+
     for (const layoutItem of layout) {
       const { start, end, layoutInfo } = layoutItem;
 
@@ -681,8 +782,20 @@ export class MultiPageEditor {
         const charLayout = layoutInfo[i];
 
         let format: Style | undefined | null;
-        const textItem = formattedText[textIndex];
-        format = textItem.format;
+        // const textItem = formattedText[textIndex];
+        const textItem = this.pages[textIndex].formatting.search(
+          [i, i + 1],
+          (value, key) => ({
+            interval: key,
+            format: value,
+          })
+        ) as unknown as MappedFormat[];
+
+        format = textItem[textItem.length - 1].format;
+
+        if (i < 100) {
+          console.info("format", format);
+        }
 
         if (!format) {
           format = defaultStyle;
@@ -721,7 +834,7 @@ export class MultiPageEditor {
         Math.round(this.pages[0].content.length / this.avgPageLength) - 1; // 0-indexed
     }
 
-    console.info("total pages", startPageIndex, this.pages.length, totalPages);
+    // console.info("total pages", startPageIndex, this.pages.length, totalPages);
 
     for (let i = startPageIndex; i < totalPages; i++) {
       const currentPage = this.pages[i];
@@ -730,7 +843,7 @@ export class MultiPageEditor {
         break;
       }
 
-      console.info("page", i);
+      // console.info("page", i);
 
       const nextPage =
         this.pages[i + 1] || new FormattedPage(this.size, this.fontData);
@@ -1069,6 +1182,24 @@ export const useMultiPageRTE = (
     setIsSelectingText(false);
   };
 
+  const handleFormattingDown = (formatting: Partial<Style>) => {
+    if (!firstSelectedNode || !lastSelectedNode) {
+      return;
+    }
+
+    const firstIndex = parseInt(firstSelectedNode.split("-")[2]);
+    const lastIndex = parseInt(lastSelectedNode.split("-")[2]);
+
+    console.info("formatting on ", firstIndex, lastIndex, formatting);
+
+    editorInstanceRef.current?.alterFormatting(
+      firstIndex,
+      lastIndex,
+      formatting,
+      setMasterJson
+    );
+  };
+
   const jsonByPage = useMemo(() => {
     const pages = masterJson.reduce(
       (acc, char) => {
@@ -1097,5 +1228,6 @@ export const useMultiPageRTE = (
     handleTextMouseDown,
     handleTextMouseMove,
     handleTextMouseUp,
+    handleFormattingDown,
   };
 };
