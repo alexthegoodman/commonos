@@ -10,16 +10,35 @@ import { useEffect, useRef, useState } from "react";
 import { Group, Layer, Rect, Stage, Text } from "react-konva";
 import * as fontkit from "fontkit";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
-import { Box, IconButton, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  MenuItem,
+  Select,
+  styled,
+  Typography,
+} from "@mui/material";
 import { useDocumentsContext } from "@/context/DocumentsContext";
 import { v4 as uuidv4 } from "uuid";
 import EditorHeader from "../editor/EditorHeader";
 import {
+  HandSwipeRight,
   TextB,
   TextItalic,
   TextStrikethrough,
   TextUnderline,
 } from "@phosphor-icons/react";
+import { Resizable } from "re-resizable";
+import { HandSwipeLeft } from "@phosphor-icons/react/dist/ssr";
+
+const ResizableInner = styled(Box)(({ theme, vertical }) => ({
+  display: "flex",
+  flexDirection: vertical ? "column" : "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  height: "100%",
+  background: "#F7F7F7",
+}));
 
 export default function FullRTE({
   markdown = "",
@@ -87,6 +106,8 @@ export default function FullRTE({
     handleTextMouseUp,
     handleFormattingDown,
   } = useMultiPageRTE(markdown, mainTextSize);
+
+  const onWidthResize = () => {};
 
   //   console.info("page index", currentPageIndex);
 
@@ -236,102 +257,146 @@ export default function FullRTE({
           <MenuItem value={"polygon"}>Polygon</MenuItem>
         </Select>
       </Box>
-      <Stage
-        ref={stageRef}
-        width={documentSize.width}
-        height={documentSize.height * Object.keys(jsonByPage).length}
-        // height={documentSize.height}
-        // onMouseDown={handleMouseDown}
-        // onMousemove={handleMouseMove}
-        // onMouseup={handleMouseUp}
-        // onMouseDown={handleCanvasClick}
-      >
-        <Layer>
-          {Object.keys(jsonByPage).map((key, i) => {
-            const masterJson = jsonByPage[key];
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <Resizable
+          // style={{ position: "absolute" }}
+          style={{ marginLeft: "25px" }}
+          grid={[25, 25]}
+          defaultSize={{
+            width: mainTextSize.width,
+            height: 25,
+          }}
+          minHeight={25}
+          maxHeight={25}
+          minWidth={25}
+          maxWidth={documentSize.width}
+          onResize={onWidthResize}
+          // onResizeStop={onResizeStop}
+        >
+          <ResizableInner>
+            <HandSwipeLeft />
+            <HandSwipeRight />
+          </ResizableInner>
+        </Resizable>
+        <Box display="flex" flexDirection="row" alignItems="center">
+          <Resizable
+            // style={{ position: "absolute" }}
 
-            return (
-              <>
-                <Rect
-                  x={0}
-                  y={documentSize.height * i}
-                  width={documentSize.width}
-                  height={documentSize.height}
-                  fill="#e5e5e5"
-                />
-                <Rect
-                  x={marginSize.x}
-                  y={documentSize.height * i + marginSize.y}
-                  width={mainTextSize.width}
-                  height={mainTextSize.height}
-                  fill="#fff"
-                  onMouseDown={handleCanvasClick}
-                />
-                <Group
-                  x={marginSize.x}
-                  y={documentSize.height * i + marginSize.y}
-                >
-                  {masterJson.map((charText: RenderItem, i) => {
-                    // const randomColor = `#${Math.floor(
-                    //   Math.random() * 16777215
-                    // ).toString(16)}`;
-                    const charId = `${charText.char}-${charText.page}-${i}`;
-                    // const isSelected = selectedTextNodes.includes(charId);
-                    if (firstSelectedNode === charId && lastSelectedNode) {
-                      isSelected = true;
-                    }
+            grid={[25, 25]}
+            defaultSize={{
+              width: 25,
+              height: mainTextSize.height,
+            }}
+            minHeight={25}
+            maxHeight={documentSize.height}
+            minWidth={25}
+            maxWidth={25}
+            onResize={onWidthResize}
+            // onResizeStop={onResizeStop}
+          >
+            <ResizableInner vertical={true}>
+              <HandSwipeLeft />
+              <HandSwipeRight />
+            </ResizableInner>
+          </Resizable>
+          <Stage
+            ref={stageRef}
+            width={documentSize.width}
+            height={documentSize.height * Object.keys(jsonByPage).length}
+            // height={documentSize.height}
+            // onMouseDown={handleMouseDown}
+            // onMousemove={handleMouseMove}
+            // onMouseup={handleMouseUp}
+            // onMouseDown={handleCanvasClick}
+          >
+            <Layer>
+              {Object.keys(jsonByPage).map((key, i) => {
+                const masterJson = jsonByPage[key];
 
-                    if (lastSelectedNode === charId) {
-                      isSelected = false;
-                    }
+                return (
+                  <>
+                    <Rect
+                      x={0}
+                      y={documentSize.height * i}
+                      width={documentSize.width}
+                      height={documentSize.height}
+                      fill="#e5e5e5"
+                    />
+                    <Rect
+                      x={marginSize.x}
+                      y={documentSize.height * i + marginSize.y}
+                      width={mainTextSize.width}
+                      height={mainTextSize.height}
+                      fill="#fff"
+                      onMouseDown={handleCanvasClick}
+                    />
+                    <Group
+                      x={marginSize.x}
+                      y={documentSize.height * i + marginSize.y}
+                    >
+                      {masterJson.map((charText: RenderItem, i) => {
+                        // const randomColor = `#${Math.floor(
+                        //   Math.random() * 16777215
+                        // ).toString(16)}`;
+                        const charId = `${charText.char}-${charText.page}-${i}`;
+                        // const isSelected = selectedTextNodes.includes(charId);
+                        if (firstSelectedNode === charId && lastSelectedNode) {
+                          isSelected = true;
+                        }
 
-                    return (
-                      <>
-                        {isSelected && (
-                          <Rect
-                            id={`${charText.char}-${charText.page}-${i}-sel`}
-                            key={`${charText.char}-${charText.page}-${i}-sel`}
-                            fill="#38ef7d"
-                            height={26}
-                            width={charText.width + 2}
-                            x={charText?.x}
-                            y={charText?.y}
-                          />
-                        )}
+                        if (lastSelectedNode === charId) {
+                          isSelected = false;
+                        }
 
-                        <Text
-                          // key={`${charText.characterId}-${i}`}
-                          // id={charText.characterId}
-                          id={charId}
-                          key={charId}
-                          x={charText?.x}
-                          y={charText?.y}
-                          text={charText.char}
-                          fontSize={charText.format.fontSize}
-                          fontFamily={charText.format.fontFamily}
-                          fontStyle={
-                            charText.format.italic
-                              ? "italic"
-                              : charText.format.fontWeight
-                          }
-                          fill={charText.format.color}
-                          textDecoration={
-                            charText.format.underline ? "underline" : ""
-                          }
-                          onClick={handleTextClick}
-                          onMouseDown={handleTextMouseDown}
-                          onMouseMove={handleTextMouseMove}
-                          onMouseUp={handleTextMouseUp}
-                        />
-                      </>
-                    );
-                  })}
-                </Group>
-              </>
-            );
-          })}
-        </Layer>
-      </Stage>
+                        return (
+                          <>
+                            {isSelected && (
+                              <Rect
+                                id={`${charText.char}-${charText.page}-${i}-sel`}
+                                key={`${charText.char}-${charText.page}-${i}-sel`}
+                                fill="#38ef7d"
+                                height={26}
+                                width={charText.width + 2}
+                                x={charText?.x}
+                                y={charText?.y}
+                              />
+                            )}
+
+                            <Text
+                              // key={`${charText.characterId}-${i}`}
+                              // id={charText.characterId}
+                              id={charId}
+                              key={charId}
+                              x={charText?.x}
+                              y={charText?.y}
+                              text={charText.char}
+                              fontSize={charText.format.fontSize}
+                              fontFamily={charText.format.fontFamily}
+                              fontStyle={
+                                charText.format.italic
+                                  ? "italic"
+                                  : charText.format.fontWeight
+                              }
+                              fill={charText.format.color}
+                              textDecoration={
+                                charText.format.underline ? "underline" : ""
+                              }
+                              onClick={handleTextClick}
+                              onMouseDown={handleTextMouseDown}
+                              onMouseMove={handleTextMouseMove}
+                              onMouseUp={handleTextMouseUp}
+                            />
+                          </>
+                        );
+                      })}
+                    </Group>
+                  </>
+                );
+              })}
+            </Layer>
+          </Stage>
+        </Box>
+      </Box>
       <style jsx>{`
         @font-face {
           font-family: "Inter";

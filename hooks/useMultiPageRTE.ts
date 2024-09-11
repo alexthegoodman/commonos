@@ -617,24 +617,28 @@ export class MultiPageEditor {
   renderVisible() {
     // const startIndex = this.scrollPosition * this.size.height;
     const startIndex = this.scrollPosition ? this.scrollPosition / 26 : 0;
-    // const endIndex = Math.round(
-    //   startIndex + this.visibleLines * this.size.height
-    // );
-    // const endIndex = Math.round(
-    //   startIndex + this.visibleLines * 26 // replace with lineheight? would expect consistent lineheight?
-    // );
-    const endIndex = this.pages.length * this.avgPageLength;
+    // const endIndex = this.pages.length * this.avgPageLength;
+    // const scrollPage = startIndex / (this.pages.length * this.avgPageLength)
+    const endIndex = this.avgPageLength;
 
     const formattedText = this.getFormattedText(startIndex, endIndex);
     const layout = this.getLayoutInfo(startIndex, endIndex);
 
-    // console.info(
-    //   "render visible: ",
-    //   startIndex,
-    //   endIndex,
-    //   formattedText,
-    //   layout
-    // );
+    return this.combineTextAndLayout(
+      formattedText,
+      layout,
+      startIndex,
+      endIndex
+    );
+  }
+
+  renderAll() {
+    // const startIndex = this.scrollPosition * this.size.height;
+    const startIndex = this.scrollPosition ? this.scrollPosition / 26 : 0;
+    const endIndex = this.pages.length * this.avgPageLength;
+
+    const formattedText = this.getFormattedText(startIndex, endIndex);
+    const layout = this.getLayoutInfo(startIndex, endIndex);
 
     return this.combineTextAndLayout(
       formattedText,
@@ -709,7 +713,7 @@ export class MultiPageEditor {
     this.rebalanceDebounceStaggered = setTimeout(() => {
       // update other page layouts in staggered fashion, first is done in rebalancePages()
       this.updatePageLayouts(pageIndex); // expensive operation
-      const renderableAll = this.renderVisible();
+      const renderableAll = this.renderAll();
       setMasterJson(renderableAll);
     }, 1000);
   }
@@ -783,7 +787,7 @@ export class MultiPageEditor {
 
         let format: Style | undefined | null;
         // const textItem = formattedText[textIndex];
-        const textItem = this.pages[textIndex].formatting.search(
+        const textItems = this.pages[textIndex].formatting.search(
           [i, i + 1],
           (value, key) => ({
             interval: key,
@@ -791,10 +795,10 @@ export class MultiPageEditor {
           })
         ) as unknown as MappedFormat[];
 
-        format = textItem[textItem.length - 1].format;
+        const textItem = textItems[textItems.length - 1];
 
-        if (i < 100) {
-          console.info("format", format);
+        if (textItem) {
+          format = textItem.format;
         }
 
         if (!format) {
