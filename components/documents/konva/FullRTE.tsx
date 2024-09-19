@@ -6,7 +6,7 @@ import {
   RenderItem,
   useMultiPageRTE,
 } from "@/hooks/useMultiPageRTE";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Group, Layer, Rect, Stage, Text } from "react-konva";
 import * as fontkit from "fontkit";
 import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
@@ -52,27 +52,36 @@ export default function FullRTE({
 
   const stageRef = useRef(null);
 
-  const pxPerIn = 96;
-  const marginSizeIn = {
-    x: 1,
-    y: 0.5,
-  };
-  const marginSize = {
-    x: marginSizeIn.x * pxPerIn,
-    y: marginSizeIn.y * pxPerIn,
-  };
-  const documentSizeIn = {
+  const [pxPerIn, setPxPerIn] = useState(96);
+  const [marginSizeIn, setMarginSizeIn] = useState({ x: 1, y: 0.5 });
+  const [documentSizeIn, setDocumentSizeIn] = useState({
     width: 8.3,
     height: 11.7,
-  };
-  const documentSize = {
-    width: documentSizeIn.width * pxPerIn,
-    height: documentSizeIn.height * pxPerIn,
-  };
-  const mainTextSize = {
-    width: (documentSizeIn.width - marginSizeIn.x * 2) * pxPerIn,
-    height: (documentSizeIn.height - marginSizeIn.y * 2) * pxPerIn,
-  };
+  });
+
+  const marginSize = useMemo(
+    () => ({
+      x: marginSizeIn.x * pxPerIn,
+      y: marginSizeIn.y * pxPerIn,
+    }),
+    [marginSizeIn, pxPerIn]
+  );
+
+  const documentSize = useMemo(
+    () => ({
+      width: documentSizeIn.width * pxPerIn,
+      height: documentSizeIn.height * pxPerIn,
+    }),
+    [documentSizeIn, pxPerIn]
+  );
+
+  const mainTextSize = useMemo(
+    () => ({
+      width: (documentSizeIn.width - marginSizeIn.x * 2) * pxPerIn,
+      height: (documentSizeIn.height - marginSizeIn.y * 2) * pxPerIn,
+    }),
+    [documentSizeIn, marginSizeIn, pxPerIn]
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,7 +116,11 @@ export default function FullRTE({
     handleFormattingDown,
   } = useMultiPageRTE(markdown, mainTextSize);
 
-  const onWidthResize = () => {};
+  const onWidthResize = (event, direction, refToElement, delta) => {
+    console.info("width resize", event, direction, refToElement, delta);
+  };
+
+  const onHeightResize = () => {};
 
   //   console.info("page index", currentPageIndex);
 
@@ -291,7 +304,7 @@ export default function FullRTE({
             maxHeight={documentSize.height}
             minWidth={25}
             maxWidth={25}
-            onResize={onWidthResize}
+            onResize={onHeightResize}
             // onResizeStop={onResizeStop}
           >
             <ResizableInner vertical={true}>

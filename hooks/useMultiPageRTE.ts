@@ -249,6 +249,8 @@ class FormattedPage {
   }
 
   insert(index: number, text: string, format: Style) {
+    performance.mark("page-insert-started");
+
     const lines = text.split(/\r?\n/);
     let currentIndex = index;
 
@@ -287,6 +289,14 @@ class FormattedPage {
     // go to try on rebalnce pages?
     // this.updateLayout(index, currentIndex);
     // this.updateLayout(0, this.content.length);
+
+    performance.mark("page-insert-ended");
+
+    performance.measure(
+      "pageInsert",
+      "page-insert-started",
+      "page-insert-ended"
+    );
   }
 
   insertLineBreak(index: number) {
@@ -615,21 +625,34 @@ export class MultiPageEditor {
   // run on scroll?
   // TODO: account for newlines?
   renderVisible() {
+    performance.mark("render-visible-started");
     // const startIndex = this.scrollPosition * this.size.height;
-    const startIndex = this.scrollPosition ? this.scrollPosition / 26 : 0;
+    // const startIndex = Math.round(
+    //   this.scrollPosition ? this.scrollPosition / 26 : 0
+    // );
+    const startIndex = Math.round(this.scrollPosition);
     // const endIndex = this.pages.length * this.avgPageLength;
     // const scrollPage = startIndex / (this.pages.length * this.avgPageLength)
-    const endIndex = this.avgPageLength;
+    // const endIndex = this.avgPageLength;
+    const endIndex = startIndex + 1500;
 
     const formattedText = this.getFormattedText(startIndex, endIndex);
     const layout = this.getLayoutInfo(startIndex, endIndex);
-
-    return this.combineTextAndLayout(
+    const combined = this.combineTextAndLayout(
       formattedText,
       layout,
       startIndex,
       endIndex
     );
+
+    performance.mark("render-visible-ended");
+    performance.measure(
+      "renderVisible",
+      "render-visible-started",
+      "render-visible-ended"
+    );
+
+    return combined;
   }
 
   renderAll() {
@@ -686,8 +709,7 @@ export class MultiPageEditor {
     setMasterJson: any,
     initialize = false
   ) {
-    clearTimeout(this.rebalanceDebounce);
-    clearTimeout(this.rebalanceDebounceStaggered);
+    performance.mark("insert-started");
 
     let pageIndex = this.getPageIndexForGlobalIndex(globalIndex);
     let localIndex = this.getLocalIndex(globalIndex, pageIndex);
@@ -697,6 +719,10 @@ export class MultiPageEditor {
     this.pages[pageIndex].insert(localIndex, text, format);
 
     this.renderAndRebalance(pageIndex, setMasterJson, initialize);
+
+    performance.mark("insert-ended");
+
+    performance.measure("insert", "insert-started", "insert-ended");
   }
 
   renderAndRebalance(
@@ -704,18 +730,21 @@ export class MultiPageEditor {
     setMasterJson: any,
     initialize = false
   ) {
+    clearTimeout(this.rebalanceDebounce);
+    clearTimeout(this.rebalanceDebounceStaggered);
+
     // this.rebalanceDebounce = setTimeout(() => {
     this.rebalancePages(pageIndex, initialize);
     const renderable = this.renderVisible();
     setMasterJson(renderable);
     // }, 20);
 
-    this.rebalanceDebounceStaggered = setTimeout(() => {
-      // update other page layouts in staggered fashion, first is done in rebalancePages()
-      this.updatePageLayouts(pageIndex); // expensive operation
-      const renderableAll = this.renderAll();
-      setMasterJson(renderableAll);
-    }, 1000);
+    // this.rebalanceDebounceStaggered = setTimeout(() => {
+    //   // update other page layouts in staggered fashion, first is done in rebalancePages()
+    //   this.updatePageLayouts(pageIndex); // expensive operation
+    //   const renderableAll = this.renderAll();
+    //   setMasterJson(renderableAll);
+    // }, 1000);
   }
 
   getLayoutInfo(start: number, end: number) {
@@ -829,6 +858,8 @@ export class MultiPageEditor {
   }
 
   rebalancePages(startPageIndex: number, initialize = false) {
+    performance.mark("rebalance-started");
+
     const pageHeight = this.size.height;
 
     // TODO: may not account for large text pasted in (creating mutliple new pages)
@@ -895,6 +926,9 @@ export class MultiPageEditor {
       0,
       this.pages[startPageIndex].content.length
     );
+
+    performance.mark("rebalance-ended");
+    performance.measure("rebalance", "rebalance-started", "rebalance-ended");
   }
 
   updatePageLayouts(startPageIndex: number) {
@@ -1124,14 +1158,31 @@ export const useMultiPageRTE = (
     }
   };
 
+  const handleScroll = (e: Event) => {
+    if (editorInstanceRef.current) {
+      editorInstanceRef.current.scrollPosition = window.scrollY;
+    }
+  };
+
+  const handleScrollEnd = (e: Event) => {
+    if (editorInstanceRef.current) {
+      const renderable = editorInstanceRef.current.renderVisible();
+      setMasterJson(renderable);
+    }
+  };
+
   useEffect(() => {
     if (fontData) {
       console.info("welcome to multi-page rte!");
 
       window.addEventListener("keydown", handleKeydown);
+      window.addEventListener("scroll", handleScroll);
+      window.addEventListener("scrollend", handleScrollEnd);
 
       return () => {
         window.removeEventListener("keydown", handleKeydown);
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("scrollend", handleScrollEnd);
       };
     }
   }, [fontData]);
