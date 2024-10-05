@@ -9,11 +9,19 @@ export const allTabs = [
   // },
   {
     id: "documents",
-    label: "Documents",
+    label: "VisualDocs",
     href: "/documents",
     badge: null,
     description: `Fully formatted documents with styling and visuals`,
     beta: true,
+  },
+  {
+    id: "plaindocs",
+    label: "PlainDocs",
+    href: "/plaindocs",
+    badge: null,
+    description: `Simple, easily organized notes and documents`,
+    beta: false,
   },
   {
     id: "slides",

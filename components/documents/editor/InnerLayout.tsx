@@ -9,6 +9,7 @@ import { useReducer } from "react";
 import DynamicInner from "../konva/DynamicInner";
 import MultiPageRTE from "../konva/MultiPageRTE";
 import FullRTE from "../konva/FullRTE";
+import CommonRTE from "../konva/CommonRTE";
 
 export default function InnerLayout({
   context,
@@ -33,7 +34,13 @@ export default function InnerLayout({
         /> */}
         {/* <DynamicInner /> */}
         {/* <MultiPageRTE markdown={initialMarkdown} /> */}
-        <FullRTE
+        {/* <FullRTE
+          markdown={initialMarkdown}
+          documentId={documentId}
+          documentData={documentData}
+          refetch={refetch}
+        /> */}
+        <CommonRTE
           markdown={initialMarkdown}
           documentId={documentId}
           documentData={documentData}
