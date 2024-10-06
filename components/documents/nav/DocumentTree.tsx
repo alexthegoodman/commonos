@@ -32,6 +32,8 @@ import PrimaryLoader from "@/components/core/layout/PrimaryLoader";
 const TreeWrapper = styled("section")(
   ({ theme, treeDisabled }) => `
     opacity: ${treeDisabled ? 0.5 : 1};
+    position: fixed;
+    max-width: 20vw;
   
     .documentTreeInner {
       .treeWrapper {
@@ -611,7 +613,7 @@ const DocumentTree = ({ documentId = "" }) => {
   return (
     <TreeWrapper treeDisabled={treeDisabled}>
       <div className="documentTreeInner">
-        <Typography variant="h4" mb={2}>
+        <Typography variant="overline" mb={2}>
           Your Documents
         </Typography>
         <Box className="treeWrapper">

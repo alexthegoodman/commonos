@@ -5,6 +5,7 @@ import { Box, styled } from "@mui/material";
 import PrimaryHeader from "./PrimaryHeader";
 import PrimaryTabs from "./PrimaryTabs";
 import DynamicTabs from "./DynamicTabs";
+import { useEffect, useState } from "react";
 
 const FixedHeader = styled("div")(({ theme, opaque }) => ({
   position: "fixed",
@@ -40,15 +41,37 @@ export default function HeaderWrapper({ hasSidebar }) {
   const scrollPosition = useScrollPosition();
   const isScrolling = scrollPosition > 0;
 
-  //   console.info("scrollPosition", scrollPosition);
+  const [prevScrollPosition, setPrevScrollPosition] = useState(0);
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
+
+  useEffect(() => {
+    if (scrollPosition > prevScrollPosition) {
+      setIsScrollingDown(true); // Scrolling down
+    } else {
+      setIsScrollingDown(false); // Scrolling up
+    }
+
+    setPrevScrollPosition(scrollPosition); // Update the previous scroll position
+  }, [scrollPosition]);
+
+  console.info("scrollPosition", scrollPosition, isScrollingDown);
 
   return (
     <FixedHeader opaque={isScrolling}>
       <Container hasSidebar={hasSidebar}>
         <InnerContainer opaque={isScrolling}>
-          <PrimaryHeader />
+          {!isScrollingDown || scrollPosition < 50 ? (
+            <PrimaryHeader isScrollingDown={isScrollingDown} />
+          ) : (
+            <></>
+          )}
           {/* <PrimaryTabs /> */}
-          <DynamicTabs />
+          <DynamicTabs
+            style={{
+              marginTop: isScrollingDown ? 0 : 5,
+              paddingTop: isScrolling ? 5 : 0,
+            }}
+          />
         </InnerContainer>
       </Container>
     </FixedHeader>

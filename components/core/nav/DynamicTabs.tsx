@@ -145,7 +145,7 @@ const LaunchAppMenu = ({ onSelectApp }) => {
   );
 };
 
-export default function DynamicTabs() {
+export default function DynamicTabs({ style }) {
   const { state, dispatch } = useContext(LauncherContext);
 
   const tabs = state.openTabs;
@@ -183,8 +183,8 @@ export default function DynamicTabs() {
   };
 
   return (
-    <TabsWrapper style={{ marginTop: "5px" }}>
-      <Box display="flex" flexDirection="row" width="fit-content" mb={2}>
+    <TabsWrapper style={style}>
+      <Box display="flex" flexDirection="row" width="fit-content" mb={"5px"}>
         <Ctrls>
           <Tab
             onClick={() => router.push("/launcher")}
@@ -215,7 +215,12 @@ export default function DynamicTabs() {
                 key={tabData.id}
                 sx={
                   tabData.href === slug1
-                    ? { background: "#99c7a2", color: "white" }
+                    ? {
+                        border: "1px solid #74ad7f",
+                        background:
+                          "linear-gradient(145deg, #99c7a2 65%, #c8cc7c 100%)",
+                        color: "white",
+                      }
                     : { background: "#515151" }
                 }
               >
@@ -273,6 +278,8 @@ export default function DynamicTabs() {
                     width: "auto",
                     minWidth: "auto",
                     marginRight: "4px",
+                    height: "30px",
+                    alignSelf: "center",
                   }}
                   onClick={() => handleRemoveTab(tab.id)}
                 >

@@ -77,7 +77,7 @@ export default function CommonRTE({
 
   return (
     <>
-      <div className="toolbar">
+      <div id="cmnToolbarPrimary" className="toolbar">
         <label>Alter Text:</label>
         <Button size="small" id="cmnColor">
           Color
@@ -113,6 +113,14 @@ export default function CommonRTE({
         <input id="cmnImageFile" type="file" className="hidden" />
         <span>Last Saved:</span>
         <span id="cmnLastSaved"></span>
+      </div>
+      <div id="cmnToolbarShape" className="toolbar">
+        <label>Shape Properties:</label>
+        <label>Width</label>
+        <input id="cmnShapeWidth" type="text" name="width" />
+        <label>Height</label>
+        <input id="cmnShapeHeight" type="text" name="height" />
+        <button id="cmnShapeColor">Color</button>
       </div>
       <div id="cmnContainer"></div>
       <style>
