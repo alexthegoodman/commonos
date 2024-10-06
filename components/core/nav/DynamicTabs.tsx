@@ -32,9 +32,12 @@ import {
   styled,
 } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { LiveTab, Tab, TabsWrapper } from "../layout/Wrapper";
 import { v4 as uuidv4 } from "uuid";
+import { getUserData } from "@/fetchers/user";
+import useSWR from "swr";
+import { useCookies } from "react-cookie";
 
 const Ctrls = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -146,7 +149,25 @@ const LaunchAppMenu = ({ onSelectApp }) => {
 };
 
 export default function DynamicTabs({ style }) {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
   const { state, dispatch } = useContext(LauncherContext);
+
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
+
+  useEffect(() => {
+    if (!state.openTabs && userData) {
+      console.info("open tab data", userData);
+      // TODO: will eventually need to restore selected project
+      dispatch({
+        type: "openTabs",
+        payload: JSON.parse(userData.launcherContext).openTabs,
+      });
+    }
+  }, [state.openTabs, userData]);
 
   const tabs = state.openTabs;
 
@@ -162,7 +183,7 @@ export default function DynamicTabs({ style }) {
 
     dispatch({
       type: "openTabs",
-      payload: [...tabs, { appId: appId, id: uuidv4() }],
+      payload: [...(tabs ?? []), { appId: appId, id: uuidv4() }],
     });
 
     router.push(selectedAppTabData.href);
@@ -203,7 +224,7 @@ export default function DynamicTabs({ style }) {
           <LaunchAppMenu onSelectApp={onSelectApp} />
         </Ctrls>
         <LiveTabs>
-          {tabs.map((tab) => {
+          {tabs?.map((tab) => {
             const tabData = allTabs.find((t) => t.id === tab.appId);
 
             if (!tabData) {

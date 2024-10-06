@@ -34,14 +34,15 @@ const GridWrapper = styled("div")(({ theme }) => ({
   // backgroundColor: theme.palette.background.paper,
   backgroundColor: "rbga(255, 255, 255, 0.3)",
   width: "calc(100vw - 50px)",
-  height: "calc(100vh - 225px)",
-  overflow: "scroll",
+  // height: "calc(100vh - 225px)",
+  // overflow: "scroll",
 }));
 
 const InnerWrapper = styled("div")(({ theme }) => ({
   position: "relative",
   width: "fit-content",
   backgroundColor: "#E5E5E5",
+  marginBottom: "50px",
   "& .columnButton": {
     position: "absolute",
     top: 0,

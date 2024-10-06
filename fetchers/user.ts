@@ -18,6 +18,16 @@ export const getUserData = async (token: string) => {
   return getCurrentUser;
 };
 
+export const updateLauncherContext = async (token: string, context: any) => {
+  graphClient.setupClient(token);
+
+  const { updateUser } = await graphClient?.request(updateUserMutation, {
+    launcherContext: JSON.stringify(context),
+  });
+
+  return updateUser;
+};
+
 export const updateDocumentTree = async (token: string, documentTree) => {
   graphClient.setupClient(token);
 

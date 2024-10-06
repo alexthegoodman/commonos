@@ -128,7 +128,7 @@ export interface LauncherContextState {
 }
 
 export const LauncherContextState = {
-  openTabs: [],
+  openTabs: null,
   currentOrganizationId: null,
   currentProjectId: null,
 };

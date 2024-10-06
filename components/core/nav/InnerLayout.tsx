@@ -19,6 +19,7 @@ import {
 import { useDarkMode, useLocalStorage } from "usehooks-ts";
 import Hotjar from "@hotjar/browser";
 import { FacebookPixelEvents } from "../landing/FacebookPixel";
+import Autosaver from "./Autosaver";
 
 export default function InnerLayout({
   children,
@@ -63,6 +64,7 @@ export default function InnerLayout({
         <FacebookPixelEvents />
         <ThemeProvider theme={theme}>
           <LauncherContext.Provider value={{ state, dispatch }}>
+            <Autosaver />
             {children}
           </LauncherContext.Provider>
         </ThemeProvider>

@@ -15,6 +15,7 @@ const UserFragment = gql`
     drawingFiles
     soundFiles
     videoFiles
+    launcherContext
     updatedAt
     createdAt
   }
@@ -37,6 +38,7 @@ export const updateUserMutation = gql`
     $drawingFiles: String
     $soundFiles: String
     $videoFiles: String
+    $launcherContext: String
   ) {
     updateUser(
       documentTree: $documentTree
@@ -45,6 +47,7 @@ export const updateUserMutation = gql`
       drawingFiles: $drawingFiles
       soundFiles: $soundFiles
       videoFiles: $videoFiles
+      launcherContext: $launcherContext
     ) {
       ...UserFragment
     }
