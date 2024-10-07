@@ -54,7 +54,7 @@ export default function HeaderWrapper({ hasSidebar }) {
     setPrevScrollPosition(scrollPosition); // Update the previous scroll position
   }, [scrollPosition]);
 
-  console.info("scrollPosition", scrollPosition, isScrollingDown);
+  // console.info("scrollPosition", scrollPosition, isScrollingDown);
 
   return (
     <FixedHeader opaque={isScrolling}>

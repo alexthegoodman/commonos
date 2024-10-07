@@ -549,6 +549,7 @@ export default function FlowEditor({ id, prompt }) {
           });
           setGotFiles(true);
           setLoading(false);
+          setCurrentFileId(files[0].id);
         }
       })
       .catch((err) => {
@@ -576,7 +577,7 @@ export default function FlowEditor({ id, prompt }) {
         getFiles();
       }
     }
-    if (view === "questions" && questionsView === "questions") {
+    if (view === "files" && questionsView === "questions") {
       if (
         !currentFileData.questions ||
         currentFileData.questions.length === 0
@@ -625,7 +626,11 @@ export default function FlowEditor({ id, prompt }) {
                   dispatch={dispatch}
                 />
               ))}
-            {loading && <PrimaryLoader />}
+            {loading && (
+              <Box px={3}>
+                <PrimaryLoader />
+              </Box>
+            )}
           </Grid>
           <Button
             color="success"
@@ -720,6 +725,7 @@ export default function FlowEditor({ id, prompt }) {
             variant="contained"
             onClick={() => {
               setView("files");
+              setCurrentFileId(state.files[0].id);
             }}
           >
             Next
@@ -730,6 +736,155 @@ export default function FlowEditor({ id, prompt }) {
         <>
           <Grid container gap={0}>
             <Grid item xs={12} md={8}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="h6" mb={1}>
+                  Work with CommonOS to create better projects
+                </Typography>
+                <Typography variant="body2">
+                  By providing brief or detailed background information as well
+                  as answering some questions regarding your file, you will get
+                  far more satisfying, tailored results.
+                </Typography>
+              </Alert>
+
+              <Box
+                display="flex"
+                flexDirection="row"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <Box>
+                  <Typography variant="overline">File Title</Typography>
+                  <Typography variant="h5">{currentFileData.name}</Typography>
+                </Box>
+              </Box>
+              {questionsView === "background" && (
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="flex-start"
+                  alignItems="flex-start"
+                >
+                  <Typography variant="overline">
+                    Background Information
+                  </Typography>
+                  <Typography variant="body2">
+                    Please provide some background information about this file.
+                    Adding original details increases your effectiveness.
+                  </Typography>
+                  <TextareaAutosize
+                    style={{
+                      width: "100%",
+                      maxWidth: "600px",
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      outline: "none",
+                      resize: "none",
+                    }}
+                    placeholder="Enter background information"
+                    minRows={3}
+                    onChange={(e) => {
+                      dispatch({
+                        type: "files",
+                        payload: state.files.map((f) => {
+                          if (f.id === currentFileId) {
+                            return {
+                              ...f,
+                              background: e.target.value,
+                            };
+                          } else {
+                            return f;
+                          }
+                        }),
+                      });
+                    }}
+                    defaultValue={currentFileData.background}
+                  />
+                  <Box display="flex" justifyContent="center" mt={2}>
+                    <Button
+                      color="success"
+                      variant="contained"
+                      onClick={() => {
+                        setQuestionsView("questions");
+                      }}
+                      disabled={
+                        !currentFileData.background ||
+                        currentFileData.background.length === 0
+                      }
+                    >
+                      Next
+                    </Button>
+                  </Box>
+                </Box>
+              )}
+              {questionsView === "questions" && (
+                <Grid container gap={3}>
+                  <Box
+                    display="flex"
+                    flexDirection="row"
+                    justifyContent="flex-end"
+                    width="100%"
+                  >
+                    <Button
+                      color="info"
+                      variant="contained"
+                      onClick={getFileQuestions}
+                    >
+                      <Refresh />
+                    </Button>
+                  </Box>
+
+                  {!loading &&
+                    currentFileData.questions &&
+                    currentFileData.questions.length > 0 &&
+                    currentFileData.questions.map((question, i) => (
+                      <QuestionItem
+                        key={question.id}
+                        fileId={currentFileId}
+                        type="files"
+                        question={question}
+                        state={state}
+                        dispatch={dispatch}
+                      />
+                    ))}
+                  {loading && <PrimaryLoader />}
+                  <Button
+                    onClick={() => {
+                      const currentFileIndex = state.files.findIndex(
+                        (file) => file.id === currentFileId
+                      );
+                      const nextFile =
+                        currentFileIndex > -1
+                          ? state.files[currentFileIndex + 1]
+                          : null;
+                      if (nextFile) {
+                        setCurrentFileId(nextFile.id);
+                        setView("files");
+                        setQuestionsView("background");
+                      } else {
+                        router.push(`/flows/${id}/results`);
+                      }
+                    }}
+                  >
+                    Finish
+                  </Button>
+                </Grid>
+              )}
+            </Grid>
+            <Grid item xs={12} md={4} paddingLeft={2}>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                <Typography variant="h6" mb={1}>
+                  Please review your files
+                </Typography>
+                <Typography variant="body2">
+                  The files in the above list will be created based on your
+                  answers to questions for each file. You can also skip files or
+                  skip the questions. Easily extend the list by adding new files
+                  or editing file titles.
+                </Typography>
+              </Alert>
+
               {!loading && state.files.length > 0 ? (
                 <>
                   <Box
@@ -768,7 +923,7 @@ export default function FlowEditor({ id, prompt }) {
                         >
                           <Typography
                             variant="body2"
-                            width={175}
+                            // width={175}
                             display="flex"
                             alignItems="center"
                             justifyContent="center"
@@ -814,13 +969,10 @@ export default function FlowEditor({ id, prompt }) {
                           <Box
                             display="flex"
                             justifyContent="space-between"
-                            width={350}
+                            // width={350}
                             padding="0px 20px"
                           >
-                            {/* <Button size="small">
-                              Skip File {file.skipFile && <CheckCircle />}
-                            </Button> */}
-                            <Button
+                            {/* <Button
                               size="small"
                               onClick={() => {
                                 dispatch({
@@ -849,7 +1001,7 @@ export default function FlowEditor({ id, prompt }) {
                             >
                               Answer Questions
                               {hasAnsweredQuestion && <CheckCircle />}
-                            </Button>
+                            </Button> */}
                             <Tooltip title="Remove File">
                               <IconButton
                                 size="small"
@@ -874,19 +1026,7 @@ export default function FlowEditor({ id, prompt }) {
               ) : (
                 <PrimaryLoader />
               )}
-            </Grid>
-            <Grid item xs={12} md={4} paddingLeft={2}>
-              <Alert severity="info">
-                <Typography variant="h6" mb={1}>
-                  Please review your files
-                </Typography>
-                <Typography variant="body2">
-                  The files in this list will be created based on your answers
-                  to questions for each file. You can also skip files or skip
-                  the questions. Easily extend the list by adding new files or
-                  editing file titles.
-                </Typography>
-              </Alert>
+
               <Box padding={2} textAlign="center">
                 <form
                   className="form"
@@ -955,135 +1095,22 @@ export default function FlowEditor({ id, prompt }) {
               <Box display="flex" justifyContent="center">
                 <Button
                   endIcon={<AutoAwesome />}
-                  color="success"
+                  color="info"
                   variant="contained"
+                  size="small"
                   onClick={() => {
                     // TODO
                     router.push(`/flows/${id}/results`);
                   }}
                 >
-                  Create Files
+                  Finish Early
                 </Button>
               </Box>
             </Grid>
           </Grid>
         </>
       )}
-      {view === "questions" && (
-        <>
-          <Box
-            display="flex"
-            flexDirection="row"
-            justifyContent="space-between"
-            width="100%"
-          >
-            <Box>
-              <Typography variant="overline">File Title</Typography>
-              <Typography variant="h5">{currentFileData.name}</Typography>
-            </Box>
-          </Box>
-          {questionsView === "background" && (
-            <Box
-              display="flex"
-              flexDirection="column"
-              justifyContent="flex-start"
-              alignItems="flex-start"
-            >
-              <Typography variant="overline">Background Information</Typography>
-              <Typography variant="body2">
-                Please provide some background information about this file.
-                Adding original details increases your effectiveness.
-              </Typography>
-              <TextareaAutosize
-                style={{
-                  width: "100%",
-                  maxWidth: "600px",
-                  padding: "8px",
-                  border: "1px solid #ccc",
-                  borderRadius: "4px",
-                  outline: "none",
-                  resize: "none",
-                }}
-                placeholder="Enter background information"
-                minRows={3}
-                onChange={(e) => {
-                  dispatch({
-                    type: "files",
-                    payload: state.files.map((f) => {
-                      if (f.id === currentFileId) {
-                        return {
-                          ...f,
-                          background: e.target.value,
-                        };
-                      } else {
-                        return f;
-                      }
-                    }),
-                  });
-                }}
-                defaultValue={currentFileData.background}
-              />
-              <Box display="flex" justifyContent="center" mt={2}>
-                <Button
-                  color="success"
-                  variant="contained"
-                  onClick={() => {
-                    setQuestionsView("questions");
-                  }}
-                  disabled={
-                    !currentFileData.background ||
-                    currentFileData.background.length === 0
-                  }
-                >
-                  Next
-                </Button>
-              </Box>
-            </Box>
-          )}
-          {questionsView === "questions" && (
-            <Grid container gap={3}>
-              <Box
-                display="flex"
-                flexDirection="row"
-                justifyContent="flex-end"
-                width="100%"
-              >
-                <Button
-                  color="info"
-                  variant="contained"
-                  onClick={getFileQuestions}
-                >
-                  <Refresh />
-                </Button>
-              </Box>
-
-              {!loading &&
-                currentFileData.questions &&
-                currentFileData.questions.length > 0 &&
-                currentFileData.questions.map((question, i) => (
-                  <QuestionItem
-                    key={question.id}
-                    fileId={currentFileId}
-                    type="files"
-                    question={question}
-                    state={state}
-                    dispatch={dispatch}
-                  />
-                ))}
-              {loading && <PrimaryLoader />}
-              <Button
-                onClick={() => {
-                  setCurrentFileId(null);
-                  setView("files");
-                  setQuestionsView("background");
-                }}
-              >
-                Finish
-              </Button>
-            </Grid>
-          )}
-        </>
-      )}
+      {view === "questions" && <></>}
     </Box>
   );
 }
