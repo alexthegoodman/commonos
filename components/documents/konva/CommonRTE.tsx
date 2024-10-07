@@ -1,3 +1,4 @@
+import { simpleUpload } from "@/fetchers/drawing";
 import { Button } from "@mui/material";
 import { initializeMultiPageRTE } from "common-rte/dist";
 import {
@@ -7,6 +8,7 @@ import {
   MultiPageEditor,
 } from "common-rte/dist";
 import { useEffect } from "react";
+import { useCookies } from "react-cookie";
 // import testJson from "./src/testJson.json";
 
 const pxPerIn = 96;
@@ -39,9 +41,33 @@ export default function CommonRTE({
   documentData,
   refetch,
 }) {
+  const [cookies, setCookie] = useCookies(["cmUserToken"]);
+  const token = cookies.cmUserToken;
+
   const startEditor = () => {
     const debounceCallback = (content, masterJson) =>
       console.info("debounce content", documentId, masterJson);
+
+    const uploadFileHandler = async (
+      fileName,
+      fileSize,
+      fileType,
+      fileData
+    ) => {
+      console.info("handling upload file");
+
+      const blob = await simpleUpload(
+        token,
+        fileName,
+        fileSize,
+        fileType,
+        fileData
+      );
+
+      console.info("uploaded", blob);
+
+      return blob.url;
+    };
 
     const detachHandlers = initializeMultiPageRTE(
       markdown,
@@ -51,7 +77,8 @@ export default function CommonRTE({
       documentSize,
       marginSize,
       debounceCallback,
-      "/fonts/Inter-Regular.ttf"
+      "/fonts/Inter-Regular.ttf",
+      uploadFileHandler
     );
 
     return detachHandlers;

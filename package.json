@@ -40,7 +40,7 @@
     "algoliasearch": "^4.22.1",
     "bcryptjs": "^2.4.3",
     "canvas": "^2.11.2",
-    "common-rte": "^1.0.14",
+    "common-rte": "^1.0.21",
     "critters": "^0.0.20",
     "fontkit": "^2.0.2",
     "framer-motion": "^10.16.12",
