@@ -196,6 +196,7 @@ export const SheetGrid = ({
                             type="text"
                             defaultValue={cell.text}
                             onChange={(e) => handleCellInputChange(e, cell.id)}
+                            style={cellStyles}
                           />
                         </InnerCell>
                       )}
