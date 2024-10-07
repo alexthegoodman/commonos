@@ -755,7 +755,7 @@ export default function FlowEditor({ id, prompt }) {
               >
                 <Box>
                   <Typography variant="overline">File Title</Typography>
-                  <Typography variant="h5">{currentFileData.name}</Typography>
+                  <Typography variant="h5">{currentFileData?.name}</Typography>
                 </Box>
               </Box>
               {questionsView === "background" && (
@@ -799,7 +799,7 @@ export default function FlowEditor({ id, prompt }) {
                         }),
                       });
                     }}
-                    defaultValue={currentFileData.background}
+                    defaultValue={currentFileData?.background}
                   />
                   <Box display="flex" justifyContent="center" mt={2}>
                     <Button
@@ -809,8 +809,8 @@ export default function FlowEditor({ id, prompt }) {
                         setQuestionsView("questions");
                       }}
                       disabled={
-                        !currentFileData.background ||
-                        currentFileData.background.length === 0
+                        !currentFileData?.background ||
+                        currentFileData?.background?.length === 0
                       }
                     >
                       Next
@@ -1006,6 +1006,19 @@ export default function FlowEditor({ id, prompt }) {
                               <IconButton
                                 size="small"
                                 onClick={() => {
+                                  if (currentFileId === file.id) {
+                                    const currentFileIndex =
+                                      state.files.findIndex(
+                                        (file) => file.id === currentFileId
+                                      );
+                                    const nextFile =
+                                      currentFileIndex > -1
+                                        ? state.files[currentFileIndex + 1]
+                                        : null;
+
+                                    setCurrentFileId(nextFile.id);
+                                  }
+
                                   dispatch({
                                     type: "files",
                                     payload: state.files.filter(
