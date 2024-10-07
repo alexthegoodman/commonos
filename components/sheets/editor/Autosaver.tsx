@@ -14,6 +14,8 @@ export default function Autosaver({ id, title }) {
   const debouncedState = useDebounce(state, 500);
   const debouncedTitle = useDebounce(title, 500);
 
+  console.info("state", state);
+
   const [stateChecked, setStateChecked] = useState(false);
 
   useEffect(() => {
@@ -33,10 +35,12 @@ export default function Autosaver({ id, title }) {
   // backwards compatability
   // add ids to cells
   useEffect(() => {
-    if (!stateChecked) {
+    if (!stateChecked && state.sheets.length) {
       setStateChecked(true);
 
       let sheets = state.sheets ? state.sheets : [];
+
+      console.info("adding ids", sheets);
 
       dispatch({
         type: "sheets",
@@ -56,6 +60,30 @@ export default function Autosaver({ id, title }) {
             }),
           };
         }),
+      });
+    } else if (!stateChecked && state.rows.length) {
+      setStateChecked(true);
+
+      dispatch({
+        type: "sheets",
+        payload: [
+          {
+            id: uuidv4(),
+            name: "Sheet 1",
+            columns: state.columns,
+            rows: state.rows.map((row) => {
+              return {
+                ...row,
+                cells: row.cells.map((cell) => {
+                  return {
+                    ...cell,
+                    id: cell.id ? cell.id : uuidv4(),
+                  };
+                }),
+              };
+            }),
+          },
+        ],
       });
     }
   }, [state]);

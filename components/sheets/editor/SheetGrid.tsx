@@ -40,18 +40,37 @@ const InnerCell = styled(Box)(({ theme }) => ({
   padding: "3px",
   width: "100%",
   fontFamily: "proxima-nova",
+  "& input": {
+    height: "100%",
+    width: "100%",
+    border: "none",
+    outline: "none",
+    fontSize: "16px",
+  },
 }));
 
-function ResizableCell({ selected = false, children, initialWidth, onClick }) {
+function ResizableCell({
+  selected = false,
+  children,
+  initialWidth,
+  onClick,
+  onStopResizing,
+}) {
   const { width, startResizing, stopResizing, resize } =
     useResizable(initialWidth);
 
+  const handleStopResizing = () => {
+    console.info("handleStopResizing");
+    stopResizing();
+    onStopResizing(width);
+  };
+
   useEffect(() => {
     document.addEventListener("mousemove", resize);
-    document.addEventListener("mouseup", stopResizing);
+    // document.addEventListener("mouseup", handleStopResizing);
     return () => {
       document.removeEventListener("mousemove", resize);
-      document.removeEventListener("mouseup", stopResizing);
+      // document.removeEventListener("mouseup", handleStopResizing);
     };
   }, [resize, stopResizing]);
 
@@ -65,6 +84,7 @@ function ResizableCell({ selected = false, children, initialWidth, onClick }) {
           right: "0px",
         }}
         onMouseDown={startResizing}
+        onMouseUp={handleStopResizing}
       />
     </Cell>
   );
@@ -75,6 +95,8 @@ export const SheetGrid = ({
   rows = [],
   columns = [],
   onSelectionChanged = () => {},
+  onCellsChanged = () => {},
+  onColumnResized = () => {},
 }) => {
   console.info("SHeetGrid", rows, columns);
   const [primaryCellSelection, setPrimaryCellSelection] = useState(null);
@@ -133,6 +155,10 @@ export const SheetGrid = ({
     return rangeCells;
   };
 
+  const handleCellInputChange = (e, cellId) => {
+    onCellsChanged(cellId, e.target.value);
+  };
+
   return (
     <>
       {rows.map((row) => {
@@ -140,7 +166,7 @@ export const SheetGrid = ({
           <>
             <Box display="flex" flexDirection="row">
               {row.cells.map((cell, i) => {
-                const cellInitialWidth = 150;
+                const cellInitialWidth = cell?.width ? cell.width : 150;
                 const isSelected = selectedCells?.find(
                   (cel) => cel === cell.id
                 );
@@ -154,6 +180,9 @@ export const SheetGrid = ({
                       initialWidth={cellInitialWidth}
                       selected={isSelected ? true : false}
                       onClick={(e) => handleCellClick(e, cell.id)}
+                      onStopResizing={(width) => {
+                        onColumnResized(cell.id, width);
+                      }}
                     >
                       {cell.type === "header" && (
                         <InnerCell>
@@ -162,7 +191,12 @@ export const SheetGrid = ({
                       )}
                       {cell.type === "text" && (
                         <InnerCell>
-                          <span style={cellStyles}>{cell.text}</span>
+                          {/* <span style={cellStyles}>{cell.text}</span> */}
+                          <input
+                            type="text"
+                            defaultValue={cell.text}
+                            onChange={(e) => handleCellInputChange(e, cell.id)}
+                          />
                         </InnerCell>
                       )}
                     </ResizableCell>

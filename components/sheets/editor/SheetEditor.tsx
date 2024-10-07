@@ -75,10 +75,12 @@ export default function SheetEditor({
 }) {
   const [state, dispatch] = useSheetsContext();
 
+  selectedSheet = selectedSheet ? selectedSheet : 0;
+
   const hasAnySheets = state?.sheets?.length;
-  const currentSheet = hasAnySheets
-    ? state.sheets[selectedSheet ? selectedSheet : 0]
-    : state;
+  const currentSheet = hasAnySheets ? state.sheets[selectedSheet] : state;
+
+  let selectedSheetId = currentSheet.id;
 
   const columns = currentSheet.columns;
   const rows = currentSheet.rows;
@@ -119,14 +121,37 @@ export default function SheetEditor({
     })),
   ];
 
-  // const handleChanges = (changes: CellChange<TextCell>[]) => {
-  //   dispatch({
-  //     type: "rows",
-  //     payload: applyChangesToRow(changes, rows, columns),
-  //   });
-  // };
+  const handleChanges = (cellId, value) => {
+    if (!cellId) {
+      return;
+    }
 
-  const handleColumnResize = (ci: Id, width: number) => {
+    dispatch({
+      type: "sheets",
+      payload: state.sheets.map((sheet) => {
+        if (sheet.id === selectedSheetId) {
+          return {
+            ...sheet,
+            rows: rows.map((row) => {
+              return {
+                ...row,
+                cells: row.cells.map((cell) => {
+                  console.info("check", cell.id, cellId);
+                  if (cell.id === cellId) {
+                    return { ...cell, text: value };
+                  }
+                  return { ...cell };
+                }),
+              };
+            }),
+          };
+        }
+        return sheet;
+      }),
+    });
+  };
+
+  const handleColumnResize = (ci: string, width: number) => {
     // dispatch({
     //   type: "columns",
     //   payload: columns.map((column) => {
@@ -136,6 +161,61 @@ export default function SheetEditor({
     //     return column;
     //   }),
     // });
+    // dispatch({
+    //   type: "rows",
+    //   payload: rows.map((row) => {
+    //     return {
+    //       ...row,
+    //       cells: row.cells.map((cell) => {
+    //         if (cell.id === ci) {
+    //           return { ...cell, width };
+    //         }
+    //         return cell;
+    //       }),
+    //     };
+    //   }),
+    // });
+
+    console.info("handleCOlumnResize", ci, width);
+
+    if (!ci) {
+      return;
+    }
+
+    dispatch({
+      type: "sheets",
+      payload: state.sheets.map((sheet) => {
+        if (sheet.id === selectedSheetId) {
+          return {
+            ...sheet,
+            rows: sheet.rows.map((row) => {
+              return {
+                ...row,
+                cells: row.cells.map((cell) => {
+                  if (cell.id === ci) {
+                    console.info("match cell");
+                    return { ...cell, width };
+                  }
+                  return cell;
+                }),
+              };
+            }),
+            // no need to maintain
+            // columns: sheet.columns.map((column) => {
+            //   if (column.columnId === ci) {
+            //     console.info("match column");
+            //     return {
+            //       ...column,
+            //       width,
+            //     };
+            //   }
+            //   return column;
+            // }),
+          };
+        }
+        return sheet;
+      }),
+    });
   };
 
   const addColumn = () => {
@@ -164,6 +244,36 @@ export default function SheetEditor({
     //     ],
     //   })),
     // });
+    dispatch({
+      type: "sheets",
+      payload: state.sheets.map((sheet) => {
+        if (sheet.id === selectedSheetId) {
+          return {
+            ...sheet,
+            columns: [
+              ...columns,
+              {
+                columnId: uuidv4(),
+                width: 100,
+                reorderable: true,
+                resizable: true,
+              },
+            ],
+            rows: rows.map((row) => ({
+              ...row,
+              cells: [
+                ...row.cells,
+                {
+                  type: "text",
+                  text: "",
+                },
+              ],
+            })),
+          };
+        }
+        return sheet;
+      }),
+    });
   };
 
   const addRow = () => {
@@ -180,6 +290,27 @@ export default function SheetEditor({
     //     },
     //   ],
     // });
+    dispatch({
+      type: "sheets",
+      payload: state.sheets.map((sheet) => {
+        if (sheet.id === selectedSheetId) {
+          return {
+            ...sheet,
+            rows: [
+              ...rows,
+              {
+                rowId: uuidv4(),
+                cells: columns.map((column) => ({
+                  type: "text",
+                  text: "",
+                })),
+              },
+            ],
+          };
+        }
+        return sheet;
+      }),
+    });
   };
 
   const handleSelectionChange = (selectedRanges) => {
@@ -207,6 +338,8 @@ export default function SheetEditor({
             columns={columnsWithIndex}
             selectedCells={selectedCells}
             onSelectionChanged={handleSelectionChange}
+            onCellsChanged={handleChanges}
+            onColumnResized={handleColumnResize}
           />
           <Button
             className="columnButton"
