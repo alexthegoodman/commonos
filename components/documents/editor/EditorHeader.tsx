@@ -21,13 +21,21 @@ const EditorHeader = ({
   graphClient.setupClient(token);
 
   const [
-    { editorJson, editorPlaintext, editorTitle, markdown, messages },
+    {
+      editorJson,
+      editorPlaintext,
+      editorTitle,
+      markdown,
+      messages,
+      commonJson,
+    },
     dispatch,
   ] = useDocumentsContext();
   const debouncedTitle = useDebounce(editorTitle, 500);
   const debouncedJson = useDebounce(editorJson, 500);
   const debouncedMarkdown = useDebounce(markdown, 2000);
   const debouncedMessages = useDebounce(messages, 500);
+  const debouncedCommonJson = useDebounce(commonJson, 500);
   const [lastSaved, setLastSaved] = React.useState<string | null>(null);
   const [hasMounted, setHasMounted] = React.useState(false);
 
@@ -45,7 +53,7 @@ const EditorHeader = ({
 
     console.info("updatedDocument", updateDocument);
 
-    refetchDocument(); // TODO: can now be done with documentId
+    // refetchDocument(); // TODO: can now be done with documentId
     mutate("browseKey", () => getDocumentsData(token));
   };
 
@@ -72,20 +80,21 @@ const EditorHeader = ({
   // }, [debouncedJson]);
 
   React.useEffect(() => {
-    if (hasMounted && debouncedMarkdown) {
-      console.info("debouncedMarkdown", debouncedMarkdown);
+    if (hasMounted && debouncedCommonJson) {
+      console.info("debouncedCommonJson");
       updateDocument({
-        markdown: debouncedMarkdown,
+        masterJson: JSON.stringify(debouncedCommonJson?.masterJson),
+        masterVisuals: JSON.stringify(debouncedCommonJson?.masterVisuals),
       });
     }
-  }, [debouncedMarkdown]);
+  }, [debouncedCommonJson]);
 
-  React.useEffect(() => {
-    if (hasMounted && debouncedMessages) {
-      // console.info("messages", messages);
-      updateDocument({ messages: JSON.stringify(debouncedMessages) });
-    }
-  }, [debouncedMessages]);
+  // React.useEffect(() => {
+  //   if (hasMounted && debouncedMessages) {
+  //     // console.info("messages", messages);
+  //     updateDocument({ messages: JSON.stringify(debouncedMessages) });
+  //   }
+  // }, [debouncedMessages]);
 
   const onTitleChange = (e: any) => {
     console.info("title change", e.target.value);

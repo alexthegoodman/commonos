@@ -16,6 +16,8 @@ export const updateDocumentMutation = gql`
     $plaintext: String
     $html: String
     $markdown: String
+    $masterJson: String
+    $masterVisuals: String
     $messages: String
   ) {
     updateDocument(
@@ -25,6 +27,8 @@ export const updateDocumentMutation = gql`
       plaintext: $plaintext
       html: $html
       markdown: $markdown
+      masterJson: $masterJson
+      masterVisuals: $masterVisuals
       messages: $messages
     ) {
       id
@@ -59,6 +63,8 @@ export const documentQuery = gql`
       html
       markdown
       messages
+      masterJson
+      masterVisuals
 
       creator {
         email

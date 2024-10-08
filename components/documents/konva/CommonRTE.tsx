@@ -1,5 +1,7 @@
+import { useDocumentsContext } from "@/context/DocumentsContext";
 import { simpleUpload } from "@/fetchers/drawing";
-import { Button } from "@mui/material";
+import { updateDocumentMutation } from "@/gql/document";
+import { Box, Button } from "@mui/material";
 import { initializeMultiPageRTE } from "common-rte/dist";
 import {
   defaultStyle,
@@ -41,12 +43,24 @@ export default function CommonRTE({
   documentData,
   refetch,
 }) {
+  const [state, dispatch] = useDocumentsContext();
+
   const [cookies, setCookie] = useCookies(["cmUserToken"]);
   const token = cookies.cmUserToken;
 
   const startEditor = () => {
-    const debounceCallback = (content, masterJson) =>
-      console.info("debounce content", documentId, masterJson);
+    const debounceCallback = (masterContent, masterJson, masterVisuals) => {
+      console.info("save editor data", documentId, masterJson, masterVisuals);
+
+      dispatch({
+        type: "commonJson",
+        payload: {
+          masterContent,
+          masterJson,
+          masterVisuals,
+        },
+      });
+    };
 
     const uploadFileHandler = async (
       fileName,
@@ -69,10 +83,17 @@ export default function CommonRTE({
       return blob.url;
     };
 
+    console.info(
+      "starting editor",
+      markdown.length,
+      documentData?.masterJson?.length,
+      documentData?.masterVisuals?.length
+    );
+
     const detachHandlers = initializeMultiPageRTE(
       markdown,
-      null,
-      // testJson,
+      documentData?.masterJson ?? null, // initial json
+      documentData?.masterVisuals ?? [], // initial visuals
       mainTextSize,
       documentSize,
       marginSize,
@@ -138,8 +159,10 @@ export default function CommonRTE({
           Image
         </Button>
         <input id="cmnImageFile" type="file" className="hidden" />
-        <span>Last Saved:</span>
-        <span id="cmnLastSaved"></span>
+        <Box display="none">
+          <span>Last Saved:</span>
+          <span id="cmnLastSaved"></span>
+        </Box>
       </div>
       <div id="cmnToolbarShape" className="toolbar">
         <label>Shape Properties:</label>

@@ -5,6 +5,7 @@ export interface DocumentsContextState {
   editorValue: string;
   editorJson: any;
   editorPlaintext: string;
+  commonJson: any;
   pages: any[] | null;
 }
 
@@ -13,6 +14,7 @@ export const DocumentsContextState = {
   editorValue: "",
   editorJson: null,
   editorPlaintext: "",
+  commonJson: null,
   pages: [],
 };
 

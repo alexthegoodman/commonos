@@ -10,6 +10,7 @@ import DynamicInner from "../konva/DynamicInner";
 import MultiPageRTE from "../konva/MultiPageRTE";
 import FullRTE from "../konva/FullRTE";
 import CommonRTE from "../konva/CommonRTE";
+import EditorHeader from "./EditorHeader";
 
 export default function InnerLayout({
   context,
@@ -40,6 +41,11 @@ export default function InnerLayout({
           documentData={documentData}
           refetch={refetch}
         /> */}
+        <EditorHeader
+          documentId={documentId}
+          documentData={documentData}
+          refetchDocument={refetch}
+        />
         <CommonRTE
           markdown={initialMarkdown}
           documentId={documentId}
