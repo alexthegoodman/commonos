@@ -7,6 +7,7 @@ import {
   Paper,
   styled,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import {
   CurrencyDollar,
@@ -14,13 +15,23 @@ import {
   Palette,
   TextColumns,
 } from "@phosphor-icons/react";
-import { Add, Close } from "@mui/icons-material";
+import { Add, Close, Info } from "@mui/icons-material";
 import { useSheetsContext } from "@/context/SheetsContext";
 import { realDefaultColumns, realDefaultRows } from "@/fixtures/sheets";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import { MuiColorInput } from "mui-color-input";
 const { DateTime } = require("luxon");
+
+import {
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Typography,
+} from "@mui/material";
 
 const Header = styled("header")(({ theme }) => ({
   display: "flex",
@@ -51,6 +62,55 @@ const PopoverPaper = styled(Paper)(({ theme, visible }) => ({
   zIndex: "10",
 }));
 
+const FormulaInfoButton = () => {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => setOpen(true);
+
+  const handleClose = () => setOpen(false);
+
+  return (
+    <>
+      <Tooltip title="Learn more about formulas">
+        <Button onClick={handleClickOpen}>
+          <Info />
+        </Button>
+      </Tooltip>
+      <Dialog open={open} keepMounted onClose={handleClose}>
+        <DialogTitle>{"How Formulas Work"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText whiteSpace="break-spaces" width="100%">
+            <p>{`Our spreadsheet supports a variety of formulas to help you analyze and manipulate your data. Here's what you can do:
+
+1. Basic Arithmetic: Use +, -, *, and / for addition, subtraction, multiplication, and division.
+2. Exponents: Use ^ for exponentiation (e.g., 2^3 = 8).
+3. Parentheses: Group operations to control calculation order.
+4. Functions:
+   - SUM: Add up a series of numbers
+   - AVERAGE: Calculate the mean of a set of values
+   - MIN: Find the smallest value
+   - MAX: Find the largest value
+   - COUNT: Count the number of values
+
+5. Comparisons: Use >, <, >=, <=, =, and <> to compare values.
+
+Formulas always start with an equals sign (=). For example:
+
+=A1 + B2       (adds values in cells A1 and B2)
+=SUM(A1:A5)    (sums values from A1 to A5)
+=AVERAGE(B1:B10) > 50  (checks if the average of B1 to B10 is greater than 50)
+
+Simply select cell(s) and then add your formula!`}</p>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Go Back</Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
 const EditorHeader = ({
   title,
   setTitle,
@@ -60,11 +120,27 @@ const EditorHeader = ({
 }) => {
   const [state, dispatch] = useSheetsContext();
 
+  selectedSheet = selectedSheet ? selectedSheet : 0;
+
+  const hasAnySheets = state?.sheets?.length;
+  const currentSheet = hasAnySheets ? state.sheets[selectedSheet] : state;
+
+  let selectedSheetId = currentSheet.id;
+
+  const columns = currentSheet.columns;
+  const rows = currentSheet.rows;
+
+  const selectedCellData = rows
+    .map((row) => {
+      return row.cells.filter((cell) => selectedCells?.includes(cell.id));
+    })
+    .flat();
+
+  console.info("selectedCellData", selectedCellData);
+
   const [formatVisible, setFormatVisible] = React.useState(false);
   const [formulaVisible, setFormulaVisible] = React.useState(false);
   const [colorVisible, setColorVisible] = React.useState(false);
-
-  const hasAnySheets = state?.sheets?.length;
 
   const onTitleChange = (e: any) => {
     console.info("title change", e.target.value);
@@ -102,33 +178,38 @@ const EditorHeader = ({
     dispatch({ type: "columns", payload: [] });
   };
 
+  const handleFormulaChange = (e) => {
+    const formula = e.target.value;
+    dispatch({
+      type: "sheets",
+      payload: state.sheets.map((sheet) => {
+        if (sheet.id === selectedSheetId) {
+          return {
+            ...sheet,
+            rows: rows.map((row) => {
+              return {
+                ...row,
+                cells: row.cells.map((cell) => {
+                  if (selectedCells.includes(cell.id)) {
+                    return {
+                      ...cell,
+                      formula,
+                    };
+                  }
+                  return cell;
+                }),
+              };
+            }),
+          };
+        }
+        return sheet;
+      }),
+    });
+  };
+
   const handleSheetClick = (sheetIndex) => {
     setSelectedSheet(sheetIndex);
   };
-
-  // const handleColorClick = () => {
-  //   dispatch({
-  //     type: "sheets",
-  //     payload: state.sheets.map((sheet) => {
-  //       return {
-  //         ...sheet,
-  //         rows: sheet.rows.map((row) => {
-  //           return {
-  //             ...row,
-  //             cells: row.cells.map((cell) => {
-  //               const isSelected = selectedCells.find((id) => id === cell.id);
-
-  //               return {
-  //                 ...cell,
-  //                 color: isSelected ? "red" : cell.color,
-  //               };
-  //             }),
-  //           };
-  //         }),
-  //       };
-  //     }),
-  //   });
-  // };
 
   return (
     <>
@@ -142,6 +223,17 @@ const EditorHeader = ({
             marginRight: "15px",
           }}
         />
+        {/** Formula Box */}
+        <Box display="flex" flexDirection="row">
+          <TextField
+            sx={{ width: 350 }}
+            placeholder={`Cell Formula (ex. "=SUM(A1,A2,A3)")`}
+            defaultValue={selectedCellData[0]?.formula}
+            onChange={handleFormulaChange}
+          />
+          <FormulaInfoButton />
+        </Box>
+
         {/** Format Box */}
         <PopoverWrapper>
           <Button
@@ -149,23 +241,25 @@ const EditorHeader = ({
             variant="outlined"
             size="small"
             endIcon={<CurrencyDollar size={20} />}
+            onClick={() => setFormatVisible(!formatVisible)}
           >
             Format
           </Button>
           <PopoverPaper visible={formatVisible}></PopoverPaper>
         </PopoverWrapper>
         {/** Formula Box */}
-        <PopoverWrapper>
+        {/* <PopoverWrapper>
           <Button
             color="secondary"
             variant="outlined"
             size="small"
             endIcon={<Function size={20} />}
+            onClick={() => setFormulaVisible(!formulaVisible)}
           >
             Formula
           </Button>
           <PopoverPaper visible={formulaVisible}></PopoverPaper>
-        </PopoverWrapper>
+        </PopoverWrapper> */}
         {/** Color Box */}
         <PopoverWrapper>
           <Button

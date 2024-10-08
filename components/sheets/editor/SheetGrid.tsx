@@ -7,7 +7,7 @@ import {
   ArrowsOutLineVertical,
   Divide,
 } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Cell = styled(Box)(({ theme, selected }) => ({
   userSelect: "none",
@@ -90,6 +90,8 @@ function ResizableCell({
   );
 }
 
+const ENGLISH_CAPS = "_ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""); // _ at beginning to count headers
+
 export const SheetGrid = ({
   selectedCells = [],
   rows = [],
@@ -98,9 +100,57 @@ export const SheetGrid = ({
   onCellsChanged = () => {},
   onColumnResized = () => {},
 }) => {
-  console.info("SHeetGrid", rows, columns);
   const [primaryCellSelection, setPrimaryCellSelection] = useState(null);
   const [secondaryCellSelection, setSecondaryCellSelection] = useState(null);
+
+  // Helper function to get cell value
+  const getCellValue = (cellId, cellValues) => {
+    return cellValues[cellId] || 0;
+  };
+
+  // Helper functions for basic operations
+  const sum = (...args) => args.reduce((a, b) => a + b, 0);
+  const average = (...args) => sum(...args) / args.length;
+  const min = (...args) => Math.min(...args);
+  const max = (...args) => Math.max(...args);
+  const count = (...args) => args.length;
+
+  // Enhanced formula evaluator
+  const evaluateFormula = (formula, cellValues) => {
+    // Remove the '=' at the beginning
+    let exp = formula.slice(1);
+
+    // Replace cell references with their values
+    exp = exp.replace(/[A-Z]\d+/g, (match) => {
+      return getCellValue(match, cellValues);
+    });
+
+    // Replace function names with their JavaScript equivalents
+    exp = exp
+      .replace(/SUM/g, "sum")
+      .replace(/AVERAGE/g, "average")
+      .replace(/MIN/g, "min")
+      .replace(/MAX/g, "max")
+      .replace(/COUNT/g, "count");
+
+    // Replace comparison operators
+    exp = exp.replace(/=/g, "==").replace(/\<\>/g, "!=");
+
+    // Use Function constructor instead of eval for better security
+    try {
+      const func = new Function(
+        "sum",
+        "average",
+        "min",
+        "max",
+        "count",
+        "return " + exp
+      );
+      return func(sum, average, min, max, count);
+    } catch (error) {
+      return "#ERROR!";
+    }
+  };
 
   const handleCellClick = (e, cellId) => {
     if (e.shiftKey) {
@@ -159,9 +209,34 @@ export const SheetGrid = ({
     onCellsChanged(cellId, e.target.value);
   };
 
+  const getRowCellsWithLabels = (rowCells, rowLabel) => {
+    let columnPerRow = 0;
+    let cellValues = {};
+    rowCells.forEach((cell) => {
+      columnLabel = ENGLISH_CAPS[columnPerRow];
+      cellLabel = columnLabel + rowLabel;
+
+      columnPerRow++;
+
+      cellValues[cellLabel] = cell.text;
+    });
+    return cellValues;
+  };
+
+  let rowLabel = "";
+  let columnLabel = "";
+  let cellLabel = "";
+
   return (
     <>
-      {rows.map((row) => {
+      {rows.map((row, i) => {
+        // columnPerRow = 0;
+        rowLabel = i;
+
+        const cellsWithLabels = getRowCellsWithLabels(row.cells, rowLabel);
+
+        // console.info("cellsWithLabels", cellsWithLabels);
+
         return (
           <>
             <Box display="flex" flexDirection="row">
@@ -172,6 +247,10 @@ export const SheetGrid = ({
                 );
 
                 const cellStyles = { color: cell.color ? cell.color : "black" };
+
+                const cellValue = cell?.formula
+                  ? evaluateFormula(cell.formula, cellsWithLabels)
+                  : cell.text;
 
                 return (
                   <>
@@ -186,7 +265,7 @@ export const SheetGrid = ({
                     >
                       {cell.type === "header" && (
                         <InnerCell>
-                          <span style={cellStyles}>{cell.text}</span>
+                          <span style={cellStyles}>{cellValue}</span>
                         </InnerCell>
                       )}
                       {cell.type === "text" && (
@@ -194,7 +273,7 @@ export const SheetGrid = ({
                           {/* <span style={cellStyles}>{cell.text}</span> */}
                           <input
                             type="text"
-                            defaultValue={cell.text}
+                            defaultValue={cellValue}
                             onChange={(e) => handleCellInputChange(e, cell.id)}
                             style={cellStyles}
                           />
