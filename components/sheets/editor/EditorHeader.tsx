@@ -97,8 +97,8 @@ const FormulaInfoButton = () => {
 Formulas always start with an equals sign (=). For example:
 
 =A1 + B2       (adds values in cells A1 and B2)
-=SUM(A1:A5)    (sums values from A1 to A5)
-=AVERAGE(B1:B10) > 50  (checks if the average of B1 to B10 is greater than 50)
+=SUM(A1,A5)    (sums values from A1 to A5)
+=AVERAGE(B1,B10) > 50  (checks if the average of B1 to B10 is greater than 50)
 
 Simply select cell(s) and then add your formula!`}</p>
           </DialogContentText>
