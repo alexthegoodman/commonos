@@ -117,6 +117,7 @@ export const SheetGrid = ({
 
   // Enhanced formula evaluator
   const evaluateFormula = (formula, cellValues) => {
+    // console.info("evaluate", formula);
     // Remove the '=' at the beginning
     let exp = formula.slice(1);
 
@@ -124,6 +125,8 @@ export const SheetGrid = ({
     exp = exp.replace(/[A-Z]\d+/g, (match) => {
       return getCellValue(match, cellValues);
     });
+
+    // console.info("evaluating...", exp);
 
     // Replace function names with their JavaScript equivalents
     exp = exp
@@ -146,7 +149,9 @@ export const SheetGrid = ({
         "count",
         "return " + exp
       );
-      return func(sum, average, min, max, count);
+      const result = func(sum, average, min, max, count);
+      // console.info("evaluation result", result);
+      return result;
     } catch (error) {
       return "#ERROR!";
     }
@@ -209,31 +214,38 @@ export const SheetGrid = ({
     onCellsChanged(cellId, e.target.value);
   };
 
-  const getRowCellsWithLabels = (rowCells, rowLabel) => {
+  const getCellsWithLabels = (rows) => {
+    let rowLabel = "";
+    let columnLabel = "";
+    let cellLabel = "";
+
     let columnPerRow = 0;
     let cellValues = {};
-    rowCells.forEach((cell) => {
-      columnLabel = ENGLISH_CAPS[columnPerRow];
-      cellLabel = columnLabel + rowLabel;
+    rows.forEach((row, i) => {
+      columnPerRow = 0;
+      row.cells.forEach((cell) => {
+        if (cell.type !== "header") {
+          columnPerRow++;
 
-      columnPerRow++;
+          columnLabel = ENGLISH_CAPS[columnPerRow];
+          cellLabel = columnLabel + i;
 
-      cellValues[cellLabel] = cell.text;
+          cellValues[cellLabel] = cell.text;
+        }
+      });
     });
+
     return cellValues;
   };
 
-  let rowLabel = "";
-  let columnLabel = "";
-  let cellLabel = "";
+  const cellsWithLabels = getCellsWithLabels(rows);
+
+  // console.info("cellsWIthLabels", cellsWithLabels);
 
   return (
     <>
       {rows.map((row, i) => {
         // columnPerRow = 0;
-        rowLabel = i;
-
-        const cellsWithLabels = getRowCellsWithLabels(row.cells, rowLabel);
 
         // console.info("cellsWithLabels", cellsWithLabels);
 
@@ -274,6 +286,7 @@ export const SheetGrid = ({
                           <input
                             type="text"
                             defaultValue={cellValue}
+                            value={cellValue}
                             onChange={(e) => handleCellInputChange(e, cell.id)}
                             style={cellStyles}
                           />
