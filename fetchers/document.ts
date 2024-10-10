@@ -1,8 +1,11 @@
 import {
   deleteDocumentMutation,
   documentQuery,
+  documentTemplatesQuery,
   generateTitlesMutation,
   myDocumentsQuery,
+  newDocumentTemplateMutation,
+  updateDocumentTemplateMutation,
 } from "../gql/document";
 import graphClient from "../helpers/GQLClient";
 
@@ -48,4 +51,52 @@ export const generateTitles = async (token: string, markdown: string) => {
   )) as any;
 
   return generateTitles;
+};
+
+export const getDocumentTemplatesData = async (token: string) => {
+  graphClient.setupClient(token);
+
+  const { documentTemplates } = (await graphClient?.request(
+    documentTemplatesQuery
+  )) as any;
+
+  return documentTemplates;
+};
+
+export const newDocumentTemplate = async (
+  token: string,
+  sourceId: string,
+  title: string,
+  masterVisuals: any
+) => {
+  graphClient.setupClient(token);
+
+  const { newDocumentTemplate } = (await graphClient?.request(
+    newDocumentTemplateMutation,
+    {
+      sourceId,
+      title,
+      masterVisuals: JSON.stringify(masterVisuals),
+    }
+  )) as any;
+
+  return newDocumentTemplate;
+};
+
+export const updateDocumentTemplate = async (
+  token: string,
+  documentTemplateId: string,
+  masterVisuals: string
+) => {
+  graphClient.setupClient(token);
+
+  const { updateDocumentTemplate } = (await graphClient?.request(
+    updateDocumentTemplateMutation,
+    {
+      documentTemplateId,
+      masterVisuals: JSON.stringify(masterVisuals),
+    }
+  )) as any;
+
+  return updateDocumentTemplate;
 };

@@ -5,9 +5,15 @@ import { useDebounce } from "../../../hooks/useDebounce";
 import { useCookies } from "react-cookie";
 import graphClient from "../../../helpers/GQLClient";
 import { updateDocumentMutation } from "../../../gql/document";
-import { mutate } from "swr";
-import { getDocumentsData } from "../../../fetchers/document";
-import { Box, TextField, Typography } from "@mui/material";
+import useSWR, { mutate } from "swr";
+import {
+  getDocumentsData,
+  getDocumentTemplatesData,
+  newDocumentTemplate,
+  updateDocumentTemplate,
+} from "../../../fetchers/document";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { getUserData } from "@/fetchers/user";
 const { DateTime } = require("luxon");
 
 const EditorHeader = ({
@@ -19,6 +25,22 @@ const EditorHeader = ({
   const token = cookies.cmUserToken;
 
   graphClient.setupClient(token);
+
+  const { data: userData } = useSWR("homeLayout", () => getUserData(token), {
+    revalidateOnMount: true,
+  });
+
+  const { data: documentTemplates } = useSWR(
+    "documentTemplates",
+    () => getDocumentTemplatesData(token),
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  const documentTemplateMatch = documentTemplates?.filter(
+    (template) => template.sourceId === documentId
+  )[0];
 
   const [
     {
@@ -119,6 +141,62 @@ const EditorHeader = ({
           </Typography>
         ) : (
           <></>
+        )}
+        {userData?.role === "ADMIN" && (
+          <Box display="flex" flexDirection="row" alignItems="center" ml={2}>
+            <Typography>Admin Tools</Typography>
+            {/* <Dropdown
+              label={templateCategory ? "" : "Choose category..."}
+              options={[
+                {
+                  label: "Category",
+                  value: "123",
+                },
+              ]}
+              handleMenuItemClick={handleSetTemplateCategory}
+            /> */}
+            {documentTemplateMatch ? (
+              <Button
+                color="success"
+                variant="contained"
+                size="small"
+                onClick={async () => {
+                  await updateDocumentTemplate(
+                    token,
+                    documentTemplateMatch.id,
+                    JSON.stringify(commonJson?.masterVisuals)
+                  );
+                  mutate("documentTemplates", () =>
+                    getDocumentTemplatesData(token)
+                  );
+                  console.info("updated template");
+                }}
+              >
+                Update Template
+              </Button>
+            ) : (
+              <Button
+                color="success"
+                variant="contained"
+                size="small"
+                onClick={async () => {
+                  await newDocumentTemplate(
+                    token,
+                    documentId,
+                    documentData?.title,
+                    JSON.stringify(commonJson?.masterVisuals)
+                  );
+                  mutate("documentTemplates", () =>
+                    getDocumentTemplatesData(token)
+                  );
+
+                  console.info("created template");
+                }}
+              >
+                Save as Template
+              </Button>
+            )}
+          </Box>
         )}
       </Box>
     </header>

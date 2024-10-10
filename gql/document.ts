@@ -99,3 +99,47 @@ export const generateTitlesMutation = gql`
     }
   }
 `;
+
+export const documentTemplatesQuery = gql`
+  query DocumentTemplates {
+    documentTemplates {
+      id
+      sourceId
+      title
+      key
+
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const newDocumentTemplateMutation = gql`
+  mutation NewDocumentTemplate(
+    $sourceId: String!
+    $title: String!
+    $masterVisuals: String!
+  ) {
+    newDocumentTemplate(
+      sourceId: $sourceId
+      title: $title
+      masterVisuals: $masterVisuals
+    ) {
+      id
+    }
+  }
+`;
+
+export const updateDocumentTemplateMutation = gql`
+  mutation UpdateDocumentTemplate(
+    $documentTemplateId: String!
+    $masterVisuals: String!
+  ) {
+    updateDocumentTemplate(
+      documentTemplateId: $documentTemplateId
+      masterVisuals: $masterVisuals
+    ) {
+      id
+    }
+  }
+`;
