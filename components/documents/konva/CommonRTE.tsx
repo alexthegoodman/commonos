@@ -98,7 +98,40 @@ export default function CommonRTE({
       documentSize,
       marginSize,
       debounceCallback,
-      "/fonts/Inter-Regular.ttf",
+      [
+        {
+          name: "Inter",
+          url: "/fonts/Inter-Regular.ttf",
+        },
+        {
+          name: "Oswald",
+          url: "/fonts/Oswald[wght].ttf",
+        },
+        {
+          name: "Playfair",
+          url: "/fonts/Playfair[opsz,wdth,wght].ttf",
+        },
+        {
+          name: "Raleway",
+          url: "/fonts/Raleway[wght].ttf",
+        },
+        {
+          name: "PT Sans",
+          url: "/fonts/PT_Sans-Web-Regular.ttf",
+        },
+        {
+          name: "PT Serif",
+          url: "/fonts/PT_Serif-Web-Regular.ttf",
+        },
+        {
+          name: "Permanent Marker",
+          url: "/fonts/PermanentMarker-Regular.ttf",
+        },
+        {
+          name: "DM Serif Display",
+          url: "/fonts/DMSerifDisplay-Regular.ttf",
+        },
+      ],
       uploadFileHandler
     );
 
@@ -127,6 +160,38 @@ export default function CommonRTE({
     <>
       <div id="cmnToolbarPrimary" className="toolbar">
         <label>Alter Text:</label>
+        <select id="cmnFontFamily">
+          <option value="Inter" style={{ fontFamily: "Inter" }}>
+            Inter
+          </option>
+          <option value="Playfair" style={{ fontFamily: "Playfair" }}>
+            Playfair
+          </option>
+          <option value="Oswald" style={{ fontFamily: "Oswald" }}>
+            Oswald
+          </option>
+          <option value="Raleway" style={{ fontFamily: "Raleway" }}>
+            Raleway
+          </option>
+          <option value="PT Sans" style={{ fontFamily: "PT Sans" }}>
+            PT Sans
+          </option>
+          <option value="PT Serif" style={{ fontFamily: "PT Serif" }}>
+            PT Serif
+          </option>
+          <option
+            value="Permanent Marker"
+            style={{ fontFamily: "Permanent Marker" }}
+          >
+            Permanent Marker
+          </option>
+          <option
+            value="DM Serif Display"
+            style={{ fontFamily: "DM Serif Display" }}
+          >
+            DM Serif Display
+          </option>
+        </select>
         <Button size="small" id="cmnColor">
           Color
         </Button>
@@ -180,6 +245,48 @@ export default function CommonRTE({
               font-weight: normal;
               font-style: normal;
             }
+              @font-face {
+              font-family: "Playfair";
+              src: url("/fonts/Playfair[opsz\,wdth\,wght].ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: "Oswald";
+              src: url("/fonts/Oswald[wght].ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: "Raleway";
+              src: url("/fonts/Raleway[wght].ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: "PT Sans";
+              src: url("/fonts/PT_Sans-Web-Regular.ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: "PT Serif";
+              src: url("/fonts/PT_Serif-Web-Regular.ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: "Permanent Marker";
+              src: url("/fonts/PermanentMarker-Regular.ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
+            @font-face {
+              font-family: "DM Serif Display";
+              src: url("/fonts/DMSerifDisplay-Regular.ttf");
+              font-weight: normal;
+              font-style: normal;
+            }
             .toolbar {
               display: flex;
               flex-direction: row;
@@ -201,6 +308,27 @@ export default function CommonRTE({
             `}
       </style>
       <div className="preloadFont" style={{ fontFamily: "Inter" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "Playfair" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "Oswald" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "Raleway" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "PT Sans" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "PT Serif" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "Permanent Marker" }}>
+        .
+      </div>
+      <div className="preloadFont" style={{ fontFamily: "DM Serif Display" }}>
         .
       </div>
     </>
